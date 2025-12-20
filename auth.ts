@@ -2,7 +2,6 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import { verifyPassword } from "@/lib/password";
-import prisma from "@/lib/prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -27,6 +26,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
 
           const { email, password } = parsedCredentials.data;
+
+          // Lazy import prisma to avoid bundling in middleware
+          const { default: prisma } = await import("@/lib/prisma");
 
           // Find user in database
           const user = await prisma.user.findUnique({
