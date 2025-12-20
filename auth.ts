@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
-import bcrypt from "bcryptjs";
+import { verifyPassword } from "@/lib/password";
 import prisma from "@/lib/prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -39,7 +39,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
 
           // Verify password
-          const passwordMatch = await bcrypt.compare(password, user.password);
+          const passwordMatch = await verifyPassword(password, user.password);
 
           if (!passwordMatch) {
             console.error("Password mismatch");
