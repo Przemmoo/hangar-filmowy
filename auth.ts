@@ -27,13 +27,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           const { email, password } = parsedCredentials.data;
 
-          // Lazy import prisma to avoid bundling in middleware
-          const { default: prisma } = await import("@/lib/prisma");
-
-          // Find user in database
-          const user = await prisma.user.findUnique({
-            where: { email },
+          // Use Supabase REST API instead of Prisma for Edge Runtime compatibility
+          const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+          const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+          
+          const response = await fetch(`${supabaseUrl}/rest/v1/users?email=eq.${email}&select=*`, {
+            headers: {
+              'apikey': supabaseKey!,
+              'Authorization': `Bearer ${supabaseKey}`,
+            },
           });
+
+          const users = await response.json();
+          const user = users[0];
           
           if (!user) {
             console.error("User not found:", email);
