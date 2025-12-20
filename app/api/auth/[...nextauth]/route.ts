@@ -1,5 +1,6 @@
 import { handlers } from "@/auth";
 
-export const runtime = 'edge';
+// Use Node.js runtime for Prisma compatibility
+export const runtime = 'nodejs';
 
 export const { GET, POST } = handlers;
