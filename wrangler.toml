@@ -1,0 +1,6 @@
+name = "hangar-filmowy"
+compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2024-12-20"
+
+[site]
+bucket = ".vercel/output/static"

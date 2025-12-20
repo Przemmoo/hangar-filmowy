@@ -1,6 +1,6 @@
 import { handlers } from "@/auth";
 
-// Use Node.js runtime for Prisma compatibility
-export const runtime = 'nodejs';
+// Edge Runtime for Cloudflare Pages
+export const runtime = 'edge';
 
 export const { GET, POST } = handlers;
