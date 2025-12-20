@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for admin authentication
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // bcrypt hashed
+  name      String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// Form submissions from event configurator
+model FormSubmission {
+  id            String   @id @default(cuid())
+  firstName     String
+  lastName      String
+  email         String
+  phone         String?
+  message       String   @db.Text
+  eventType     String   // plener_miejski, event_firmowy, kino_samochodowe, inne
+  audienceSize  Int
+  extras        Json     // { popcorn: boolean, sunbeds: boolean, license: boolean }
+  estimatedLevel String  // KAMERALNY, STANDARD, PROFESSIONAL, MASS EVENT
+  status        String   @default("NEW") // NEW, IN_PROGRESS, CLOSED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("form_submissions")
+}
+
+// Media library for event photos
+model Media {
+  id          String   @id @default(cuid())
+  filename    String
+  url         String   // Cloudflare R2 URL
+  alt         String?
+  size        Int      // bytes
+  mimeType    String
+  width       Int?
+  height      Int?
+  uploadedBy  String
+  createdAt   DateTime @default(now())
+
+  @@map("media")
+}
+
+// Page content (editable via admin panel)
+model Content {
+  id        String   @id @default(cuid())
+  section   String   @unique // hero, about, offer, process, etc.
+  data      Json     // flexible content structure
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  @@map("content")
+}
+
+// Site settings
+model Setting {
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  @@map("settings")
+}

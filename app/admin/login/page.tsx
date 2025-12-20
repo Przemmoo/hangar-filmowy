@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Film, Lock, Mail } from "lucide-react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -16,23 +17,17 @@ export default function LoginPage() {
     setError("");
 
     try {
-      // TODO: Implement NextAuth signIn
-      // const result = await signIn("credentials", {
-      //   email,
-      //   password,
-      //   redirect: false,
-      // });
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-      // Mock authentication for now
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // if (result?.error) {
-      //   setError("Nieprawidłowy email lub hasło");
-      // } else {
-      //   window.location.href = "/admin/dashboard";
-      // }
-      
-      setError("Autentykacja jeszcze nie skonfigurowana - w trakcie implementacji");
+      if (result?.error) {
+        setError("Nieprawidłowy email lub hasło");
+      } else {
+        window.location.href = "/admin/dashboard";
+      }
     } catch (err) {
       setError("Wystąpił błąd podczas logowania");
     } finally {
@@ -135,12 +130,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Info note */}
-        <div className="mt-6 p-4 bg-brand-gold/10 border border-brand-gold/30 rounded-lg">
-          <p className="text-brand-gold text-sm text-center">
-            🚧 Panel w budowie - NextAuth.js zostanie skonfigurowany w następnym kroku
-          </p>
-        </div>
+        
       </div>
     </div>
   );
