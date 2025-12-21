@@ -134,23 +134,25 @@ export default function Home() {
             filmowe klasy premium.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <button 
               onClick={() => document.getElementById('kontakt')?.scrollIntoView({ behavior: 'smooth' })}
-              className="btn-primary"
+              className="btn-primary text-sm md:text-base"
+              style={{ borderRadius: '30px', padding: '16px 40px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
             >
               Zorganizuj pokaz
             </button>
             <button 
               onClick={() => document.getElementById('dlaczego-my')?.scrollIntoView({ behavior: 'smooth' })}
-              className="btn-secondary"
+              className="btn-secondary text-sm md:text-base"
+              style={{ borderRadius: '30px', padding: '16px 40px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
             >
               Zobacz naszą technologię
             </button>
           </div>
 
           {/* Scroll Indicator */}
-          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-bounce">
+          <div className="absolute bottom-15 left-1/2 -translate-x-1/2 animate-bounce">
             <ChevronDown className="w-8 h-8 text-white/60" />
           </div>
         </div>
@@ -161,11 +163,11 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Text Side */}
-            <div>
-              <h2 className="heading-section text-[#0A1828] mb-6">
+            <div style={{ padding: '60px' }} className="bg-white rounded-2xl">
+              <h2 className="text-[48px] font-bold text-[#0A1828] mb-6" style={{ marginBottom: '24px' }}>
                 Wychodzimy z cienia. Wnosimy kino plenerowe na nowy poziom.
               </h2>
-              <div className="space-y-4 body-text text-gray-700">
+              <div className="space-y-4 text-[18px] text-gray-700" style={{ lineHeight: '1.8' }}>
                 <p>
                   Przez lata kino plenerowe kojarzyło się z jednym: czekaniem na zmrok, walką z wiatrem 
                   falującym ekranem i kompromisami w jakości obrazu. Hangar Filmowy zmienia te zasady gry.
@@ -183,7 +185,10 @@ export default function Home() {
 
             {/* Image Side */}
             <div className="relative">
-              <div className="aspect-[4/3] bg-gradient-to-br from-[#1E3A5F] to-[#0A1828] rounded-2xl shadow-2xl flex items-center justify-center">
+              <div 
+                className="aspect-[4/3] bg-gradient-to-br from-[#1E3A5F] to-[#0A1828] flex items-center justify-center"
+                style={{ borderRadius: '16px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}
+              >
                 <div className="text-white/20 text-6xl font-bold">LED Screen</div>
               </div>
             </div>
@@ -199,10 +204,18 @@ export default function Home() {
           </h2>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Box 1 */}
-            <div className="card group cursor-pointer">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* Box 1 - Yellow-Orange Gradient */}
+            <div className="card group cursor-pointer" style={{ padding: '40px', borderRadius: '20px' }}>
+              <div 
+                className="flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300"
+                style={{ 
+                  width: '64px', 
+                  height: '64px', 
+                  borderRadius: '50%', 
+                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)' 
+                }}
+              >
+                <svg className="text-white" style={{ width: '32px', height: '32px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </div>
@@ -216,10 +229,18 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Box 2 */}
-            <div className="card group cursor-pointer">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#4D90FE] to-[#64C7FF] flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* Box 2 - Blue Gradient */}
+            <div className="card group cursor-pointer" style={{ padding: '40px', borderRadius: '20px' }}>
+              <div 
+                className="flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300"
+                style={{ 
+                  width: '64px', 
+                  height: '64px', 
+                  borderRadius: '50%', 
+                  background: 'linear-gradient(135deg, #4D90FE 0%, #64C7FF 100%)' 
+                }}
+              >
+                <svg className="text-white" style={{ width: '32px', height: '32px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
@@ -233,10 +254,18 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Box 3 */}
-            <div className="card group cursor-pointer">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* Box 3 - Purple Gradient */}
+            <div className="card group cursor-pointer" style={{ padding: '40px', borderRadius: '20px' }}>
+              <div 
+                className="flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300"
+                style={{ 
+                  width: '64px', 
+                  height: '64px', 
+                  borderRadius: '50%', 
+                  background: 'linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)' 
+                }}
+              >
+                <svg className="text-white" style={{ width: '32px', height: '32px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 1.06m-1.414-1.06a5 5 0 01-1.06-1.414M12 12l.01.01m-.01 4.95a5 5 0 110-9.9" />
                 </svg>
               </div>
@@ -412,7 +441,15 @@ export default function Home() {
             <div className="grid md:grid-cols-4 gap-8">
               {/* Step 1 */}
               <div className="text-center">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] flex items-center justify-center text-3xl font-bold text-white mx-auto mb-6">
+                <div 
+                  className="rounded-full flex items-center justify-center font-bold text-white mx-auto mb-6"
+                  style={{ 
+                    width: '120px', 
+                    height: '120px', 
+                    fontSize: '72px',
+                    background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)' 
+                  }}
+                >
                   1
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-3">Ustalamy Termin & Wizję</h3>
@@ -423,7 +460,15 @@ export default function Home() {
 
               {/* Step 2 */}
               <div className="text-center">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#4D90FE] to-[#64C7FF] flex items-center justify-center text-3xl font-bold text-white mx-auto mb-6">
+                <div 
+                  className="rounded-full flex items-center justify-center font-bold text-white mx-auto mb-6"
+                  style={{ 
+                    width: '120px', 
+                    height: '120px', 
+                    fontSize: '72px',
+                    background: 'linear-gradient(135deg, #4D90FE 0%, #64C7FF 100%)' 
+                  }}
+                >
                   2
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-3">Wybieramy Repertuar</h3>
@@ -434,7 +479,15 @@ export default function Home() {
 
               {/* Step 3 */}
               <div className="text-center">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] flex items-center justify-center text-3xl font-bold text-white mx-auto mb-6">
+                <div 
+                  className="rounded-full flex items-center justify-center font-bold text-white mx-auto mb-6"
+                  style={{ 
+                    width: '120px', 
+                    height: '120px', 
+                    fontSize: '72px',
+                    background: 'linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)' 
+                  }}
+                >
                   3
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-3">Przygotowanie Przestrzeni</h3>
@@ -445,7 +498,15 @@ export default function Home() {
 
               {/* Step 4 */}
               <div className="text-center">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#FF6B6B] to-[#FFD93D] flex items-center justify-center text-3xl font-bold text-white mx-auto mb-6">
+                <div 
+                  className="rounded-full flex items-center justify-center font-bold text-white mx-auto mb-6"
+                  style={{ 
+                    width: '120px', 
+                    height: '120px', 
+                    fontSize: '72px',
+                    background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)' 
+                  }}
+                >
                   4
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-3">Showtime!</h3>
@@ -454,109 +515,138 @@ export default function Home() {
                 </p>
               </div>
             </div>
-
-            {/* Connecting Line */}
-            <div className="hidden md:block relative -mt-64 mb-64">
-              <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-[#FFD700] via-[#4D90FE] via-[#8B5CF6] to-[#FF6B6B] opacity-30" 
-                   style={{ transform: 'translateY(-50%)' }} />
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Kontakt Section */}
-      <section id="kontakt" className="section-padding bg-gradient-to-b from-[#F8F9FA] to-white">
+      {/* Kontakt Section - Konfigurator */}
+      <section id="kontakt" className="section-padding bg-[#0A1828]">
         <div className="container mx-auto px-6">
-          <h2 className="heading-section text-[#0A1828] text-center mb-16">
+          <h2 className="heading-section text-white text-center mb-4">
             Skonfiguruj Swój Pokaz & Wyślij Zapytanie
           </h2>
+          <p className="body-text text-white/70 text-center mb-16 max-w-3xl mx-auto">
+            Odpowiedz na kilka pytań, a my przygotujemy dla Ciebie ofertę szytą na miarę.
+          </p>
 
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12">
-            {/* Left Side - Form */}
-            <div>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Event Type */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Rodzaj wydarzenia *
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {(['city', 'corporate', 'hotel', 'festival'] as const).map((type) => (
-                      <button
-                        key={type}
-                        type="button"
-                        onClick={() => setEventType(type)}
-                        className={`px-4 py-3 rounded-lg border-2 transition-all text-left ${
-                          eventType === type
-                            ? 'border-[#FFD700] bg-[#FFD700]/10 font-semibold'
-                            : 'border-gray-300 hover:border-[#FFD700]/50'
-                        }`}
-                      >
-                        {type === 'city' && '🏙️ Event miejski'}
-                        {type === 'corporate' && '🏢 Event korporacyjny'}
-                        {type === 'hotel' && '🏨 Hotel / Resort'}
-                        {type === 'festival' && '🎪 Festiwal / Impreza'}
-                      </button>
-                    ))}
-                  </div>
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-[55fr_45fr] gap-12">
+            {/* Left Side - 55% */}
+            <div className="space-y-8">
+              {/* Event Type - Toggle Buttons */}
+              <div>
+                <label className="block text-lg font-semibold text-white mb-4">
+                  Rodzaj wydarzenia *
+                </label>
+                <div className="grid grid-cols-2 gap-4">
+                  {(['city', 'corporate', 'hotel', 'festival'] as const).map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setEventType(type)}
+                      className={`px-6 py-4 rounded-xl border-2 transition-all duration-300 text-left font-medium ${
+                        eventType === type
+                          ? 'border-[#FFD700] bg-[#FFD700]/10 text-white'
+                          : 'border-gray-600 bg-transparent text-gray-300 hover:border-[#FFD700]/50 hover:text-white'
+                      }`}
+                    >
+                      {type === 'city' && '🏙️ Plener Miejski'}
+                      {type === 'corporate' && '🏢 Event Firmowy'}
+                      {type === 'hotel' && '🏨 Kino Samochodowe'}
+                      {type === 'festival' && '🎪 Inne'}
+                    </button>
+                  ))}
                 </div>
+              </div>
 
-                {/* Audience Size */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Przewidywana liczba widzów: <span className="text-[#FFD700] font-bold">{audienceSize}</span>
-                  </label>
-                  <input 
-                    type="range" 
-                    min="50" 
-                    max="1000" 
-                    value={audienceSize}
-                    onChange={(e) => setAudienceSize(Number(e.target.value))}
-                    className="slider-gold w-full"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>50</span>
-                    <span>1000+</span>
-                  </div>
+              {/* Audience Size Slider */}
+              <div>
+                <label className="block text-lg font-semibold text-white mb-2">
+                  Liczba widzów
+                </label>
+                <div className="text-center mb-4">
+                  <span className="text-4xl font-bold text-[#FFD700]">{audienceSize}</span>
+                  <span className="text-white/70 ml-2">osób</span>
                 </div>
+                <input 
+                  type="range" 
+                  min="50" 
+                  max="1000" 
+                  value={audienceSize}
+                  onChange={(e) => setAudienceSize(Number(e.target.value))}
+                  className="slider-gold w-full"
+                />
+                <div className="flex justify-between text-sm text-white/60 mt-2">
+                  <span>50</span>
+                  <span>1000+</span>
+                </div>
+              </div>
 
-                {/* Extras */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Dodatki
-                  </label>
-                  <div className="space-y-2">
-                    <label className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
+              {/* Toggle Switches for Extras */}
+              <div>
+                <label className="block text-lg font-semibold text-white mb-4">
+                  Dodatki
+                </label>
+                <div className="space-y-3">
+                  {/* Toggle Switch 1 - Popcorn */}
+                  <label className="flex items-center justify-between p-4 bg-white/5 rounded-xl cursor-pointer hover:bg-white/10 transition-all">
+                    <span className="text-white flex items-center gap-3">
+                      <span className="text-2xl">🍿</span>
+                      <span className="font-medium">Wózek popcornowy</span>
+                    </span>
+                    <div className="relative">
                       <input 
                         type="checkbox" 
                         checked={extras.popcorn}
                         onChange={(e) => setExtras({ ...extras, popcorn: e.target.checked })}
-                        className="w-5 h-5 text-[#FFD700] rounded" 
+                        className="sr-only peer"
                       />
-                      <span>🍿 Wózek popcornowy</span>
-                    </label>
-                    <label className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <div className="w-12 h-6 bg-gray-600 rounded-full peer-checked:bg-gradient-to-r peer-checked:from-[#FFD700] peer-checked:to-[#FFA500] transition-all"></div>
+                      <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-6"></div>
+                    </div>
+                  </label>
+
+                  {/* Toggle Switch 2 - Deckchairs */}
+                  <label className="flex items-center justify-between p-4 bg-white/5 rounded-xl cursor-pointer hover:bg-white/10 transition-all">
+                    <span className="text-white flex items-center gap-3">
+                      <span className="text-2xl">🛋️</span>
+                      <span className="font-medium">Leżaki premium</span>
+                    </span>
+                    <div className="relative">
                       <input 
                         type="checkbox"
                         checked={extras.deckchairs}
                         onChange={(e) => setExtras({ ...extras, deckchairs: e.target.checked })}
-                        className="w-5 h-5 text-[#FFD700] rounded" 
+                        className="sr-only peer"
                       />
-                      <span>🛋️ Leżaki premium</span>
-                    </label>
-                    <label className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <div className="w-12 h-6 bg-gray-600 rounded-full peer-checked:bg-gradient-to-r peer-checked:from-[#FFD700] peer-checked:to-[#FFA500] transition-all"></div>
+                      <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-6"></div>
+                    </div>
+                  </label>
+
+                  {/* Toggle Switch 3 - License */}
+                  <label className="flex items-center justify-between p-4 bg-white/5 rounded-xl cursor-pointer hover:bg-white/10 transition-all">
+                    <span className="text-white flex items-center gap-3">
+                      <span className="text-2xl">📜</span>
+                      <span className="font-medium">Obsługa licencyjna filmu</span>
+                    </span>
+                    <div className="relative">
                       <input 
                         type="checkbox"
                         checked={extras.license}
                         onChange={(e) => setExtras({ ...extras, license: e.target.checked })}
-                        className="w-5 h-5 text-[#FFD700] rounded" 
+                        className="sr-only peer"
                       />
-                      <span>📜 Obsługa licencyjna filmu</span>
-                    </label>
-                  </div>
+                      <div className="w-12 h-6 bg-gray-600 rounded-full peer-checked:bg-gradient-to-r peer-checked:from-[#FFD700] peer-checked:to-[#FFA500] transition-all"></div>
+                      <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-6"></div>
+                    </div>
+                  </label>
                 </div>
+              </div>
 
-                {/* Contact Fields */}
+              {/* Contact Form */}
+              <form onSubmit={handleSubmit} className="space-y-4 pt-6 border-t border-white/10">
+                <h3 className="text-xl font-semibold text-white mb-4">Twoje dane kontaktowe</h3>
+                
                 <div className="grid md:grid-cols-2 gap-4">
                   <input 
                     type="text" 
@@ -564,7 +654,7 @@ export default function Home() {
                     required
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFD700] focus:border-transparent"
+                    className="px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/50 focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
                   />
                   <input 
                     type="text" 
@@ -572,7 +662,7 @@ export default function Home() {
                     required
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFD700] focus:border-transparent"
+                    className="px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/50 focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
                   />
                 </div>
                 <input 
@@ -581,7 +671,7 @@ export default function Home() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFD700] focus:border-transparent"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/50 focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
                 />
                 <input 
                   type="tel" 
@@ -589,65 +679,69 @@ export default function Home() {
                   required
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFD700] focus:border-transparent"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/50 focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all"
                 />
                 <textarea 
                   placeholder="Dodatkowe uwagi..." 
                   rows={4}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFD700] focus:border-transparent"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/50 focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all resize-none"
                 />
 
-                <button type="submit" className="btn-primary w-full">
-                  Wyślij Zapytanie
+                <button type="submit" className="btn-primary w-full text-lg">
+                  Wyślij Zapytanie Ofertowe
                 </button>
+
+                <p className="text-xs text-white/50 text-center">
+                  Odpowiemy w ciągu 24h roboczych
+                </p>
               </form>
             </div>
 
-            {/* Right Side - Summary */}
-            <div className="card sticky top-24 h-fit">
-              <h3 className="text-2xl font-semibold text-[#0A1828] mb-6">Podsumowanie</h3>
-              
-              <div className="space-y-4 mb-6">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Rodzaj wydarzenia:</span>
-                  <span className="font-semibold">
-                    {eventType ? eventLabels[eventType] : 'Nie wybrano'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Liczba widzów:</span>
-                  <span className="font-semibold">{audienceSize} osób</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Kategoria:</span>
-                  <span className={`font-semibold ${getCategory().color}`}>
+            {/* Right Side - 45% Sticky Summary */}
+            <div className="lg:sticky lg:top-24 h-fit">
+              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
+                <h3 className="text-2xl font-bold text-white mb-6">Podsumowanie</h3>
+                
+                {/* Tier Badge */}
+                <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 border-2 border-[#FFD700]">
+                  <p className="text-sm text-white/70 mb-1">Kategoria eventu:</p>
+                  <p className={`text-3xl font-bold ${getCategory().color}`}>
                     {getCategory().name}
-                  </span>
+                  </p>
+                </div>
+
+                <div className="space-y-4 mb-6">
+                  <div className="flex justify-between items-center py-3 border-b border-white/10">
+                    <span className="text-white/70">Rodzaj wydarzenia:</span>
+                    <span className="font-semibold text-white text-right">
+                      {eventType ? eventLabels[eventType] : 'Nie wybrano'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-white/10">
+                    <span className="text-white/70">Liczba widzów:</span>
+                    <span className="font-semibold text-white">{audienceSize} osób</span>
+                  </div>
+                </div>
+
+                {(extras.popcorn || extras.deckchairs || extras.license) && (
+                  <div className="mb-6 p-4 bg-white/5 rounded-xl">
+                    <p className="text-sm text-white/70 mb-3 font-semibold">Wybrane dodatki:</p>
+                    <ul className="space-y-2 text-white">
+                      {extras.popcorn && <li className="flex items-center gap-2">✓ Wózek popcornowy</li>}
+                      {extras.deckchairs && <li className="flex items-center gap-2">✓ Leżaki premium</li>}
+                      {extras.license && <li className="flex items-center gap-2">✓ Obsługa licencyjna filmu</li>}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] p-6 rounded-xl text-white mt-6">
+                  <p className="text-sm opacity-90 mb-1">Orientacyjna cena od:</p>
+                  <p className="text-5xl font-bold">~{getEstimatedPrice()} zł</p>
+                  <p className="text-xs opacity-75 mt-3">*Ostateczna wycena po konsultacji</p>
                 </div>
               </div>
-
-              {(extras.popcorn || extras.deckchairs || extras.license) && (
-                <div className="border-t pt-4 mb-6">
-                  <p className="text-sm text-gray-600 mb-2">Wybrane dodatki:</p>
-                  <ul className="text-sm space-y-1 text-gray-700">
-                    {extras.popcorn && <li>• Wózek popcornowy</li>}
-                    {extras.deckchairs && <li>• Leżaki premium</li>}
-                    {extras.license && <li>• Obsługa licencyjna filmu</li>}
-                  </ul>
-                </div>
-              )}
-
-              <div className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] p-6 rounded-xl text-white">
-                <p className="text-sm opacity-90 mb-1">Orientacyjna cena od:</p>
-                <p className="text-4xl font-bold">~{getEstimatedPrice()} zł</p>
-                <p className="text-xs opacity-75 mt-2">*Ostateczna wycena po konsultacji</p>
-              </div>
-
-              <p className="text-xs text-gray-500 mt-4 text-center">
-                Odpowiemy w ciągu 24h roboczych
-              </p>
             </div>
           </div>
         </div>

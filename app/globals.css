@@ -3,19 +3,31 @@
 @tailwind utilities;
 
 :root {
-  /* Brand Colors - Design System */
+  /* Brand Colors - Design System Specyfikacja */
   --brand-dark: #0A1828;
   --brand-blue: #1E3A5F;
   --brand-gold: #FFD700;
   --brand-orange: #FFA500;
   --brand-light-blue: #4D90FE;
   --brand-cyan: #64C7FF;
+  --brand-teal: #0EA5E9;
+  --brand-purple: #8B5CF6;
+  --brand-purple-light: #A78BFA;
+  --brand-purple-dark: #6D28D9;
+  --brand-green: #10B981;
+  --brand-green-dark: #059669;
+  --brand-red: #FF6B35;
+  --brand-red-light: #F7931E;
   
   /* Gradients */
   --gradient-hero: linear-gradient(180deg, #0A1828 0%, #1E3A5F 100%);
   --gradient-primary: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  --gradient-blue: linear-gradient(135deg, #4D90FE 0%, #0EA5E9 100%);
+  --gradient-yellow-orange: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  --gradient-blue: linear-gradient(135deg, #4D90FE 0%, #64C7FF 100%);
+  --gradient-blue-teal: linear-gradient(135deg, #4D90FE 0%, #0EA5E9 100%);
   --gradient-purple: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+  --gradient-purple-dark: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+  --gradient-orange: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
   --gradient-green: linear-gradient(135deg, #10B981 0%, #059669 100%);
   
   /* Typography */
@@ -49,19 +61,17 @@ a {
   text-decoration: none;
 }
 
-/* Typography Classes */
+/* Typography Classes - Specyfikacja */
 .heading-hero {
   font-size: clamp(2.25rem, 5vw, 4.5rem); /* 36px-72px */
   font-weight: 700;
   line-height: 1.2;
-  letter-spacing: -0.02em;
 }
 
 .heading-section {
-  font-size: clamp(1.75rem, 4vw, 3rem); /* 28px-48px */
+  font-size: clamp(1.75rem, 3vw, 3rem); /* 28px-48px */
   font-weight: 600;
   line-height: 1.3;
-  letter-spacing: -0.01em;
 }
 
 .body-text {
@@ -70,50 +80,85 @@ a {
   line-height: 1.6;
 }
 
-/* Button Styles */
+/* Container - max-width 1280px */
+.container {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem; /* 24px */
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 2.5rem; /* 40px */
+    padding-right: 2.5rem;
+  }
+}
+
+/* Section Padding - 80px desktop, 60px mobile */
+.section-padding {
+  padding-top: 3.75rem; /* 60px mobile */
+  padding-bottom: 3.75rem;
+}
+
+@media (min-width: 1024px) {
+  .section-padding {
+    padding-top: 5rem; /* 80px desktop */
+    padding-bottom: 5rem;
+  }
+}
+
+/* Buttons - Specyfikacja */
 .btn-primary {
-  background: var(--gradient-primary);
-  color: var(--brand-dark);
-  padding: 16px 40px;
-  border-radius: 30px;
-  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2.5rem; /* 16px 40px */
+  font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  box-shadow: 0 4px 15px rgba(255, 165, 0, 0.3);
-  transition: all 0.3s ease;
+  border-radius: 30px;
+  background: var(--gradient-primary);
+  color: #000;
   border: none;
   cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
 }
 
 .btn-primary:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(255, 165, 0, 0.5);
+  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.5);
 }
 
 .btn-secondary {
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  background: transparent;
-  color: #FFFFFF;
-  padding: 14px 38px;
-  border-radius: 30px;
-  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2.5rem; /* 16px 40px */
+  font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  transition: all 0.3s ease;
+  border-radius: 30px;
+  background: transparent;
+  color: #FFFFFF;
+  border: 2px solid #FFFFFF;
   cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: #FFFFFF;
+  transform: scale(1.05);
 }
 
-/* Card Styles */
+/* Card Styles - Specyfikacja */
 .card {
   background: #FFFFFF;
-  padding: 40px;
+  padding: 2.5rem; /* 40px */
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -121,47 +166,40 @@ a {
 
 .card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
 .card-dark {
-  background: var(--gradient-hero);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  padding: 3rem 2rem; /* 48px 32px */
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 360px;
   color: #FFFFFF;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Container */
-.container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 24px;
+.card-dark:hover {
+  transform: scale(1.03);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 215, 0, 0.3);
 }
 
-@media (min-width: 1024px) {
-  .container {
-    padding: 0 40px;
-  }
-}
-
-/* Section Padding */
-.section-padding {
-  padding: 60px 0;
-}
-
-@media (min-width: 1024px) {
-  .section-padding {
-    padding: 80px 0;
-  }
-}
-
-/* Custom slider styles */
+/* Custom Slider - Gold Theme */
 .slider-gold {
   -webkit-appearance: none;
   appearance: none;
-  width: 100%;
   height: 6px;
   background: #E5E7EB;
-  border-radius: 3px;
+  border-radius: 5px;
   outline: none;
+}
+
+.slider-gold::-webkit-slider-track {
+  background: linear-gradient(to right, var(--brand-gold) 0%, var(--brand-gold) var(--value, 50%), #E5E7EB var(--value, 50%), #E5E7EB 100%);
+  height: 6px;
+  border-radius: 5px;
 }
 
 .slider-gold::-webkit-slider-thumb {
@@ -169,42 +207,36 @@ a {
   appearance: none;
   width: 20px;
   height: 20px;
-  background: var(--gradient-primary);
   border-radius: 50%;
+  background: var(--brand-gold);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5);
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
   transition: all 0.3s ease;
 }
 
 .slider-gold::-webkit-slider-thumb:hover {
   transform: scale(1.2);
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.7);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.7);
+}
+
+.slider-gold::-moz-range-track {
+  background: #E5E7EB;
+  height: 6px;
+  border-radius: 5px;
 }
 
 .slider-gold::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  background: var(--gradient-primary);
   border-radius: 50%;
+  background: var(--brand-gold);
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5);
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
   transition: all 0.3s ease;
 }
 
 .slider-gold::-moz-range-thumb:hover {
   transform: scale(1.2);
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.7);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.7);
 }
-
-/* Parallax */
-.parallax-slow {
-  will-change: transform;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
