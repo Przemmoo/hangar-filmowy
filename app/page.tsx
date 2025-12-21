@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Navbar from '@/components/Navbar';
+import ScrollReveal from '@/components/ScrollReveal';
 import { ChevronDown } from 'lucide-react';
 
 type EventType = 'city' | 'corporate' | 'hotel' | 'festival' | null;
@@ -123,10 +124,10 @@ export default function Home() {
 
         {/* Content */}
         <div className="relative z-10 container mx-auto px-6 text-center">
-          <h1 className="heading-hero text-white mb-6">
-            Prawdziwe kino pod gwiazdami.<br />
-            W jakości, jakiej jeszcze nie widziałeś.
-          </h1>
+          <h1 className="heading-hero text-white ">
+            Prawdziwe kino</h1>
+            <h1 className="heading-hero mb-8 bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">pod gwiazdami.</h1>
+          
           
           <p className="body-text text-white/90 max-w-3xl mx-auto mb-12">
             Zapomnij o wyblakłym obrazie z rzutnika. Hangar Filmowy to potężne ekrany LED, 
@@ -136,11 +137,11 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <button 
-              onClick={() => document.getElementById('kontakt')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('konfigurator')?.scrollIntoView({ behavior: 'smooth' })}
               className="btn-primary text-sm md:text-base"
               style={{ borderRadius: '30px', padding: '16px 40px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
             >
-              Zorganizuj pokaz
+              Skonfiguruj wydarzenie
             </button>
             <button 
               onClick={() => document.getElementById('dlaczego-my')?.scrollIntoView({ behavior: 'smooth' })}
@@ -163,7 +164,8 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Text Side */}
-            <div style={{ padding: '60px' }} className="bg-white rounded-2xl">
+            <ScrollReveal>
+              <div style={{ padding: '60px' }} className="bg-white rounded-2xl">
               <h2 className="text-[48px] font-bold text-[#0A1828] mb-6" style={{ marginBottom: '24px' }}>
                 Wychodzimy z cienia. Wnosimy kino plenerowe na nowy poziom.
               </h2>
@@ -182,8 +184,10 @@ export default function Home() {
                 </p>
               </div>
             </div>
+            </ScrollReveal>
 
             {/* Image Side */}
+            <ScrollReveal delay={0.2}>
             <div className="relative">
               <div 
                 className="aspect-[4/3] bg-gradient-to-br from-[#1E3A5F] to-[#0A1828] flex items-center justify-center"
@@ -192,6 +196,7 @@ export default function Home() {
                 <div className="text-white/20 text-6xl font-bold">LED Screen</div>
               </div>
             </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -199,12 +204,15 @@ export default function Home() {
       {/* Dlaczego My Section */}
       <section id="dlaczego-my" className="section-padding bg-gradient-to-b from-[#F8F9FA] to-white">
         <div className="container mx-auto px-6">
-          <h2 className="heading-section text-[#0A1828] text-center mb-16">
-            Dlaczego ekran LED, a nie rzutnik?
-          </h2>
+          <ScrollReveal>
+            <h2 className="heading-section text-[#0A1828] text-center mb-16">
+              Dlaczego ekran LED, a nie rzutnik?
+            </h2>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Box 1 - Yellow-Orange Gradient */}
+            <ScrollReveal delay={0.1}>
             <div className="card group cursor-pointer" style={{ padding: '40px', borderRadius: '20px' }}>
               <div 
                 className="flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300"
@@ -228,8 +236,10 @@ export default function Home() {
                 kolory nasycone, a rozdzielczość zachwyca każdego widza.
               </p>
             </div>
+            </ScrollReveal>
 
             {/* Box 2 - Blue Gradient */}
+            <ScrollReveal delay={0.2}>
             <div className="card group cursor-pointer" style={{ padding: '40px', borderRadius: '20px' }}>
               <div 
                 className="flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300"
@@ -253,13 +263,15 @@ export default function Home() {
                 („dmuchańców"), które poddają się przy mocniejszych podmuchach.
               </p>
             </div>
+            </ScrollReveal>
 
             {/* Box 3 - Purple Gradient */}
+            <ScrollReveal delay={0.3}>
             <div className="card group cursor-pointer" style={{ padding: '40px', borderRadius: '20px' }}>
               <div 
                 className="flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300"
                 style={{ 
-                  width: '64px', 
+                    width: '64px', 
                   height: '64px', 
                   borderRadius: '50%', 
                   background: 'linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)' 
@@ -277,6 +289,7 @@ export default function Home() {
                 czystość dialogów i głębię efektów specjalnych, precyzyjnie pokrywając dźwiękiem strefę widowni.
               </p>
             </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
