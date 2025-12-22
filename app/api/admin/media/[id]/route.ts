@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 // DELETE - Delete media
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -16,11 +16,12 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     // TODO: Also delete from Cloudflare R2
-    await fetch(`${supabaseUrl}/rest/v1/media?id=eq.${params.id}`, {
+    await fetch(`${supabaseUrl}/rest/v1/media?id=eq.${id}`, {
       method: 'DELETE',
       headers: {
         'apikey': supabaseKey!,
