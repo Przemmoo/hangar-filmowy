@@ -31,7 +31,7 @@
   --gradient-green: linear-gradient(135deg, #10B981 0%, #059669 100%);
   
   /* Typography */
-  --font-primary: "Google Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-primary: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 * {
@@ -82,14 +82,14 @@ a {
 
 /* Container - max-width 1280px */
 .container {
-  max-width: 1280px;
+  max-width: 1550px;
   margin-left: auto;
   margin-right: auto;
   padding-left: 1.5rem; /* 24px */
   padding-right: 1.5rem;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1550px) {
   .container {
     padding-left: 2.5rem; /* 40px */
     padding-right: 2.5rem;
@@ -102,7 +102,7 @@ a {
   padding-bottom: 3.75rem;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1550px) {
   .section-padding {
     padding-top: 5rem; /* 80px desktop */
     padding-bottom: 5rem;
@@ -239,4 +239,9 @@ a {
 .slider-gold::-moz-range-thumb:hover {
   transform: scale(1.2);
   box-shadow: 0 4px 15px rgba(255, 215, 0, 0.7);
+}
+
+/* Hover effect for process steps */
+.group:hover .hover-step-circle {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%) !important;
 }

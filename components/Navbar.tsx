@@ -20,7 +20,14 @@ export default function Navbar() {
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const navbarHeight = 50;
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - navbarHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
       setIsMobileMenuOpen(false);
     }
   };
@@ -52,6 +59,12 @@ export default function Navbar() {
             className="text-white hover:text-[#FFD700] transition-colors duration-300 font-medium"
           >
             O nas
+          </button>
+          <button
+            onClick={() => scrollToSection('technologia')}
+            className="text-white hover:text-[#FFD700] transition-colors duration-300 font-medium"
+          >
+            Technologia
           </button>
           <button
             onClick={() => scrollToSection('oferta')}
@@ -86,6 +99,12 @@ export default function Navbar() {
               className="text-white hover:text-[#FFD700] transition-colors duration-300 font-medium text-lg text-left"
             >
               O nas
+            </button>
+            <button
+              onClick={() => scrollToSection('technologia')}
+              className="text-white hover:text-[#FFD700] transition-colors duration-300 font-medium text-lg text-left"
+            >
+              Technologia
             </button>
             <button
               onClick={() => scrollToSection('oferta')}
