@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import prisma from "@/lib/prisma";
-
-export const runtime = 'edge';
 
 // PATCH - Update submission status
 export async function PATCH(
@@ -22,12 +19,22 @@ export async function PATCH(
     const body = await request.json();
     const { status } = body;
 
-    const submission = await prisma.formSubmission.update({
-      where: { id: params.id },
-      data: { status },
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    const response = await fetch(`${supabaseUrl}/rest/v1/form_submissions?id=eq.${params.id}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': supabaseKey!,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({ status, updatedAt: new Date().toISOString() })
     });
 
-    return NextResponse.json(submission);
+    const submission = await response.json();
+    return NextResponse.json(submission[0]);
   } catch (error) {
     console.error("Error updating submission:", error);
     return NextResponse.json(
@@ -52,8 +59,15 @@ export async function DELETE(
       );
     }
 
-    await prisma.formSubmission.delete({
-      where: { id: params.id },
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    await fetch(`${supabaseUrl}/rest/v1/form_submissions?id=eq.${params.id}`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': supabaseKey!,
+        'Authorization': `Bearer ${supabaseKey}`,
+      }
     });
 
     return NextResponse.json({ success: true });

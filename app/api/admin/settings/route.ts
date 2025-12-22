@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import prisma from "@/lib/prisma";
-
-export const runtime = 'edge';
 
 // GET all settings
 export async function GET(request: NextRequest) {
@@ -12,12 +9,21 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Fetch all settings and convert to object
-    const settings = await prisma.setting.findMany();
-    const settingsObject = settings.reduce((acc: Record<string, string>, setting: { key: string; value: string }) => {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    const response = await fetch(`${supabaseUrl}/rest/v1/settings?select=key,value`, {
+      headers: {
+        'apikey': supabaseKey!,
+        'Authorization': `Bearer ${supabaseKey}`,
+      }
+    });
+
+    const settings = await response.json();
+    const settingsObject = settings.reduce((acc: Record<string, any>, setting: { key: string; value: any }) => {
       acc[setting.key] = setting.value;
       return acc;
-    }, {} as Record<string, string>);
+    }, {});
 
     // Return with default values if not set
     return NextResponse.json({
@@ -65,14 +71,44 @@ export async function POST(request: NextRequest) {
       "seoKeywords",
     ];
 
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    // Update each setting using upsert pattern
     await Promise.all(
-      settingsToUpdate.map((key) =>
-        prisma.setting.upsert({
-          where: { key },
-          update: { value: data[key] || "" },
-          create: { key, value: data[key] || "" },
-        })
-      )
+      settingsToUpdate.map(async (key) => {
+        const value = typeof data[key] === 'object' ? data[key] : (data[key] || "");
+        
+        // Check if exists
+        const checkRes = await fetch(`${supabaseUrl}/rest/v1/settings?key=eq.${key}&select=key`, {
+          headers: { 'apikey': supabaseKey!, 'Authorization': `Bearer ${supabaseKey}` }
+        });
+        const existing = await checkRes.json();
+        
+        if (existing.length > 0) {
+          // UPDATE
+          return fetch(`${supabaseUrl}/rest/v1/settings?key=eq.${key}`, {
+            method: 'PATCH',
+            headers: {
+              'apikey': supabaseKey!,
+              'Authorization': `Bearer ${supabaseKey}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ value, updatedAt: new Date().toISOString(), updatedBy: session.user?.email })
+          });
+        } else {
+          // INSERT
+          return fetch(`${supabaseUrl}/rest/v1/settings`, {
+            method: 'POST',
+            headers: {
+              'apikey': supabaseKey!,
+              'Authorization': `Bearer ${supabaseKey}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ key, value, updatedAt: new Date().toISOString(), updatedBy: session.user?.email })
+          });
+        }
+      })
     );
 
     return NextResponse.json({ success: true });

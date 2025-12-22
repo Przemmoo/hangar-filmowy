@@ -1,11 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/auth";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
-export const runtime = 'edge';
+import { auth } from "@/auth";
 
 // DELETE - Delete media
 export async function DELETE(
@@ -13,7 +7,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     
     if (!session) {
       return NextResponse.json(
@@ -22,9 +16,16 @@ export async function DELETE(
       );
     }
 
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
     // TODO: Also delete from Cloudflare R2
-    await prisma.media.delete({
-      where: { id: params.id },
+    await fetch(`${supabaseUrl}/rest/v1/media?id=eq.${params.id}`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': supabaseKey!,
+        'Authorization': `Bearer ${supabaseKey}`,
+      }
     });
 
     return NextResponse.json({ success: true });

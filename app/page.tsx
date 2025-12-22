@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -9,6 +9,8 @@ import { ChevronDown, Sparkles, Users, Film, Star } from 'lucide-react';
 type EventType = 'city' | 'corporate' | 'hotel' | 'festival' | null;
 
 export default function Home() {
+  const [content, setContent] = useState<Record<string, any>>({});
+  const [isLoading, setIsLoading] = useState(true);
   const [eventType, setEventType] = useState<EventType>(null);
   const [audienceSize, setAudienceSize] = useState(250);
   const [sliderPosition, setSliderPosition] = useState(50);
@@ -25,6 +27,20 @@ export default function Home() {
     phone: '',
     message: ''
   });
+
+  // Load content from CMS
+  useEffect(() => {
+    fetch('/api/content')
+      .then(res => res.json())
+      .then(data => {
+        setContent(data);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error('Error loading content:', err);
+        setIsLoading(false);
+      });
+  }, []);
 
   const eventLabels: Record<Exclude<EventType, null>, string> = {
     city: 'Plener Miejski',
@@ -132,19 +148,19 @@ export default function Home() {
             
             
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
-              Prawdziwe Kino
+              {content.hero?.title}
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-orange)]">
-                Pod Gwiazdami
+                {content.hero?.titleGradient}
               </span>
             </h1>
             
             <p className="text-xl md:text-2xl text-white/80 mb-4 max-w-2xl mx-auto">
-              Wynajem profesjonalnego ekranu LED na wydarzenia
+              {content.hero?.subtitle}
             </p>
             
             <p className="text-lg text-white/60 mb-12 max-w-xl mx-auto">
-              Organizacja kin plenerowych, eventów firmowych, pokazów samochodowych i imprez miejskich
+              {content.hero?.lead}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -152,13 +168,13 @@ export default function Home() {
                 href="#kontakt"
                 className="px-8 py-4 bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-orange)] text-black font-bold rounded-lg hover:scale-105 transition-transform duration-300"
               >
-                ZAPYTAJ O TERMIN
+                {content.hero?.ctaPrimary}
               </a>
               <a
                 href="#oferta"
                 className="px-8 py-4 border-2 border-[var(--brand-gold)] text-[var(--brand-gold)] font-bold rounded-lg hover:bg-[var(--brand-gold)]/10 transition-colors duration-300"
               >
-                ZOBACZ OFERTĘ
+                {content.hero?.ctaSecondary}
               </a>
             </div>
           </motion.div>
@@ -290,7 +306,7 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <ScrollReveal>
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-              <span className="text-white">Dlaczego Ekaran LED </span><br />
+              <span className="text-white">{content["why-us"]?.title} </span><br />
               
             </h2>
             <p className="text-white/70 text-center mb-16 max-w-3xl mx-auto">
@@ -395,12 +411,10 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-2xl font-semibold text-white mb-4 text-center">
-                Obraz Żyleta
+                {content["why-us"]?.boxes?.[0]?.title}
               </h3>
               <p className="text-white/80 text-sm text-center">
-                Tradycyjna projekcja wymaga całkowitej ciemności. Nasze ekrany LED o ultrawysokiej jasności 
-                pozwalają rozpocząć seans wcześniej, nawet przy zachodzącym słońcu. Czerń jest czarna, 
-                kolory nasycone, a rozdzielczość zachwyca każdego widza.
+                {content["why-us"]?.boxes?.[0]?.description}
               </p>
             </div>
             </ScrollReveal>
@@ -422,12 +436,10 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-2xl font-semibold text-white mb-4 text-center">
-                Odporność na Warunki
+                {content["why-us"]?.boxes?.[1]?.title}
               </h3>
               <p className="text-white/80 text-sm text-center">
-                Wiatr? Lekki deszcz? Dla naszych modułowych ścian LED to nie problem. Konstrukcja jest 
-                stabilna i bezpieczna, w przeciwieństwie do tradycyjnych ekranów pneumatycznych 
-                („dmuchańców"), które poddają się przy mocniejszych podmuchach.
+                {content["why-us"]?.boxes?.[1]?.description}
               </p>
             </div>
             </ScrollReveal>
@@ -448,11 +460,10 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-2xl font-semibold text-white mb-4 text-center">
-                Dźwięk, Który Czujesz
+                {content["why-us"]?.boxes?.[2]?.title}
               </h3>
               <p className="text-white/80 text-sm text-center">
-                Kino to w 50% dźwięk. Instalujemy profesjonalne systemy nagłośnieniowe, które zapewniają 
-                czystość dialogów i głębię efektów specjalnych, precyzyjnie pokrywając dźwiękiem strefę widowni.
+                {content["why-us"]?.boxes?.[2]?.description}
               </p>
             </div>
             </ScrollReveal>
@@ -467,7 +478,7 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
               <span className="text-white">Od licencji po </span><br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-orange)]">
-                ostatnie ziarno kukurydzy.
+                {content.offer?.title}
               </span>
             </h2>
             <p className="text-white/70 text-center mb-16 max-w-3xl mx-auto">
@@ -504,8 +515,8 @@ export default function Home() {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <img 
-                    src="/technologia-kinowa.png" 
-                    alt="Technika Kinowa"
+                    src={content.offer?.cards?.[0]?.imageUrl}
+                    alt={content.offer?.cards?.[0]?.title}
                     className="w-full h-full object-cover transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
@@ -520,9 +531,9 @@ export default function Home() {
                       style={{ width: '32px', height: '32px', filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
                     />
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-3">Technika Kinowa</h3>
+                  <h3 className="text-2xl font-bold text-white mb-3">{content.offer?.cards?.[0]?.title}</h3>
                   <p className="text-white/90 text-sm">
-                    Mobilne ekrany LED (nits), profesjonalne nagłośnienie i oświetlenie ambientowe.
+                    {content.offer?.cards?.[0]?.description}
                   </p>
                 </div>
               </div>
@@ -557,8 +568,8 @@ export default function Home() {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <img 
-                    src="/Licence.png" 
-                    alt="Licencje"
+                    src={content.offer?.cards?.[1]?.imageUrl}
+                    alt={content.offer?.cards?.[1]?.title}
                     className="w-full h-full object-cover transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
@@ -573,9 +584,9 @@ export default function Home() {
                       style={{ width: '32px', height: '32px', filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
                     />
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-3">Licencje</h3>
+                  <h3 className="text-2xl font-bold text-white mb-3">{content.offer?.cards?.[1]?.title}</h3>
                   <p className="text-white/90 text-sm">
-                    Pośrednictwo w zakupie praw do publicznego odtwarzania. Ty wybierasz film, my papiery.
+                    {content.offer?.cards?.[1]?.description}
                   </p>
                 </div>
               </div>
@@ -694,7 +705,7 @@ export default function Home() {
           {/* Dla Kogo Subsection */}
           <ScrollReveal delay={0.5}>
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 mt-24">
-              Tworzymy kino tam, gdzie go potrzebujesz
+              {content['for-who']?.title}
             </h2>
           </ScrollReveal>
 
@@ -806,7 +817,7 @@ export default function Home() {
       <section id="proces" className="section-padding bg-gradient-to-b from-[var(--brand-blue)] to-[var(--brand-dark)]">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-            Jak zorganizować kino?
+            {content.process?.title}
           </h2>
           <p className="text-white/70 text-center mb-16 max-w-3xl mx-auto">
             Od zapytania do seansu – wszystko maksymalnie proste.
@@ -898,13 +909,13 @@ export default function Home() {
       <section id="kontakt" className="section-padding bg-[var(--brand-dark)]">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-              <span className="text-white">Zaplanuj</span><br />
+              <span className="text-white">{content.contact?.title}</span><br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-orange)]">
-                Swoje Wydarzenie
+                {content.contact?.titleGradient}
               </span>
           </h2>
           <p className="text-white/70 text-center mb-16 max-w-3xl mx-auto">
-            Odpowiedz na kilka pytań, a my przygotujemy dla Ciebie ofertę szytą na miarę.
+            {content.contact?.subtitle}
           </p>
 
           <div className=" mx-auto grid lg:grid-cols-[55fr_45fr] gap-6">

@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import prisma from "@/lib/prisma";
-
-export const runtime = 'edge';
 
 // GET - Fetch all media
 export async function GET(request: NextRequest) {
@@ -16,10 +13,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const media = await prisma.media.findMany({
-      orderBy: { createdAt: "desc" },
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    const response = await fetch(`${supabaseUrl}/rest/v1/media?select=*&order=createdAt.desc`, {
+      headers: {
+        'apikey': supabaseKey!,
+        'Authorization': `Bearer ${supabaseKey}`,
+      }
     });
 
+    const media = await response.json();
     return NextResponse.json(media);
   } catch (error) {
     console.error("Error fetching media:", error);
@@ -56,16 +60,31 @@ export async function POST(request: NextRequest) {
     }
 
     // Placeholder: In production, upload to Cloudflare R2 and get URL
-    const media = await prisma.media.create({
-      data: {
-        filename: file.name,
-        url: `/uploads/${file.name}`, // Placeholder URL
-        size: file.size,
-        mimeType: file.type,
-        uploadedBy: session.user?.email || "admin",
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    const mediaData = {
+      id: crypto.randomUUID(),
+      filename: file.name,
+      url: `/uploads/${file.name}`, // Placeholder URL
+      size: file.size,
+      mimeType: file.type,
+      uploadedBy: session.user?.email || "admin",
+      createdAt: new Date().toISOString()
+    };
+
+    const response = await fetch(`${supabaseUrl}/rest/v1/media`, {
+      method: 'POST',
+      headers: {
+        'apikey': supabaseKey!,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
       },
+      body: JSON.stringify(mediaData)
     });
 
+    const media = await response.json();
     return NextResponse.json(media);
   } catch (error) {
     console.error("Error uploading media:", error);

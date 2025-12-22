@@ -1,15 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-
-export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
   try {
-    const settings = await prisma.setting.findMany();
-    const settingsObject = settings.reduce((acc, setting) => {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    const response = await fetch(`${supabaseUrl}/rest/v1/settings?select=key,value`, {
+      headers: {
+        'apikey': supabaseKey!,
+        'Authorization': `Bearer ${supabaseKey}`,
+      }
+    });
+
+    const settings = await response.json();
+    const settingsObject = settings.reduce((acc: any, setting: any) => {
       acc[setting.key] = setting.value;
       return acc;
-    }, {} as Record<string, string>);
+    }, {});
 
     return NextResponse.json(settingsObject);
   } catch (error) {
