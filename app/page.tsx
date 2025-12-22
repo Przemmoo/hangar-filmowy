@@ -98,9 +98,15 @@ export default function Home() {
         id="hero" 
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
         style={{
-          background: 'linear-gradient(180deg, #0A1828 0%, #1E3A5F 100%)',
+          backgroundImage: 'url(/kino.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
       >
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-black/60" />
+        
         {/* Background Stars Effect */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-10 w-2 h-2 bg-white rounded-full opacity-80 animate-pulse" />
