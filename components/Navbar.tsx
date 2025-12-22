@@ -37,17 +37,17 @@ export default function Navbar() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
           ? 'bg-[#0A1828] shadow-lg backdrop-blur-sm'
-          : 'bg-transparent'
+          : 'bg-[#0A1828]/80 backdrop-blur-md md:bg-transparent md:backdrop-blur-none'
       }`}
       style={{ height: '80px' }}
     >
-      <div className="container mx-auto h-full flex items-center justify-between px-6 lg:px-12">
+      <div className="container mx-auto h-full flex items-center justify-between px-4 sm:px-6 lg:px-12">
         {/* Logo */}
         <button
           onClick={() => scrollToSection('hero')}
           className="flex items-center gap-2 group"
         >
-          <div className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+          <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
             Hangar Filmowy
           </div>
         </button>
