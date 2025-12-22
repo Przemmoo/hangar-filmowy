@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 
+export const runtime = 'edge';
+
 // GET - Fetch all content using Supabase REST API
 export async function GET(request: NextRequest) {
   try {

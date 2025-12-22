@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 
+export const runtime = 'edge';
+
 // PATCH - Update submission status
 export async function PATCH(
   request: NextRequest,
