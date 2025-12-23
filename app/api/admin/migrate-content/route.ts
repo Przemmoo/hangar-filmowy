@@ -120,7 +120,8 @@ export async function POST(request: NextRequest) {
       contact: {
         title: "Zaplanuj",
         titleGradient: "Swoje Wydarzenie",
-        subtitle: "Odpowiedz na kilka pytań, a my przygotujemy dla Ciebie ofertę szytą na miarę."
+        subtitle: "Odpowiedz na kilka pytań, a my przygotujemy dla Ciebie ofertę szytą na miarę.",
+        email: "pokaz@hangarfilmowy.pl"
       },
       footer: {
         slogan: "Hangar Filmowy - Kino pod gwiazdami",

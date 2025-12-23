@@ -12,6 +12,7 @@ interface FormSubmission {
   message: string;
   eventType: string;
   audienceSize: number;
+  preferredDate?: string;
   extras: {
     popcorn: boolean;
     deckchairs: boolean;
@@ -32,6 +33,7 @@ const eventTypeLabels: Record<string, string> = {
 const statusLabels: Record<string, { label: string; color: string }> = {
   NEW: { label: "Nowe", color: "bg-blue-500" },
   IN_PROGRESS: { label: "W trakcie", color: "bg-yellow-500" },
+  CONTACTED: { label: "Skontaktowano", color: "bg-purple-500" },
   CLOSED: { label: "Zamknięte", color: "bg-gray-500" },
 };
 
@@ -143,6 +145,7 @@ export default function SubmissionsPage() {
                   <option value="all">Wszystkie</option>
                   <option value="NEW">Nowe</option>
                   <option value="IN_PROGRESS">W trakcie</option>
+                  <option value="CONTACTED">Skontaktowano</option>
                   <option value="CLOSED">Zamknięte</option>
                 </select>
               </div>
@@ -261,6 +264,14 @@ export default function SubmissionsPage() {
                     <p className="text-white/60 text-sm mb-1">Liczba widzów</p>
                     <p className="text-white">{selectedSubmission.audienceSize} osób</p>
                   </div>
+                  {selectedSubmission.preferredDate && (
+                    <div>
+                      <p className="text-white/60 text-sm mb-1">Preferowany termin</p>
+                      <p className="text-white">
+                        {new Date(selectedSubmission.preferredDate).toLocaleDateString("pl-PL", { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </p>
+                    </div>
+                  )}
                   <div>
                     <p className="text-white/60 text-sm mb-1">Poziom realizacji</p>
                     <p className="text-white">{selectedSubmission.estimatedLevel}</p>

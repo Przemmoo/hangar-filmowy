@@ -9,7 +9,22 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { eventType, audienceSize, extras, formData, category, estimatedPrice } = body;
+    
+    const { eventType, audienceSize, extras, formData, category, preferredDate } = body;
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    // Fetch contact email from database
+    const settingsResponse = await fetch(`${supabaseUrl}/rest/v1/content_sections?section=eq.contact&select=data`, {
+      headers: {
+        'apikey': supabaseKey!,
+        'Authorization': `Bearer ${supabaseKey}`,
+      }
+    });
+
+    const settingsData = await settingsResponse.json();
+    const contactEmail = settingsData?.[0]?.data?.email || process.env.EMAIL_TO || 'pokaz@hangarfilmowy.pl';
 
     const eventLabels: Record<string, string> = {
       city: 'Event miejski',
@@ -29,6 +44,42 @@ export async function POST(request: Request) {
         return labels[key];
       })
       .join(', ') || 'Brak';
+
+    // Save to database - dostosowane do struktury tabeli
+    const submissionData = {
+      id: crypto.randomUUID(),
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phone: formData.phone || null,
+      message: formData.message || '',
+      eventType: eventLabels[eventType] || eventType,
+      audienceSize: audienceSize,
+      extras: extras, // JSONB object, nie string
+      estimatedLevel: category,
+      preferredDate: preferredDate || null,
+      status: 'NEW', // Uppercase zgodnie z DEFAULT
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    const submissionResponse = await fetch(`${supabaseUrl}/rest/v1/form_submissions`, {
+      method: 'POST',
+      headers: {
+        'apikey': supabaseKey!,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(submissionData)
+    });
+    
+    if (!submissionResponse.ok) {
+      const errorText = await submissionResponse.text();
+      throw new Error(`Database save failed: ${errorText}`);
+    }
+    
+    const savedSubmission = await submissionResponse.json();
 
     // Email do firmy
     const adminEmailHtml = `
@@ -72,8 +123,14 @@ export async function POST(request: Request) {
                   <span class="info-label">Liczba widzów:</span>
                   <span class="info-value">${audienceSize} osób</span>
                 </div>
+                ${preferredDate ? `
                 <div class="info-row">
-                  <span class="info-label">Kategoria:</span>
+                  <span class="info-label">Preferowany termin:</span>
+                  <span class="info-value"><strong>${new Date(preferredDate).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' })}</strong></span>
+                </div>
+                ` : ''}
+                <div class="info-row">
+                  <span class="info-label">Kategoria wydarzenia:</span>
                   <span class="info-value">
                     <span class="category ${category.toLowerCase()}">${category}</span>
                   </span>
@@ -104,12 +161,6 @@ export async function POST(request: Request) {
                     <p style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin-top: 10px;">${formData.message}</p>
                   </div>
                 ` : ''}
-              </div>
-
-              <div class="price-box">
-                <div style="font-size: 14px; opacity: 0.9;">Orientacyjna wycena:</div>
-                <div class="amount">~${estimatedPrice} zł</div>
-                <div style="font-size: 11px; opacity: 0.8; margin-top: 5px;">*Do uzgodnienia po konsultacji</div>
               </div>
 
               <div class="footer">
@@ -157,6 +208,7 @@ export async function POST(request: Request) {
                 <div class="summary">
                   <p style="margin: 5px 0;"><strong>Wybrany pakiet:</strong> ${eventLabels[eventType] || 'Nie określono'}</p>
                   <p style="margin: 5px 0;"><strong>Liczba widzów:</strong> ${audienceSize} osób</p>
+                  ${preferredDate ? `<p style="margin: 5px 0;"><strong>Preferowany termin:</strong> ${new Date(preferredDate).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' })}</p>` : ''}
                   <p style="margin: 5px 0;"><strong>Kategoria:</strong> ${category}</p>
                   ${extrasText !== 'Brak' ? `<p style="margin: 5px 0;"><strong>Dodatki:</strong> ${extrasText}</p>` : ''}
                 </div>
@@ -183,26 +235,37 @@ export async function POST(request: Request) {
     `;
 
     // Wysyłka emaila do firmy
-    await resend.emails.send({
-      from: process.env.EMAIL_FROM!,
-      to: process.env.EMAIL_TO!,
-      subject: `🎬 Nowe zapytanie: ${eventLabels[eventType]} - ${formData.firstName} ${formData.lastName}`,
-      html: adminEmailHtml,
-    });
+    try {
+      await resend.emails.send({
+        from: process.env.EMAIL_FROM!,
+        to: contactEmail,
+        subject: `Nowe zapytanie: ${eventLabels[eventType]} - ${formData.firstName} ${formData.lastName}`,
+        html: adminEmailHtml,
+      });
+    } catch (emailError) {
+      // Email error handled silently
+    }
 
     // Wysyłka emaila potwierdzającego do klienta
-    await resend.emails.send({
-      from: process.env.EMAIL_FROM!,
-      to: formData.email,
-      subject: '🎬 Potwierdzenie zapytania - Hangar Filmowy',
-      html: clientEmailHtml,
-    });
+    try {
+      await resend.emails.send({
+        from: process.env.EMAIL_FROM!,
+        to: formData.email,
+        subject: `Potwierdzenie zapytania - Hangar Filmowy`,
+        html: clientEmailHtml,
+      });
+    } catch (emailError) {
+      // Email error handled silently
+    }
 
     return NextResponse.json({ success: true, message: 'Zapytanie wysłane pomyślnie!' });
   } catch (error) {
-    console.error('Error sending email:', error);
     return NextResponse.json(
-      { success: false, error: 'Wystąpił błąd podczas wysyłania zapytania.' },
+      { 
+        success: false, 
+        error: 'Wystąpił błąd podczas wysyłania zapytania.',
+        details: error instanceof Error ? error.message : String(error)
+      },
       { status: 500 }
     );
   }

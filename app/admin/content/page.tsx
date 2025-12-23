@@ -688,6 +688,20 @@ export default function ContentManagement() {
             placeholder="Odpowiedz na kilka pytań..."
           />
         </div>
+
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">
+            Email docelowy (odbiorczy zapytań z formularza)
+          </label>
+          <input
+            type="email"
+            value={data.email || ""}
+            onChange={(e) => updateContent("email", e.target.value)}
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+            placeholder="pokaz@hangarfilmowy.pl"
+          />
+          <p className="text-xs text-white/50 mt-1">Na ten adres będą przychodzić zapytania z formularza kontaktowego</p>
+        </div>
       </div>
     );
   };

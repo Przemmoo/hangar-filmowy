@@ -21,7 +21,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             .safeParse(credentials);
 
           if (!parsedCredentials.success) {
-            console.error("Invalid credentials format");
             return null;
           }
 
@@ -42,7 +41,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const user = users[0];
           
           if (!user) {
-            console.error("User not found:", email);
             return null;
           }
 
@@ -50,7 +48,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const passwordMatch = await verifyPassword(password, user.password);
 
           if (!passwordMatch) {
-            console.error("Password mismatch");
             return null;
           }
 
@@ -63,7 +60,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             role: user.role,
           };
         } catch (error) {
-          console.error("Auth error:", error);
           return null;
         }
       },

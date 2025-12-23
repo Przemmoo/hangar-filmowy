@@ -15,6 +15,7 @@ export default function Home() {
   const [audienceSize, setAudienceSize] = useState(250);
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
+  const [preferredDate, setPreferredDate] = useState('');
   const [extras, setExtras] = useState({
     popcorn: false,
     deckchairs: false,
@@ -27,6 +28,17 @@ export default function Home() {
     phone: '',
     message: ''
   });
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Oblicz kategorię na podstawie liczby widzów
+  const getCategory = () => {
+    if (audienceSize <= 150) return 'KAMERALNY';
+    if (audienceSize <= 500) return 'STANDARD';
+    if (audienceSize <= 800) return 'PROFESSIONAL';
+    return 'MASS EVENT';
+  };
 
   // Load content from CMS
   useEffect(() => {
@@ -53,9 +65,14 @@ export default function Home() {
     e.preventDefault();
     
     if (!eventType) {
-      alert('Proszę wybrać rodzaj wydarzenia');
+      setShowErrorModal(true);
       return;
     }
+
+    setIsSubmitting(true);
+
+    // Oblicz kategorię wydarzenia na podstawie liczby widzów
+    const category = getCategory();
 
     try {
       const response = await fetch('/api/contact', {
@@ -67,25 +84,29 @@ export default function Home() {
           eventType,
           audienceSize,
           extras,
-          formData
+          formData,
+          category,
+          preferredDate
         }),
       });
-
+      
       const data = await response.json();
 
       if (data.success) {
-        alert('✅ Zapytanie wysłane! Odezwiemy się wkrótce (sprawdź też folder SPAM).');
         // Reset formularza
         setEventType(null);
         setAudienceSize(250);
+        setPreferredDate('');
         setExtras({ popcorn: false, deckchairs: false, license: false });
         setFormData({ firstName: '', lastName: '', email: '', phone: '', message: '' });
+        setShowSuccessModal(true);
       } else {
-        alert('❌ Wystąpił błąd. Spróbuj ponownie lub napisz na: pokaz@hangarfilmowy.pl');
+        setShowErrorModal(true);
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('❌ Wystąpił błąd połączenia. Spróbuj ponownie lub napisz na: pokaz@hangarfilmowy.pl');
+      setShowErrorModal(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -961,6 +982,24 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* Preferred Date */}
+              <div>
+                <label className="block text-sm sm:text-base font-semibold text-white mb-2">
+                  Preferowany termin wydarzenia
+                </label>
+                <input 
+                  type="date" 
+                  value={preferredDate}
+                  onChange={(e) => setPreferredDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full px-3 py-2.5 sm:px-4 sm:py-3 bg-white/5 border-2 border-white/20 rounded-xl text-white focus:ring-2 focus:ring-[var(--brand-gold)] focus:border-[var(--brand-gold)] transition-all text-sm sm:text-base"
+                  style={{
+                    colorScheme: 'dark'
+                  }}
+                />
+                <p className="text-xs text-white/50 mt-1">Podaj przybliżoną datę - pomożemy dostosować szczegóły</p>
+              </div>
+
               {/* Toggle Switches for Extras */}
               <div>
                 <label className="block text-sm sm:text-base font-semibold text-white mb-2 sm:mb-3">
@@ -1026,24 +1065,63 @@ export default function Home() {
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 sm:p-5">
                 <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">Podsumowanie</h3>
 
-                <div className="space-y-2 mb-3 sm:mb-4">
-                  <div className="flex justify-between items-center py-2 sm:py-3 border-b border-white/10">
-                    <span className="text-white/70 text-xs sm:text-sm">Technologia:</span>
-                    <span className="font-semibold text-white text-right text-xs sm:text-base">
-                      Ekran LED Premium<br />
-                      
-                    <span className="text-sm text-yellow-400 text-right">w zestawie</span>
-                    </span>
-                  </div><div className="flex justify-between items-center py-2 border-b border-white/10">
-                    <span className="text-white/70 text-xs sm:text-sm">Rodzaj wydarzenia:</span>
-                    <span className="font-semibold text-white text-right text-xs sm:text-base">
-                      {eventType ? eventLabels[eventType] : 'Nie wybrano'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-white/10">
+                {/* Rodzaj wydarzenia - duży box */}
+                <div className="mb-4 p-4 bg-gradient-to-r from-[var(--brand-gold)]/20 to-[var(--brand-orange)]/20 border-2 border-[var(--brand-gold)]/30 rounded-xl text-center">
+                  <p className="text-white/60 text-xs sm:text-sm mb-2 uppercase tracking-wider">Rodzaj wydarzenia</p>
+                  <p className="text-white font-bold text-lg sm:text-xl">
+                    {eventType ? eventLabels[eventType] : 'Nie wybrano'}
+                  </p>
+                </div>
+
+                {/* Kategoria - duży box */}
+                <div className="mb-4 p-4 rounded-xl text-center border-2"
+                  style={{
+                    background: `linear-gradient(135deg, ${
+                      getCategory() === 'KAMERALNY' ? '#4D90FE' : 
+                      getCategory() === 'STANDARD' ? '#FFD700' : 
+                      getCategory() === 'PROFESSIONAL' ? '#FFA500' : '#FF6B6B'
+                    }22, ${
+                      getCategory() === 'KAMERALNY' ? '#4D90FE' : 
+                      getCategory() === 'STANDARD' ? '#FFD700' : 
+                      getCategory() === 'PROFESSIONAL' ? '#FFA500' : '#FF6B6B'
+                    }11)`,
+                    borderColor: `${
+                      getCategory() === 'KAMERALNY' ? '#4D90FE' : 
+                      getCategory() === 'STANDARD' ? '#FFD700' : 
+                      getCategory() === 'PROFESSIONAL' ? '#FFA500' : '#FF6B6B'
+                    }66`
+                  }}>
+                  <p className="text-white/60 text-xs sm:text-sm mb-2 uppercase tracking-wider">Kategoria</p>
+                  <p className="font-bold text-xl sm:text-2xl"
+                    style={{
+                      color: getCategory() === 'KAMERALNY' ? '#4D90FE' : 
+                             getCategory() === 'STANDARD' ? '#FFD700' : 
+                             getCategory() === 'PROFESSIONAL' ? '#FFA500' : '#FF6B6B'
+                    }}>
+                    {getCategory()}
+                  </p>
+                  <p className="text-white/50 text-xs mt-1">
+                    {getCategory() === 'KAMERALNY' && 'do 150 widzów'}
+                    {getCategory() === 'STANDARD' && '151-500 widzów'}
+                    {getCategory() === 'PROFESSIONAL' && '501-800 widzów'}
+                    {getCategory() === 'MASS EVENT' && 'powyżej 800 widzów'}
+                  </p>
+                </div>
+
+                {/* Pozostałe parametry */}
+                <div className="space-y-2 mb-3 sm:mb-4 pt-3 border-t border-white/10">
+                  <div className="flex justify-between items-center py-2">
                     <span className="text-white/70 text-xs sm:text-sm">Liczba widzów:</span>
                     <span className="font-semibold text-white text-xs sm:text-base">{audienceSize} osób</span>
                   </div>
+                  {preferredDate && (
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-white/70 text-xs sm:text-sm">Preferowany termin:</span>
+                      <span className="font-semibold text-white text-xs sm:text-base">
+                        {new Date(preferredDate).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {(extras.popcorn || extras.deckchairs || extras.license) && (
@@ -1106,8 +1184,12 @@ export default function Home() {
                   className="w-full px-3 py-2 sm:px-4 sm:py-2.5 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/50 focus:ring-2 focus:ring-[#FFD700] focus:border-transparent transition-all resize-none text-sm"
                 />
 
-                <button type="submit" className="btn-primary w-full text-base sm:text-lg py-3 sm:py-4">
-                  Wyślij Zapytanie Ofertowe
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="btn-primary w-full text-base sm:text-lg py-3 sm:py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? 'Wysyłanie...' : 'Wyślij Zapytanie Ofertowe'}
                 </button>
 
                 <p className="text-xs text-white/50 text-center">
@@ -1159,6 +1241,63 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-gradient-to-br from-[var(--brand-dark)] to-[var(--brand-blue)] border-2 border-[var(--brand-gold)] rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl transform animate-scaleIn">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">Zapytanie wysłane!</h3>
+              <p className="text-white/80 mb-6">
+                Dziękujemy za zapytanie. Odpowiemy w ciągu 24h roboczych.<br/>
+                <span className="text-[var(--brand-gold)] text-sm">(Sprawdź też folder SPAM)</span>
+              </p>
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="btn-primary w-full"
+              >
+                Zamknij
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error Modal */}
+      {showErrorModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-gradient-to-br from-[var(--brand-dark)] to-[var(--brand-blue)] border-2 border-red-500 rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl transform animate-scaleIn">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">Wystąpił błąd</h3>
+              <p className="text-white/80 mb-2">
+                {!eventType ? 'Proszę wybrać rodzaj wydarzenia' : 'Nie udało się wysłać zapytania. Spróbuj ponownie.'}
+              </p>
+              <p className="text-white/60 text-sm mb-6">
+                Lub napisz bezpośrednio na:<br/>
+                <a href="mailto:pokaz@hangarfilmowy.pl" className="text-[var(--brand-gold)] hover:underline">
+                  pokaz@hangarfilmowy.pl
+                </a>
+              </p>
+              <button
+                onClick={() => setShowErrorModal(false)}
+                className="btn-primary w-full"
+              >
+                Zamknij
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
