@@ -10,9 +10,13 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://hangarfilmowy.pl'),
   title: "Hangar Filmowy - Ekran LED na Wynajem",
   description: "Prawdziwe kino pod gwiazdami. Wypożycz nasz profesjonalny ekran LED na eventy, kino plenerowe i wydarzenia firmowe.",
   keywords: "ekran LED, kino plenerowe, wynajem ekranu, event outdoor, kino samochodowe",
+  alternates: {
+    canonical: 'https://hangarfilmowy.pl',
+  },
   icons: {
     icon: '/hangar_filmowy.svg',
     shortcut: '/hangar_filmowy.svg',
@@ -34,6 +38,12 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Hangar Filmowy - Ekran LED na Wynajem',
+    description: 'Prawdziwe kino pod gwiazdami. Wypożycz nasz profesjonalny ekran LED.',
+    images: ['/hangar_filmowy.svg'],
+  },
 };
 
 export default function RootLayout({
@@ -41,8 +51,35 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: 'Hangar Filmowy',
+    description: 'Profesjonalny wynajem ekranów LED na kino plenerowe',
+    url: 'https://hangarfilmowy.pl',
+    telephone: '+48602451036',
+    email: 'pokaz@hangarfilmowy.pl',
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'PL',
+    },
+    priceRange: '$$',
+    image: 'https://hangarfilmowy.pl/hangar_filmowy.svg',
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '5',
+      reviewCount: '1',
+    },
+  };
+
   return (
     <html lang="pl">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className={montserrat.className}>
         <Providers>{children}</Providers>
       </body>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import ScrollReveal from '@/components/ScrollReveal';
 import { ChevronDown, Sparkles, Users, Film, Star } from 'lucide-react';
@@ -133,7 +134,7 @@ export default function Home() {
       {/* Hero Section */}
       <section 
         id="hero" 
-        className="relative min-h-[650px] sm:min-h-[700px] md:min-h-screen flex items-center justify-center overflow-hidden"
+        className="relative min-h-[650px] sm:min-h-[700px] md:min-h-screen flex items-center justify-center overflow-hidden pt-24 md:pt-0"
         style={{
           backgroundImage: `url(${content.hero?.backgroundImage || '/kino.png'})`,
           backgroundSize: 'cover',
@@ -160,7 +161,7 @@ export default function Home() {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 pb-12 sm:pt-0 sm:pb-0">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-12 sm:py-16">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -305,10 +306,12 @@ export default function Home() {
                   />
                   {/* Image Container */}
                   <div className="relative aspect-[4/3] rounded-2xl overflow-hidden z-10">
-                    <img 
+                    <Image 
                       src={content.about?.imageUrl || "/plan_filmowy.png"} 
                       alt={content.about?.title || "Plan filmowy Hangar Filmowy"}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
                     />
                   </div>
                 </div>
@@ -360,10 +363,12 @@ export default function Home() {
                 >
                   
                   {/* Full comparison image as base */}
-                  <img 
-                    src={content["why-us"]?.comparisonImageUrl} 
+                  <Image 
+                    src={content["why-us"]?.comparisonImageUrl || "/kino.png"} 
                     alt="Porównanie rzutnika i ekranu LED"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    loading="lazy"
                   />
 
                   {/* Dark blur overlay for left side */}
@@ -410,7 +415,7 @@ export default function Home() {
             </div>
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8 px-4">
             {/* Box 1 - Sun Icon */}
             <ScrollReveal delay={0.1}>
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 group cursor-pointer hover:bg-white/10 transition-all duration-300 flex flex-col h-full" style={{ padding: '24px', borderRadius: '20px' }}>
@@ -531,21 +536,26 @@ export default function Home() {
                 <div className="relative overflow-hidden rounded-2xl cursor-pointer h-[300px] sm:h-[350px] md:h-[400px] z-10">
                 {/* Background Image */}
                 <div className="absolute inset-0">
-                  <img 
-                    src={content.offer?.cards?.[0]?.imageUrl}
-                    alt={content.offer?.cards?.[0]?.title}
-                    className="w-full h-full object-cover transition-transform duration-500"
+                  <Image 
+                    src={content.offer?.cards?.[0]?.imageUrl || "/kino.png"}
+                    alt={content.offer?.cards?.[0]?.title || "Technika Kinowa"}
+                    fill
+                    className="object-cover transition-transform duration-500"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
                 </div>
                 
                 {/* Content */}
                 <div className="relative h-full flex flex-col justify-end p-4 sm:p-6 md:p-8">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg  flex items-center justify-center mb-3 md:mb-4">
-                    <img 
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg  flex items-center justify-center mb-3 md:mb-4 relative">
+                    <Image 
                       src="/image-kino.png" 
                       alt="Technika Kinowa"
-                      style={{ width: '24px', height: '24px', filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                      width={24}
+                      height={24}
+                      style={{ filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                      loading="lazy"
                     />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 md:mb-3">{content.offer?.cards?.[0]?.title}</h3>
@@ -584,21 +594,26 @@ export default function Home() {
                 <div className="relative overflow-hidden rounded-2xl cursor-pointer h-[300px] sm:h-[350px] md:h-[400px] z-10">
                 {/* Background Image */}
                 <div className="absolute inset-0">
-                  <img 
-                    src={content.offer?.cards?.[1]?.imageUrl}
-                    alt={content.offer?.cards?.[1]?.title}
-                    className="w-full h-full object-cover transition-transform duration-500"
+                  <Image 
+                    src={content.offer?.cards?.[1]?.imageUrl || "/kino.png"}
+                    alt={content.offer?.cards?.[1]?.title || "Licencje"}
+                    fill
+                    className="object-cover transition-transform duration-500"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
                 </div>
                 
                 {/* Content */}
                 <div className="relative h-full flex flex-col justify-end p-4 sm:p-6 md:p-8">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg  flex items-center justify-center mb-3 md:mb-4">
-                    <img 
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg  flex items-center justify-center mb-3 md:mb-4 relative">
+                    <Image 
                       src="/image-licenc.png" 
                       alt="Licencje"
-                      style={{ width: '24px', height: '24px', filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                      width={24}
+                      height={24}
+                      style={{ filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                      loading="lazy"
                     />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 md:mb-3">{content.offer?.cards?.[1]?.title}</h3>
@@ -638,21 +653,26 @@ export default function Home() {
                 <div className="relative overflow-hidden rounded-2xl cursor-pointer h-[300px] sm:h-[350px] md:h-[400px] z-10">
                 {/* Background Image */}
                 <div className="absolute inset-0">
-                  <img 
-                    src={content.offer?.cards?.[2]?.imageUrl}
-                    alt={content.offer?.cards?.[2]?.title}
-                    className="w-full h-full object-cover transition-transform duration-500"
+                  <Image 
+                    src={content.offer?.cards?.[2]?.imageUrl || "/kino.png"}
+                    alt={content.offer?.cards?.[2]?.title || "Strefa Widza"}
+                    fill
+                    className="object-cover transition-transform duration-500"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
                 </div>
                 
                 {/* Content */}
                 <div className="relative h-full flex flex-col justify-end p-4 sm:p-6 md:p-8">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg  flex items-center justify-center mb-3 md:mb-4">
-                    <img 
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg  flex items-center justify-center mb-3 md:mb-4 relative">
+                    <Image 
                       src="/image-armchair.png" 
-                      alt={content.offer?.cards?.[2]?.title}
-                      style={{ width: '24px', height: '24px', filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                      alt="Strefa Widza"
+                      width={24}
+                      height={24}
+                      style={{ filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                      loading="lazy"
                     />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 md:mb-3">{content.offer?.cards?.[2]?.title}</h3>
@@ -691,21 +711,26 @@ export default function Home() {
                 <div className="relative overflow-hidden rounded-2xl cursor-pointer h-[300px] sm:h-[350px] md:h-[400px] z-10">
                 {/* Background Image */}
                 <div className="absolute inset-0">
-                  <img 
-                    src={content.offer?.cards?.[3]?.imageUrl}
-                    alt={content.offer?.cards?.[3]?.title}
-                    className="w-full h-full object-cover transition-transform duration-500"
+                  <Image 
+                    src={content.offer?.cards?.[3]?.imageUrl || "/kino.png"}
+                    alt={content.offer?.cards?.[3]?.title || "Popcorn Bar"}
+                    fill
+                    className="object-cover transition-transform duration-500"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
                 </div>
                 
                 {/* Content */}
                 <div className="relative h-full flex flex-col justify-end p-4 sm:p-6 md:p-8">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg  flex items-center justify-center mb-3 md:mb-4">
-                    <img 
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg  flex items-center justify-center mb-3 md:mb-4 relative">
+                    <Image 
                       src="/image-food.png" 
-                      alt={content.offer?.cards?.[3]?.title}
-                      style={{ width: '24px', height: '24px', filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                      alt="Popcorn Bar"
+                      width={24}
+                      height={24}
+                      style={{ filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                      loading="lazy"
                     />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 md:mb-3">{content.offer?.cards?.[3]?.title}</h3>
@@ -729,17 +754,20 @@ export default function Home() {
             {/* Target 1 - Samorządy */}
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 group cursor-pointer hover:bg-white/10 transition-all duration-300 flex flex-col h-full" style={{ padding: '24px', borderRadius: '20px' }}>
               <div 
-                className="flex items-center justify-center mb-4 md:mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 bg-white/10"
+                className="flex items-center justify-center mb-4 md:mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 bg-white/10 relative"
                 style={{ 
                   width: '48px', 
                   height: '48px', 
                   borderRadius: '50%'
                 }}
               >
-                <img 
+                <Image 
                   src="/image-office.png" 
                   alt="Samorządy i Miasta"
-                  style={{ width: '24px', height: '24px', filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                  width={24}
+                  height={24}
+                  style={{ filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                  loading="lazy"
                 />
               </div>
               <h3 className="text-base sm:text-lg font-semibold text-white mb-3 md:mb-4 text-center">
@@ -753,17 +781,20 @@ export default function Home() {
             {/* Target 2 - Hotele */}
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 group cursor-pointer hover:bg-white/10 transition-all duration-300 flex flex-col h-full" style={{ padding: '24px', borderRadius: '20px' }}>
               <div 
-                className="flex items-center justify-center mb-4 md:mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 bg-white/10"
+                className="flex items-center justify-center mb-4 md:mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 bg-white/10 relative"
                 style={{ 
                   width: '48px', 
                   height: '48px', 
                   borderRadius: '50%'
                 }}
               >
-                <img 
+                <Image 
                   src="/image-hotels.png" 
                   alt="Hotele i Resorty"
-                  style={{ width: '24px', height: '24px', filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                  width={24}
+                  height={24}
+                  style={{ filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                  loading="lazy"
                 />
               </div>
               <h3 className="text-base sm:text-lg font-semibold text-white mb-3 md:mb-4 text-center">
@@ -777,17 +808,20 @@ export default function Home() {
             {/* Target 3 - Firmy */}
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 group cursor-pointer hover:bg-white/10 transition-all duration-300 flex flex-col h-full" style={{ padding: '24px', borderRadius: '20px' }}>
               <div 
-                className="flex items-center justify-center mb-4 md:mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 bg-white/10"
+                className="flex items-center justify-center mb-4 md:mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 bg-white/10 relative"
                 style={{ 
                   width: '48px', 
                   height: '48px', 
                   borderRadius: '50%'
                 }}
               >
-                <img 
+                <Image 
                   src="/image-firm.png" 
                   alt="Firmy i Korporacje"
-                  style={{ width: '24px', height: '24px', filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                  width={24}
+                  height={24}
+                  style={{ filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                  loading="lazy"
                 />
               </div>
               <h3 className="text-base sm:text-lg font-semibold text-white mb-3 md:mb-4 text-center">
@@ -801,17 +835,20 @@ export default function Home() {
             {/* Target 4 - Festiwale */}
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 group cursor-pointer hover:bg-white/10 transition-all duration-300 flex flex-col h-full" style={{ padding: '24px', borderRadius: '20px' }}>
               <div 
-                className="flex items-center justify-center mb-4 md:mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 bg-white/10"
+                className="flex items-center justify-center mb-4 md:mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 bg-white/10 relative"
                 style={{ 
                   width: '48px', 
                   height: '48px', 
                   borderRadius: '50%'
                 }}
               >
-                <img 
+                <Image 
                   src="/image-festival.png" 
                   alt="Festiwale i Eventy"
-                  style={{ width: '24px', height: '24px', filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                  width={24}
+                  height={24}
+                  style={{ filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
+                  loading="lazy"
                 />
               </div>
               <h3 className="text-base sm:text-lg font-semibold text-white mb-3 md:mb-4 text-center">
@@ -1207,10 +1244,13 @@ export default function Home() {
             {/* Column 1 - Brand */}
             <div>
               <div className="flex items-center space-x-3 mb-3 md:mb-4">
-                <img 
+                <Image 
                   src="/hangar_filmowy.svg" 
                   alt="Hangar Filmowy Logo" 
+                  width={48}
+                  height={48}
                   className="h-12 w-auto"
+                  loading="lazy"
                 />
                 <span className="text-lg sm:text-xl font-bold">Hangar Filmowy</span>
               </div>
