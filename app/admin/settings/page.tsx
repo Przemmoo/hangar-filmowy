@@ -427,13 +427,16 @@ export default function SettingsPage() {
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => handleDeleteUser(user.id)}
-                            className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition"
-                            title="Usuń"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {/* Nie pokazuj przycisku usuń dla własnego konta */}
+                          {user.id !== currentUserId && (
+                            <button
+                              onClick={() => handleDeleteUser(user.id)}
+                              className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition"
+                              title="Usuń"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
