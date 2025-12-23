@@ -213,12 +213,7 @@ export async function POST(request: Request) {
                   ${extrasText !== 'Brak' ? `<p style="margin: 5px 0;"><strong>Dodatki:</strong> ${extrasText}</p>` : ''}
                 </div>
 
-                <p>W międzyczasie możesz:</p>
-                <ul>
-                  <li>Zastanowić się nad preferowanym terminem wydarzenia</li>
-                  <li>Przygotować listę pytań dotyczących organizacji</li>
-                  <li>Pomyśleć o repertuarze filmowym</li>
-                </ul>
+                <p>Jeśli masz dodatkowe pytania lub chcesz omówić szczegóły swojego wydarzenia, nie wahaj się z nami skontaktować.</p>
 
                 <p style="margin-top: 25px;">W razie pilnych pytań, możesz napisać bezpośrednio na: <a href="mailto:pokaz@hangarfilmowy.pl" style="color: #FFD700; text-decoration: none; font-weight: bold;">pokaz@hangarfilmowy.pl</a></p>
               </div>

@@ -135,7 +135,7 @@ export default function Home() {
         id="hero" 
         className="relative min-h-[650px] sm:min-h-[700px] md:min-h-screen flex items-center justify-center overflow-hidden"
         style={{
-          backgroundImage: 'url(/kino.png)',
+          backgroundImage: `url(${content.hero?.backgroundImage || '/kino.png'})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Upload, Image as ImageIcon, Trash2, Loader2, Copy, Check } from "lucide-react";
+import { Upload, Image as ImageIcon, Trash2, Loader2, Copy, Check, Search, Edit2, X } from "lucide-react";
 
 interface Media {
   id: string;
@@ -21,6 +21,10 @@ export default function MediaLibrary() {
   const [isUploading, setIsUploading] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isEditingAlt, setIsEditingAlt] = useState(false);
+  const [altText, setAltText] = useState("");
+  const [uploadMessage, setUploadMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
     loadMedia();
@@ -46,8 +50,24 @@ export default function MediaLibrary() {
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
+    setUploadMessage(null);
+    
+    let successCount = 0;
+    let errorCount = 0;
     
     for (const file of Array.from(files)) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        errorCount++;
+        continue;
+      }
+
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        errorCount++;
+        continue;
+      }
+
       const formData = new FormData();
       formData.append("file", file);
 
@@ -58,15 +78,33 @@ export default function MediaLibrary() {
         });
 
         if (response.ok) {
-          await loadMedia();
+          successCount++;
+        } else {
+          errorCount++;
         }
       } catch (error) {
-        console.error("Error uploading file:", error);
+        errorCount++;
       }
     }
 
+    await loadMedia();
     setIsUploading(false);
     e.target.value = "";
+    
+    if (successCount > 0) {
+      setUploadMessage({
+        type: "success",
+        text: `Pomyślnie dodano ${successCount} ${successCount === 1 ? 'plik' : 'pliki'}`
+      });
+    }
+    if (errorCount > 0) {
+      setUploadMessage({
+        type: "error",
+        text: `Błąd podczas dodawania ${errorCount} ${errorCount === 1 ? 'pliku' : 'plików'}`
+      });
+    }
+    
+    setTimeout(() => setUploadMessage(null), 5000);
   };
 
   const deleteMedia = async (id: string) => {
@@ -88,6 +126,36 @@ export default function MediaLibrary() {
     }
   };
 
+  const startEditAlt = () => {
+    if (selectedMedia) {
+      setAltText(selectedMedia.alt || "");
+      setIsEditingAlt(true);
+    }
+  };
+
+  const saveAltText = async () => {
+    if (!selectedMedia) return;
+
+    try {
+      const response = await fetch(`/api/admin/media/${selectedMedia.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ alt: altText }),
+      });
+
+      if (response.ok) {
+        await loadMedia();
+        const updatedMedia = media.find(m => m.id === selectedMedia.id);
+        if (updatedMedia) {
+          setSelectedMedia({ ...updatedMedia, alt: altText });
+        }
+        setIsEditingAlt(false);
+      }
+    } catch (error) {
+      console.error("Error updating alt text:", error);
+    }
+  };
+
   const copyUrl = (url: string, id: string) => {
     navigator.clipboard.writeText(url);
     setCopiedId(id);
@@ -100,10 +168,18 @@ export default function MediaLibrary() {
     return (bytes / (1024 * 1024)).toFixed(1) + " MB";
   };
 
+  const filteredMedia = media.filter((item) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      item.filename.toLowerCase().includes(query) ||
+      item.alt?.toLowerCase().includes(query)
+    );
+  });
+
   return (
     <div className="p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Biblioteka Mediów</h1>
           <p className="text-white/60">Zarządzaj zdjęciami i grafikami</p>
@@ -131,6 +207,31 @@ export default function MediaLibrary() {
         </label>
       </div>
 
+      {/* Upload Message */}
+      {uploadMessage && (
+        <div className={`mb-6 p-4 rounded-lg ${
+          uploadMessage.type === "success" 
+            ? "bg-green-500/20 border border-green-500/30 text-green-400"
+            : "bg-red-500/20 border border-red-500/30 text-red-400"
+        }`}>
+          {uploadMessage.text}
+        </div>
+      )}
+
+      {/* Search Bar */}
+      <div className="mb-6">
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+          <input
+            type="text"
+            placeholder="Szukaj po nazwie pliku lub tekście ALT..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-brand-gold transition"
+          />
+        </div>
+      </div>
+
       <div className="grid grid-cols-12 gap-6">
         {/* Gallery Grid */}
         <div className="col-span-8">
@@ -156,9 +257,20 @@ export default function MediaLibrary() {
                   />
                 </label>
               </div>
+            ) : filteredMedia.length === 0 ? (
+              <div className="text-center py-24">
+                <Search className="w-16 h-16 text-white/20 mx-auto mb-4" />
+                <p className="text-white/60 mb-4">Nie znaleziono zdjęć</p>
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
+                >
+                  Wyczyść wyszukiwanie
+                </button>
+              </div>
             ) : (
               <div className="grid grid-cols-3 gap-4">
-                {media.map((item) => (
+                {filteredMedia.map((item) => (
                   <div
                     key={item.id}
                     onClick={() => setSelectedMedia(item)}
@@ -203,6 +315,50 @@ export default function MediaLibrary() {
                   <p className="text-white text-sm font-mono break-all">
                     {selectedMedia.filename}
                   </p>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-white/60 text-xs">Tekst ALT</p>
+                    {!isEditingAlt && (
+                      <button
+                        onClick={startEditAlt}
+                        className="text-xs text-brand-gold hover:text-brand-orange transition flex items-center space-x-1"
+                      >
+                        <Edit2 className="w-3 h-3" />
+                        <span>Edytuj</span>
+                      </button>
+                    )}
+                  </div>
+                  {isEditingAlt ? (
+                    <div className="space-y-2">
+                      <input
+                        type="text"
+                        value={altText}
+                        onChange={(e) => setAltText(e.target.value)}
+                        placeholder="Opisz obrazek..."
+                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-brand-gold"
+                      />
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={saveAltText}
+                          className="flex-1 px-3 py-1.5 bg-brand-gold text-brand-dark rounded-lg text-xs font-semibold hover:bg-brand-orange transition"
+                        >
+                          Zapisz
+                        </button>
+                        <button
+                          onClick={() => setIsEditingAlt(false)}
+                          className="px-3 py-1.5 bg-white/10 text-white rounded-lg text-xs hover:bg-white/20 transition"
+                        >
+                          Anuluj
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-white text-sm">
+                      {selectedMedia.alt || <span className="text-white/40 italic">Brak tekstu ALT</span>}
+                    </p>
+                  )}
                 </div>
 
                 <div>

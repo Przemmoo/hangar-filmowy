@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Upload media (placeholder - needs actual file upload implementation)
+// POST - Upload media to Supabase Storage
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -48,9 +48,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Implement actual file upload to Cloudflare R2
-    // For now, return a placeholder response
-    
     const formData = await request.formData();
     const file = formData.get("file") as File;
     
@@ -61,32 +58,117 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Placeholder: In production, upload to Cloudflare R2 and get URL
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      return NextResponse.json(
+        { error: "Only image files are allowed" },
+        { status: 400 }
+      );
+    }
 
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "File size must be less than 10MB" },
+        { status: 400 }
+      );
+    }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    // Generate unique filename
+    const fileExt = file.name.split('.').pop();
+    const uniqueFilename = `${crypto.randomUUID()}.${fileExt}`;
+    
+    // Convert File to ArrayBuffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = new Uint8Array(arrayBuffer);
+
+    // Upload to Supabase Storage (use service role key to bypass RLS)
+    const uploadResponse = await fetch(
+      `${supabaseUrl}/storage/v1/object/hangar-media/${uniqueFilename}`,
+      {
+        method: 'POST',
+        headers: {
+          'apikey': supabaseServiceKey!,
+          'Authorization': `Bearer ${supabaseServiceKey}`,
+          'Content-Type': file.type,
+          'x-upsert': 'false'
+        },
+        body: buffer
+      }
+    );
+
+    if (!uploadResponse.ok) {
+      const error = await uploadResponse.text();
+      console.error('Supabase Storage error:', {
+        status: uploadResponse.status,
+        statusText: uploadResponse.statusText,
+        error: error,
+        url: `${supabaseUrl}/storage/v1/object/hangar-media/${uniqueFilename}`,
+        bucket: 'hangar-media',
+        filename: uniqueFilename
+      });
+      return NextResponse.json(
+        { 
+          error: "Failed to upload file to storage",
+          details: error,
+          status: uploadResponse.status
+        },
+        { status: 500 }
+      );
+    }
+
+    // Get public URL
+    const publicUrl = `${supabaseUrl}/storage/v1/object/public/hangar-media/${uniqueFilename}`;
+
+    // Note: Image dimensions cannot be extracted in Edge Runtime
+    // They would need to be processed client-side or in a Node.js runtime
+
+    // Save metadata to database
     const mediaData = {
       id: crypto.randomUUID(),
       filename: file.name,
-      url: `/uploads/${file.name}`, // Placeholder URL
+      url: publicUrl,
       size: file.size,
       mimeType: file.type,
       uploadedBy: session.user?.email || "admin",
       createdAt: new Date().toISOString()
     };
 
-    const response = await fetch(`${supabaseUrl}/rest/v1/media`, {
+    const dbResponse = await fetch(`${supabaseUrl}/rest/v1/media`, {
       method: 'POST',
       headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
+        'apikey': supabaseAnonKey!,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
       },
       body: JSON.stringify(mediaData)
     });
 
-    const media = await response.json();
+    if (!dbResponse.ok) {
+      // If database save fails, try to delete uploaded file
+      await fetch(
+        `${supabaseUrl}/storage/v1/object/hangar-media/${uniqueFilename}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'apikey': supabaseServiceKey!,
+            'Authorization': `Bearer ${supabaseServiceKey}`
+          }
+        }
+      );
+      
+      return NextResponse.json(
+        { error: "Failed to save media metadata" },
+        { status: 500 }
+      );
+    }
+
+    const media = await dbResponse.json();
     return NextResponse.json(media);
   } catch (error) {
     console.error("Error uploading media:", error);

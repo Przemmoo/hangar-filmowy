@@ -1,11 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Eye, Loader2, Download } from "lucide-react";
+import { Save, Eye, Loader2, Download, Image as ImageIcon, X } from "lucide-react";
 
 interface ContentSection {
   section: string;
   data: any;
+}
+
+interface Media {
+  id: string;
+  filename: string;
+  url: string;
+  alt?: string;
+  size: number;
+  mimeType: string;
+  width?: number;
+  height?: number;
+  createdAt: string;
 }
 
 const sections = [
@@ -26,6 +38,10 @@ export default function ContentManagement() {
   const [isSaving, setIsSaving] = useState(false);
   const [isMigrating, setIsMigrating] = useState(false);
   const [message, setMessage] = useState<{type: "success" | "error", text: string} | null>(null);
+  const [showMediaModal, setShowMediaModal] = useState(false);
+  const [mediaLibrary, setMediaLibrary] = useState<Media[]>([]);
+  const [isLoadingMedia, setIsLoadingMedia] = useState(false);
+  const [selectedField, setSelectedField] = useState<string | null>(null);
 
   // Load content on mount
   useEffect(() => {
@@ -112,6 +128,47 @@ export default function ContentManagement() {
   const showMessage = (type: "success" | "error", text: string) => {
     setMessage({ type, text });
     setTimeout(() => setMessage(null), 3000);
+  };
+
+  const loadMediaLibrary = async () => {
+    setIsLoadingMedia(true);
+    try {
+      const response = await fetch("/api/admin/media");
+      if (response.ok) {
+        const data = await response.json();
+        setMediaLibrary(data);
+      }
+    } catch (error) {
+      console.error("Error loading media:", error);
+    } finally {
+      setIsLoadingMedia(false);
+    }
+  };
+
+  const openMediaModal = (fieldName: string) => {
+    setSelectedField(fieldName);
+    setShowMediaModal(true);
+    loadMediaLibrary();
+  };
+
+  const selectMedia = (media: Media) => {
+    if (selectedField) {
+      // Obsługa kart w sekcji Offer (format: "offer-card-0", "offer-card-1", etc.)
+      if (selectedField.startsWith('offer-card-')) {
+        const cardIndex = parseInt(selectedField.split('-')[2]);
+        const data = content.offer || { cards: [{}, {}, {}, {}] };
+        const cards = Array.isArray(data.cards) ? data.cards : [{}, {}, {}, {}];
+        const newCards = [...cards];
+        newCards[cardIndex] = { ...newCards[cardIndex], imageUrl: media.url };
+        updateContent('cards', newCards);
+      } 
+      // Standardowe pole
+      else {
+        updateContent(selectedField, media.url);
+      }
+    }
+    setShowMediaModal(false);
+    setSelectedField(null);
   };
 
   const updateContent = (field: string, value: any) => {
@@ -205,6 +262,36 @@ export default function ContentManagement() {
             placeholder="ZOBACZ OFERTĘ"
           />
         </div>
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">
+            Zdj\u0119cie t\u0142a Hero
+          </label>
+          <div className="flex space-x-2">
+            <input
+              type="text"
+              value={data.backgroundImage || ""}
+              onChange={(e) => updateContent("backgroundImage", e.target.value)}
+              className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+              placeholder="URL zdj\u0119cia t\u0142a"
+            />
+            <button
+              onClick={() => openMediaModal("backgroundImage")}
+              className="px-4 py-3 bg-brand-gold hover:bg-brand-orange text-brand-dark rounded-lg transition flex items-center space-x-2"
+            >
+              <ImageIcon className="w-5 h-5" />
+              <span>Wybierz</span>
+            </button>
+          </div>
+          {data.backgroundImage && (
+            <div className="mt-3 relative aspect-video rounded-lg overflow-hidden border border-white/10">
+              <img
+                src={data.backgroundImage}
+                alt="Podgl\u0105d t\u0142a"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+        </div>      
       </div>
     );
   };
@@ -269,16 +356,31 @@ export default function ContentManagement() {
           <label className="block text-sm font-medium text-white mb-2">
             URL zdjęcia
           </label>
-          <input
-            type="text"
-            value={data.imageUrl || ""}
-            onChange={(e) => updateContent("imageUrl", e.target.value)}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
-            placeholder="/plan_filmowy.png"
-          />
-          <p className="mt-2 text-xs text-white/40">
-            Dodaj zdjęcie w Bibliotece Mediów i skopiuj URL
-          </p>
+          <div className="flex space-x-2">
+            <input
+              type="text"
+              value={data.imageUrl || ""}
+              onChange={(e) => updateContent("imageUrl", e.target.value)}
+              className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+              placeholder="/plan_filmowy.png"
+            />
+            <button
+              onClick={() => openMediaModal("imageUrl")}
+              className="px-4 py-3 bg-brand-gold hover:bg-brand-orange text-brand-dark rounded-lg transition flex items-center space-x-2"
+            >
+              <ImageIcon className="w-5 h-5" />
+              <span>Wybierz</span>
+            </button>
+          </div>
+          {data.imageUrl && (
+            <div className="mt-3 relative aspect-video rounded-lg overflow-hidden border border-white/10">
+              <img
+                src={data.imageUrl}
+                alt="Podgląd zdjęcia"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
         </div>
       </div>
     );
@@ -381,16 +483,31 @@ export default function ContentManagement() {
           <label className="block text-sm font-medium text-white mb-2">
             URL grafiki porównawczej (slider)
           </label>
-          <input
-            type="text"
-            value={data.comparisonImageUrl || ""}
-            onChange={(e) => updateContent("comparisonImageUrl", e.target.value)}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
-            placeholder="/dlaczego-ekran-led.png"
-          />
-          <p className="mt-2 text-xs text-white/40">
-            Dodaj grafikę w Bibliotece Mediów i skopiuj URL
-          </p>
+          <div className="flex space-x-2">
+            <input
+              type="text"
+              value={data.comparisonImageUrl || ""}
+              onChange={(e) => updateContent("comparisonImageUrl", e.target.value)}
+              className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+              placeholder="/dlaczego-ekran-led.png"
+            />
+            <button
+              onClick={() => openMediaModal("comparisonImageUrl")}
+              className="px-4 py-3 bg-brand-gold hover:bg-brand-orange text-brand-dark rounded-lg transition flex items-center space-x-2"
+            >
+              <ImageIcon className="w-5 h-5" />
+              <span>Wybierz</span>
+            </button>
+          </div>
+          {data.comparisonImageUrl && (
+            <div className="mt-3 relative aspect-video rounded-lg overflow-hidden border border-white/10">
+              <img
+                src={data.comparisonImageUrl}
+                alt="Podgląd grafiki porównawczej"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
         </div>
 
         {boxes.map((box: any, index: number) => (
@@ -511,13 +628,31 @@ export default function ContentManagement() {
                 <label className="block text-sm font-medium text-white mb-2">
                   URL zdjęcia
                 </label>
-                <input
-                  type="text"
-                  value={card.imageUrl || ""}
-                  onChange={(e) => updateCard(index, "imageUrl", e.target.value)}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
-                  placeholder="/technologia-kinowa.png"
-                />
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    value={card.imageUrl || ""}
+                    onChange={(e) => updateCard(index, "imageUrl", e.target.value)}
+                    className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+                    placeholder="/technologia-kinowa.png"
+                  />
+                  <button
+                    onClick={() => openMediaModal(`offer-card-${index}`)}
+                    className="px-4 py-3 bg-brand-gold hover:bg-brand-orange text-brand-dark rounded-lg transition flex items-center space-x-2"
+                  >
+                    <ImageIcon className="w-5 h-5" />
+                    <span>Wybierz</span>
+                  </button>
+                </div>
+                {card.imageUrl && (
+                  <div className="mt-3 relative aspect-video rounded-lg overflow-hidden border border-white/10">
+                    <img
+                      src={card.imageUrl}
+                      alt="Podgląd zdjęcia"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -837,6 +972,83 @@ export default function ContentManagement() {
           </div>
         </div>
       </div>
+
+      {/* Media Library Modal */}
+      {showMediaModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-8">
+          <div className="bg-brand-dark border border-white/10 rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-white/10">
+              <div>
+                <h2 className="text-2xl font-bold text-white">Biblioteka Mediów</h2>
+                <p className="text-white/60 text-sm">Wybierz zdjęcie z biblioteki</p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowMediaModal(false);
+                  setSelectedField(null);
+                }}
+                className="p-2 hover:bg-white/10 rounded-lg transition"
+              >
+                <X className="w-6 h-6 text-white" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {isLoadingMedia ? (
+                <div className="text-center py-24">
+                  <Loader2 className="w-8 h-8 text-brand-gold animate-spin mx-auto mb-4" />
+                  <p className="text-white/60">Ładowanie mediów...</p>
+                </div>
+              ) : mediaLibrary.length === 0 ? (
+                <div className="text-center py-24">
+                  <ImageIcon className="w-16 h-16 text-white/20 mx-auto mb-4" />
+                  <p className="text-white/60 mb-4">Brak zdjęć w bibliotece</p>
+                  <p className="text-white/40 text-sm">
+                    Przejdź do <a href="/admin/media" target="_blank" className="text-brand-gold hover:underline">Biblioteki Mediów</a> aby dodać zdjęcia
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-4 gap-4">
+                  {mediaLibrary.map((media) => (
+                    <button
+                      key={media.id}
+                      onClick={() => selectMedia(media)}
+                      className="relative aspect-square rounded-lg overflow-hidden border-2 border-white/10 hover:border-brand-gold transition group"
+                    >
+                      <img
+                        src={media.url}
+                        alt={media.alt || media.filename}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                        <div className="text-center">
+                          <ImageIcon className="w-8 h-8 text-white mx-auto mb-2" />
+                          <p className="text-white text-sm font-medium">Wybierz</p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 border-t border-white/10 flex justify-end">
+              <button
+                onClick={() => {
+                  setShowMediaModal(false);
+                  setSelectedField(null);
+                }}
+                className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
+              >
+                Anuluj
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

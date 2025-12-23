@@ -539,7 +539,7 @@ export default function SettingsPage() {
                   <select
                     value={userForm.role}
                     onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-gray-500 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
                   >
                     <option value="admin">Admin</option>
                     <option value="editor">Edytor</option>
