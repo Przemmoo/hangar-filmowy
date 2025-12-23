@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Film, Lock, Mail } from "lucide-react";
+import { Lock, Mail } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
@@ -57,9 +58,13 @@ export default function LoginPage() {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-brand-gold to-brand-orange rounded-xl flex items-center justify-center">
-                <Film className="w-10 h-10 text-black" />
-              </div>
+              <Image
+                src="/hangar_filmowy.svg"
+                alt="Hangar Filmowy Logo"
+                width={80}
+                height={80}
+                className="drop-shadow-2xl"
+              />
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">Panel Administracyjny</h1>
             <p className="text-white/60">Hangar Filmowy</p>
