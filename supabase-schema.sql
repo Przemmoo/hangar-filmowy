@@ -23,6 +23,7 @@ CREATE TABLE "form_submissions" (
     "audienceSize" INTEGER NOT NULL,
     "extras" JSONB NOT NULL,
     "estimatedLevel" TEXT NOT NULL,
+    "preferredDate" DATE,
     "status" TEXT NOT NULL DEFAULT 'NEW',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
