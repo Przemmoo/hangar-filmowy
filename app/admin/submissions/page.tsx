@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Mail, Eye, Trash2, Loader2, Search, Filter } from "lucide-react";
+import { Mail, Eye, Trash2, Loader2, Search, Filter, Send, MessageSquare } from "lucide-react";
 
 interface FormSubmission {
   id: string;
@@ -20,6 +20,16 @@ interface FormSubmission {
   };
   estimatedLevel: string;
   status: string;
+  createdAt: string;
+}
+
+interface SubmissionReply {
+  id: string;
+  submissionId: string;
+  subject: string;
+  message: string;
+  sentBy: string;
+  sentByName: string;
   createdAt: string;
 }
 
@@ -43,6 +53,12 @@ export default function SubmissionsPage() {
   const [selectedSubmission, setSelectedSubmission] = useState<FormSubmission | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showReplyModal, setShowReplyModal] = useState(false);
+  const [replyForm, setReplyForm] = useState({ subject: "", message: "" });
+  const [isSendingReply, setIsSendingReply] = useState(false);
+  const [replyMessage, setReplyMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [replyHistory, setReplyHistory] = useState<SubmissionReply[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
   useEffect(() => {
     loadSubmissions();
@@ -60,6 +76,21 @@ export default function SubmissionsPage() {
       console.error("Error loading submissions:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadReplyHistory = async (submissionId: string) => {
+    setIsLoadingHistory(true);
+    try {
+      const response = await fetch(`/api/admin/submissions/${submissionId}/replies`);
+      if (response.ok) {
+        const data = await response.json();
+        setReplyHistory(data);
+      }
+    } catch (error) {
+      console.error("Error loading reply history:", error);
+    } finally {
+      setIsLoadingHistory(false);
     }
   };
 
@@ -98,6 +129,66 @@ export default function SubmissionsPage() {
       }
     } catch (error) {
       console.error("Error deleting submission:", error);
+    }
+  };
+
+  const openReplyModal = () => {
+    if (!selectedSubmission) return;
+    
+    setReplyForm({
+      subject: `Odpowiedź na zapytanie - ${eventTypeLabels[selectedSubmission.eventType] || selectedSubmission.eventType}`,
+      message: `Dzień dobry ${selectedSubmission.firstName},\n\nDziękujemy za zainteresowanie naszą ofertą.\n\n\n\nPozdrawiamy,\nZespół Hangar Filmowy`,
+    });
+    setShowReplyModal(true);
+    setReplyMessage(null);
+  };
+
+  const closeReplyModal = () => {
+    setShowReplyModal(false);
+    setReplyForm({ subject: "", message: "" });
+    setReplyMessage(null);
+  };
+
+  const handleSendReply = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!selectedSubmission || !replyForm.subject || !replyForm.message) {
+      setReplyMessage({ type: "error", text: "Temat i treść wiadomości są wymagane" });
+      return;
+    }
+
+    setIsSendingReply(true);
+    setReplyMessage(null);
+
+    try {
+      const response = await fetch(`/api/admin/submissions/${selectedSubmission.id}/reply`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject: replyForm.subject,
+          message: replyForm.message,
+        }),
+      });
+
+      if (response.ok) {
+        setReplyMessage({ type: "success", text: "Odpowiedź została wysłana pomyślnie!" });
+        // Zmień status na CONTACTED jeśli był NEW
+        if (selectedSubmission.status === "NEW") {
+          await updateStatus(selectedSubmission.id, "CONTACTED");
+        }
+        // Odśwież historię odpowiedzi
+        await loadReplyHistory(selectedSubmission.id);
+        setTimeout(() => {
+          closeReplyModal();
+        }, 2000);
+      } else {
+        const error = await response.json();
+        setReplyMessage({ type: "error", text: error.error || "Błąd wysyłania odpowiedzi" });
+      }
+    } catch (error) {
+      setReplyMessage({ type: "error", text: "Błąd wysyłania odpowiedzi" });
+    } finally {
+      setIsSendingReply(false);
     }
   };
 
@@ -167,7 +258,10 @@ export default function SubmissionsPage() {
                 filteredSubmissions.map((submission) => (
                   <button
                     key={submission.id}
-                    onClick={() => setSelectedSubmission(submission)}
+                    onClick={() => {
+                      setSelectedSubmission(submission);
+                      loadReplyHistory(submission.id);
+                    }}
                     className={`w-full text-left p-4 rounded-lg transition ${
                       selectedSubmission?.id === submission.id
                         ? "bg-brand-gold/20 border border-brand-gold"
@@ -219,6 +313,14 @@ export default function SubmissionsPage() {
                   )}
                 </div>
                 <div className="flex space-x-2">
+                  <button
+                    onClick={openReplyModal}
+                    className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-brand-gold to-brand-orange text-brand-dark font-semibold rounded-lg hover:scale-105 transition"
+                    title="Wyślij odpowiedź"
+                  >
+                    <Send className="w-4 h-4" />
+                    <span>Odpowiedz</span>
+                  </button>
                   <button
                     onClick={() => deleteSubmission(selectedSubmission.id)}
                     className="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition"
@@ -318,6 +420,48 @@ export default function SubmissionsPage() {
                   <p className="text-white whitespace-pre-wrap">{selectedSubmission.message}</p>
                 </div>
               </div>
+
+              {/* Reply History */}
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+                    <MessageSquare className="w-5 h-5" />
+                    <span>Historia Odpowiedzi ({replyHistory.length})</span>
+                  </h3>
+                </div>
+                
+                {isLoadingHistory ? (
+                  <div className="text-center py-8">
+                    <Loader2 className="w-6 h-6 text-brand-gold animate-spin mx-auto mb-2" />
+                    <p className="text-white/60 text-sm">Ładowanie historii...</p>
+                  </div>
+                ) : replyHistory.length === 0 ? (
+                  <div className="text-center py-8 bg-white/5 rounded-lg">
+                    <MessageSquare className="w-12 h-12 text-white/20 mx-auto mb-2" />
+                    <p className="text-white/60 text-sm">Brak wysłanych odpowiedzi</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {replyHistory.map((reply) => (
+                      <div key={reply.id} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <h4 className="text-white font-medium mb-1">{reply.subject}</h4>
+                            <div className="flex items-center space-x-3 text-xs text-white/60">
+                              <span>Wysłał: {reply.sentByName}</span>
+                              <span>•</span>
+                              <span>{new Date(reply.createdAt).toLocaleString("pl-PL")}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="bg-white/5 rounded-lg p-3 mt-2">
+                          <p className="text-white/80 text-sm whitespace-pre-wrap">{reply.message}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6">
@@ -329,6 +473,102 @@ export default function SubmissionsPage() {
           )}
         </div>
       </div>
+
+      {/* Reply Modal */}
+      {showReplyModal && selectedSubmission && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-brand-dark border border-white/10 rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-2xl font-bold text-white mb-2">
+              Odpowiedź na zgłoszenie
+            </h3>
+            <p className="text-white/60 mb-6">
+              Do: {selectedSubmission.firstName} {selectedSubmission.lastName} ({selectedSubmission.email})
+            </p>
+
+            {replyMessage && (
+              <div
+                className={`mb-4 p-4 rounded-lg ${
+                  replyMessage.type === "success"
+                    ? "bg-green-500/20 text-green-400"
+                    : "bg-red-500/20 text-red-400"
+                }`}
+              >
+                {replyMessage.text}
+              </div>
+            )}
+
+            <form onSubmit={handleSendReply} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Temat wiadomości *
+                </label>
+                <input
+                  type="text"
+                  value={replyForm.subject}
+                  onChange={(e) => setReplyForm({ ...replyForm, subject: e.target.value })}
+                  required
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+                  placeholder="Temat emaila"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Treść wiadomości *
+                </label>
+                <textarea
+                  value={replyForm.message}
+                  onChange={(e) => setReplyForm({ ...replyForm, message: e.target.value })}
+                  required
+                  rows={12}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none resize-none"
+                  placeholder="Wpisz treść odpowiedzi..."
+                />
+              </div>
+
+              <div className="bg-white/5 rounded-lg p-4">
+                <p className="text-white/60 text-xs mb-2">Szczegóły zgłoszenia:</p>
+                <div className="text-white/80 text-sm space-y-1">
+                  <p>• Rodzaj: {eventTypeLabels[selectedSubmission.eventType]}</p>
+                  <p>• Liczba widzów: {selectedSubmission.audienceSize}</p>
+                  {selectedSubmission.preferredDate && (
+                    <p>• Termin: {new Date(selectedSubmission.preferredDate).toLocaleDateString("pl-PL")}</p>
+                  )}
+                  <p>• Kategoria: {selectedSubmission.estimatedLevel}</p>
+                </div>
+              </div>
+
+              <div className="flex space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={closeReplyModal}
+                  disabled={isSendingReply}
+                  className="flex-1 px-4 py-3 border border-white/10 text-white rounded-lg hover:bg-white/5 transition disabled:opacity-50"
+                >
+                  Anuluj
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSendingReply}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-brand-gold to-brand-orange text-brand-dark font-semibold rounded-lg hover:scale-105 transition disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center space-x-2"
+                >
+                  {isSendingReply ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Wysyłanie...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>Wyślij Odpowiedź</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

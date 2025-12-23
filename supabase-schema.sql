@@ -66,6 +66,19 @@ CREATE TABLE "settings" (
     "updatedBy" TEXT NOT NULL
 );
 
+-- CreateTable: submission_replies
+CREATE TABLE "submission_replies" (
+    "id" TEXT NOT NULL,
+    "submissionId" TEXT NOT NULL,
+    "subject" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
+    "sentBy" TEXT NOT NULL,
+    "sentByName" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "submission_replies_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -74,3 +87,6 @@ CREATE UNIQUE INDEX "content_section_key" ON "content"("section");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "settings_key_key" ON "settings"("key");
+
+-- CreateIndex
+CREATE INDEX "submission_replies_submissionId_idx" ON "submission_replies"("submissionId");
