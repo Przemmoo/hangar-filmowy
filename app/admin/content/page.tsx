@@ -215,25 +215,53 @@ export default function ContentManagement() {
       <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-white mb-2">
-            Nagłówek H2
+            Tytuł (biały tekst)
           </label>
           <input
             type="text"
             value={data.title || ""}
             onChange={(e) => updateContent("title", e.target.value)}
             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+            placeholder="Wychodzimy z cienia."
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-white mb-2">
-            Tekst główny
+            Tytuł (gradient złoto-pomarańcz)
+          </label>
+          <input
+            type="text"
+            value={data.titleGradient || ""}
+            onChange={(e) => updateContent("titleGradient", e.target.value)}
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+            placeholder="Wnosimy kino plenerowe na nowy poziom."
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">
+            Paragraf 1
           </label>
           <textarea
-            value={data.content || ""}
-            onChange={(e) => updateContent("content", e.target.value)}
-            rows={8}
+            value={data.paragraph1 || ""}
+            onChange={(e) => updateContent("paragraph1", e.target.value)}
+            rows={3}
             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none resize-none"
+            placeholder="Przez lata kino plenerowe kojarzyło się..."
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">
+            Paragraf 2
+          </label>
+          <textarea
+            value={data.paragraph2 || ""}
+            onChange={(e) => updateContent("paragraph2", e.target.value)}
+            rows={5}
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none resize-none"
+            placeholder="Jesteśmy zespołem pasjonatów kina..."
           />
         </div>
 
@@ -246,7 +274,7 @@ export default function ContentManagement() {
             value={data.imageUrl || ""}
             onChange={(e) => updateContent("imageUrl", e.target.value)}
             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
-            placeholder="/images/about.jpg"
+            placeholder="/plan_filmowy.png"
           />
           <p className="mt-2 text-xs text-white/40">
             Dodaj zdjęcie w Bibliotece Mediów i skopiuj URL
@@ -336,6 +364,35 @@ export default function ContentManagement() {
           />
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">
+            Podtytuł (opis)
+          </label>
+          <input
+            type="text"
+            value={data.subtitle || ""}
+            onChange={(e) => updateContent("subtitle", e.target.value)}
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+            placeholder="Przesuń suwak, aby zobaczyć różnicę..."
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">
+            URL grafiki porównawczej (slider)
+          </label>
+          <input
+            type="text"
+            value={data.comparisonImageUrl || ""}
+            onChange={(e) => updateContent("comparisonImageUrl", e.target.value)}
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+            placeholder="/dlaczego-ekran-led.png"
+          />
+          <p className="mt-2 text-xs text-white/40">
+            Dodaj grafikę w Bibliotece Mediów i skopiuj URL
+          </p>
+        </div>
+
         {boxes.map((box: any, index: number) => (
           <div key={index} className="p-6 bg-white/5 rounded-xl border border-white/10">
             <h3 className="text-lg font-bold text-white mb-4">Box {index + 1}</h3>
@@ -385,14 +442,40 @@ export default function ContentManagement() {
       <div className="space-y-8">
         <div>
           <label className="block text-sm font-medium text-white mb-2">
-            Nagłówek sekcji
+            Prefix tytułu (biały tekst)
+          </label>
+          <input
+            type="text"
+            value={data.titlePrefix || ""}
+            onChange={(e) => updateContent("titlePrefix", e.target.value)}
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+            placeholder="Od licencji po"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">
+            Tytuł (gradient złoto-pomarańcz)
           </label>
           <input
             type="text"
             value={data.title || ""}
             onChange={(e) => updateContent("title", e.target.value)}
             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
-            placeholder="Od licencji po ostatnie ziarno kukurydzy"
+            placeholder="ostatnie ziarno kukurydzy."
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">
+            Podtytuł (opis)
+          </label>
+          <input
+            type="text"
+            value={data.subtitle || ""}
+            onChange={(e) => updateContent("subtitle", e.target.value)}
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+            placeholder="Kompleksowa obsługa Twojego eventu."
           />
         </div>
 

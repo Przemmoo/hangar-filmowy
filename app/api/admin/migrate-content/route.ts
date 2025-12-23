@@ -22,12 +22,16 @@ export async function POST(request: NextRequest) {
         ctaSecondary: "ZOBACZ OFERTĘ"
       },
       about: {
-        title: "Kim jesteśmy?",
-        content: "Jesteśmy zespołem specjalistów od eventów plenerowych z pasją do dobrego kina. Przez lata testowaliśmy różne rozwiązania – od tradycyjnych projektorów, przez ekrany pneumatyczne, aż po najnowocześniejsze moduły LED.\n\nWiemy, że nikt nie chce zostawać po zmroku tylko dlatego, że rzutnik wymaga totalnej ciemności. Wiemy też, jak frustrujące jest odwoływanie eventu z powodu lekkiego wiatru, który przewraca ekran dmuchany.\n\nDlatego postawiliśmy na technologię LED najwyższej klasy. Nasze ekrany działają w każdych warunkach, a obraz jest spektakularny – niezależnie od pory dnia. To kino, jakie powinno być: wygodne, niezawodne i po prostu WOW.",
-        imageUrl: "/about-image.jpg"
+        title: "Wychodzimy z cienia.",
+        titleGradient: "Wnosimy kino plenerowe na nowy poziom.",
+        paragraph1: "Przez lata kino plenerowe kojarzyło się z jednym: czekaniem na zmrok, walką z wiatrem falującym ekranem i kompromisami w jakości obrazu. Hangar Filmowy zmienia te zasady gry.",
+        paragraph2: "Jesteśmy zespołem pasjonatów kina i ekspertów od eventów. Nasza obietnica jest prosta: dostarczamy wrażenia kinowe (dosłownie!) w dowolnym miejscu w Polsce. Nie uznajemy półśrodków. Nasze ekrany świecą jasno, dźwięk wbija w fotel, a obsługa licencyjna zdejmuje Ci z głowy wszystkie formalności. Tworzymy wydarzenia, o których mieszkańcy rozmawiają miesiącami.",
+        imageUrl: "/plan_filmowy.png"
       },
       "why-us": {
         title: "Dlaczego Ekran LED",
+        subtitle: "Przesuń suwak, aby zobaczyć różnicę między tradycyjnym projektorem a naszą technologią LED.",
+        comparisonImageUrl: "/dlaczego-ekran-led.png",
         boxes: [
           {
             title: "Obraz Żyleta",
@@ -44,7 +48,9 @@ export async function POST(request: NextRequest) {
         ]
       },
       offer: {
-        title: "Od licencji po ostatnie ziarno kukurydzy.",
+        titlePrefix: "Od licencji po",
+        title: "ostatnie ziarno kukurydzy.",
+        subtitle: "Kompleksowa obsługa Twojego eventu.",
         cards: [
           {
             title: "Technika Kinowa",
@@ -91,6 +97,7 @@ export async function POST(request: NextRequest) {
       },
       process: {
         title: "Jak zorganizować kino?",
+        subtitle: "Od zapytania do seansu – wszystko maksymalnie proste.",
         steps: [
           {
             title: "Ustalamy Termin & Wizję",

@@ -225,23 +225,19 @@ export default function Home() {
             <ScrollReveal>
               <div className="space-y-4 md:space-y-8">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-normal">
-                  <span className="text-white">Wychodzimy z cienia.</span>
+                  <span className="text-white">{content.about?.title}</span>
                   <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-orange)]">
-                    Wnosimy kino plenerowe na nowy poziom.
+                    {content.about?.titleGradient}
                   </span>
                 </h2>
                 
                 <div className="space-y-4 md:space-y-6 text-sm sm:text-base md:text-lg text-white/80 leading-relaxed">
                   <p>
-                    Przez lata kino plenerowe kojarzyło się z jednym: czekaniem na zmrok, walką z wiatrem 
-                    falującym ekranem i kompromisami w jakości obrazu. Hangar Filmowy zmienia te zasady gry.
+                    {content.about?.paragraph1}
                   </p>
                   <p>
-                    Jesteśmy zespołem pasjonatów kina i ekspertów od eventów. Nasza obietnica jest prosta: 
-                    dostarczamy wrażenia kinowe (dosłownie!) w dowolnym miejscu w Polsce. Nie uznajemy półśrodków. 
-                    Nasze ekrany świecą jasno, dźwięk wbija w fotel, a obsługa licencyjna zdejmuje Ci z głowy 
-                    wszystkie formalności. Tworzymy wydarzenia, o których mieszkańcy rozmawiają miesiącami.
+                    {content.about?.paragraph2}
                   </p>
                 </div>
 
@@ -289,8 +285,8 @@ export default function Home() {
                   {/* Image Container */}
                   <div className="relative aspect-[4/3] rounded-2xl overflow-hidden z-10">
                     <img 
-                      src="/plan_filmowy.png" 
-                      alt="Plan filmowy Hangar Filmowy"
+                      src={content.about?.imageUrl || "/plan_filmowy.png"} 
+                      alt={content.about?.title || "Plan filmowy Hangar Filmowy"}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>
@@ -310,7 +306,7 @@ export default function Home() {
               
             </h2>
             <p className="text-white/70 text-center mb-16 max-w-3xl mx-auto">
-              Przesuń suwak, aby zobaczyć różnicę między tradycyjnym projektorem a naszą technologią LED.
+              {content["why-us"]?.subtitle}
             </p>
           </ScrollReveal>
 
@@ -344,7 +340,7 @@ export default function Home() {
                   
                   {/* Full comparison image as base */}
                   <img 
-                    src="/dlaczego-ekran-led.png" 
+                    src={content["why-us"]?.comparisonImageUrl} 
                     alt="Porównanie rzutnika i ekranu LED"
                     className="absolute inset-0 w-full h-full object-cover"
                   />
@@ -361,8 +357,8 @@ export default function Home() {
                     className="absolute inset-0 z-10"
                     style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
                   >
-                    <div className="absolute top-2 left-2 md:top-4 md:left-4 bg-black/70 px-2 py-1 md:px-4 md:py-2 rounded-lg">
-                      <span className="text-white font-semibold text-xs md:text-sm">TRADYCYJNY RZUTNIK</span>
+                    <div className="absolute top-2 left-2 md:top-4 md:left-4 bg-black/70 px-1.5 py-0.5 sm:px-2 sm:py-1 md:px-4 md:py-2 rounded-lg">
+                      <span className="text-white font-semibold text-[9px] sm:text-xs md:text-sm">TRADYCYJNY RZUTNIK</span>
                     </div>
                   </div>
                   
@@ -371,8 +367,8 @@ export default function Home() {
                     className="absolute inset-0 z-10"
                     style={{ clipPath: `inset(0 0 0 ${sliderPosition}%)` }}
                   >
-                    <div className="absolute top-2 right-2 md:top-4 md:right-4 bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-orange)] px-2 py-1 md:px-4 md:py-2 rounded-lg">
-                      <span className="text-black font-semibold text-xs md:text-sm">HANGAR FILMOWY LED</span>
+                    <div className="absolute top-2 right-2 md:top-4 md:right-4 bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-orange)] px-1.5 py-0.5 sm:px-2 sm:py-1 md:px-4 md:py-2 rounded-lg">
+                      <span className="text-black font-semibold text-[9px] sm:text-xs md:text-sm">HANGAR FILMOWY LED</span>
                     </div>
                   </div>
                 
@@ -472,17 +468,17 @@ export default function Home() {
       </section>
 
       {/* Oferta Section */}
-      <section id="oferta" className="section-padding bg-[var(--brand-dark)]">
+      <section id="oferta" className="section-padding bg-[var(--brand-dark)] scroll-mt-[50px]">
         <div className="container mx-auto px-4 sm:px-6">
           <ScrollReveal>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-3 md:mb-4">
-              <span className="text-white">Od licencji po </span><br />
+              <span className="text-white">{content.offer?.titlePrefix} </span><br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-orange)]">
                 {content.offer?.title}
               </span>
             </h2>
             <p className="text-white/70 text-center text-sm sm:text-base mb-8 md:mb-16 max-w-3xl mx-auto px-4">
-              Kompleksowa obsługa Twojego eventu.
+              {content.offer?.subtitle}
             </p>
           </ScrollReveal>
 
@@ -622,8 +618,8 @@ export default function Home() {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <img 
-                    src="/strefa-widza.png" 
-                    alt="Strefa Widza"
+                    src={content.offer?.cards?.[2]?.imageUrl}
+                    alt={content.offer?.cards?.[2]?.title}
                     className="w-full h-full object-cover transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
@@ -634,13 +630,13 @@ export default function Home() {
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg  flex items-center justify-center mb-3 md:mb-4">
                     <img 
                       src="/image-armchair.png" 
-                      alt="Strefa Widza"
+                      alt={content.offer?.cards?.[2]?.title}
                       style={{ width: '24px', height: '24px', filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
                     />
                   </div>
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 md:mb-3">Strefa Widza</h3>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 md:mb-3">{content.offer?.cards?.[2]?.title}</h3>
                   <p className="text-white/90 text-xs sm:text-sm">
-                    Wygodne leżaki i nastrojowe oświetlenie, tworzące magię kina letniego.
+                    {content.offer?.cards?.[2]?.description}
                   </p>
                 </div>
               </div>
@@ -675,8 +671,8 @@ export default function Home() {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <img 
-                    src="/popcorn-bar.png" 
-                    alt="Popcorn Bar"
+                    src={content.offer?.cards?.[3]?.imageUrl}
+                    alt={content.offer?.cards?.[3]?.title}
                     className="w-full h-full object-cover transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
@@ -687,14 +683,13 @@ export default function Home() {
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg  flex items-center justify-center mb-3 md:mb-4">
                     <img 
                       src="/image-food.png" 
-                      alt="Popcorn Bar"
+                      alt={content.offer?.cards?.[3]?.title}
                       style={{ width: '24px', height: '24px', filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(1558%) hue-rotate(356deg) brightness(104%) contrast(106%)' }}
                     />
                   </div>
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 md:mb-3">Popcorn Bar</h3>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 md:mb-3">{content.offer?.cards?.[3]?.title}</h3>
                   <p className="text-white/90 text-xs sm:text-sm">
-                    Profesjonalnie maszyny i obsługa. Świeży, ciepły popcorn, napoje, cukierki – 
-                    jak w multiplepie, tylko lepiej.
+                    {content.offer?.cards?.[3]?.description}
                   </p>
                 </div>
               </div>
@@ -727,11 +722,10 @@ export default function Home() {
                 />
               </div>
               <h3 className="text-base sm:text-lg font-semibold text-white mb-3 md:mb-4 text-center">
-                Samorządy i Miasta
+                {content['for-who']?.cards?.[0]?.title}
               </h3>
               <p className="text-white/80 text-xs sm:text-sm text-center">
-                Kino w parku, festiwal miejski, piknik rodzinny – zbuduj kapitał społeczny i pokaż, 
-                że Twoje miasto żyje kulturą.
+                {content['for-who']?.cards?.[0]?.description}
               </p>
             </div>
 
@@ -752,11 +746,10 @@ export default function Home() {
                 />
               </div>
               <h3 className="text-base sm:text-lg font-semibold text-white mb-3 md:mb-4 text-center">
-                Hotele i Resorty
+                {content['for-who']?.cards?.[1]?.title}
               </h3>
               <p className="text-white/80 text-xs sm:text-sm text-center">
-                Zaproponuj gościom wieczór filmowy w ogrodzie. Unikalne doświadczenie, które wyróżni 
-                Twoją ofertę i wygeneruje pozytywne recenzje.
+                {content['for-who']?.cards?.[1]?.description}
               </p>
             </div>
 
@@ -777,11 +770,10 @@ export default function Home() {
                 />
               </div>
               <h3 className="text-base sm:text-lg font-semibold text-white mb-3 md:mb-4 text-center">
-                Firmy i Korporacje
+                {content['for-who']?.cards?.[2]?.title}
               </h3>
               <p className="text-white/80 text-xs sm:text-sm text-center">
-                Integracja? Urodziny firmy? Prezentacja produktu? Zorganizuj kino na zamkniętym 
-                evencie – niezapomniane team-buildingowe doświadczenie.
+                {content['for-who']?.cards?.[2]?.description}
               </p>
             </div>
 
@@ -802,11 +794,10 @@ export default function Home() {
                 />
               </div>
               <h3 className="text-base sm:text-lg font-semibold text-white mb-3 md:mb-4 text-center">
-                Festiwale i Eventy
+                {content['for-who']?.cards?.[3]?.title}
               </h3>
               <p className="text-white/80 text-xs sm:text-sm text-center">
-                Festiwal muzyczny, food truck event, targi – dodaj kinową strefę, która przyciągnie 
-                tłumy i stworzy wiralowe momenty w social mediach.
+                {content['for-who']?.cards?.[3]?.description}
               </p>
             </div>
           </div>
@@ -820,7 +811,7 @@ export default function Home() {
             {content.process?.title}
           </h2>
           <p className="text-white/70 text-center mb-8 md:mb-16 max-w-3xl mx-auto text-sm sm:text-base px-4">
-            Od zapytania do seansu – wszystko maksymalnie proste.
+            {content.process?.subtitle}
           </p>
 
           <div className="mx-auto">
@@ -838,9 +829,9 @@ export default function Home() {
                 >
                   1
                 </div>
-                <h3 className="text-base sm:text-lg font-semibold text-white mb-2 md:mb-3 transition-all duration-300 group-hover:text-[var(--brand-gold)]">Ustalamy Termin & Wizję</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-white mb-2 md:mb-3 transition-all duration-300 group-hover:text-[var(--brand-gold)]">{content.process?.steps?.[0]?.title}</h3>
                 <p className="text-white/80 text-xs sm:text-sm transition-all duration-300 group-hover:text-white">
-                  Dzwonisz/piszesz. Rozmawiamy o dacie, miejscu, rodzaju eventu i Twoich oczekiwaniach.
+                  {content.process?.steps?.[0]?.description}
                 </p>
               </div>
 
@@ -857,9 +848,9 @@ export default function Home() {
                 >
                   2
                 </div>
-                <h3 className="text-base sm:text-lg font-semibold text-white mb-2 md:mb-3 transition-all duration-300 group-hover:text-[var(--brand-gold)]">Wybieramy Repertuar</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-white mb-2 md:mb-3 transition-all duration-300 group-hover:text-[var(--brand-gold)]">{content.process?.steps?.[1]?.title}</h3>
                 <p className="text-white/80 text-xs sm:text-sm transition-all duration-300 group-hover:text-white">
-                  Podpowiadamy filmy dopasowane do grupy docelowej. Ty wybierasz – my załatwiamy licencje.
+                  {content.process?.steps?.[1]?.description}
                 </p>
               </div>
 
@@ -876,9 +867,9 @@ export default function Home() {
                 >
                   3
                 </div>
-                <h3 className="text-base sm:text-lg font-semibold text-white mb-2 md:mb-3 transition-all duration-300 group-hover:text-[var(--brand-gold)]">Przygotowanie Przestrzeni</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-white mb-2 md:mb-3 transition-all duration-300 group-hover:text-[var(--brand-gold)]">{content.process?.steps?.[2]?.title}</h3>
                 <p className="text-white/80 text-xs sm:text-sm transition-all duration-300 group-hover:text-white">
-                  Przyjeżdżamy z wyprzedzeniem, montujemy ekran, nagłośnienie, strefę widowni.
+                  {content.process?.steps?.[2]?.description}
                 </p>
               </div>
 
@@ -895,9 +886,9 @@ export default function Home() {
                 >
                   4
                 </div>
-                <h3 className="text-base sm:text-lg font-semibold text-white mb-2 md:mb-3 transition-all duration-300 group-hover:text-[var(--brand-gold)]">Showtime!</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-white mb-2 md:mb-3 transition-all duration-300 group-hover:text-[var(--brand-gold)]">{content.process?.steps?.[3]?.title}</h3>
                 <p className="text-white/80 text-xs sm:text-sm transition-all duration-300 group-hover:text-white">
-                  Twoi goście wchodzą, siadają, zapachy popcornu unoszą się w powietrzu – KINO się zaczyna!
+                  {content.process?.steps?.[3]?.description}
                 </p>
               </div>
             </div>
@@ -906,7 +897,7 @@ export default function Home() {
       </section>
 
       {/* Kontakt Section - Konfigurator */}
-      <section id="kontakt" className="section-padding bg-[var(--brand-dark)]">
+      <section id="kontakt" className="section-padding bg-[var(--brand-dark)] scroll-mt-[50px]">
         <div className="container mx-auto px-4 sm:px-6">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-3 md:mb-4">
               <span className="text-white">{content.contact?.title}</span><br />
@@ -1137,7 +1128,7 @@ export default function Home() {
                 <span className="text-lg sm:text-xl font-bold">Hangar Filmowy</span>
               </div>
               <p className="text-white/70 text-xs sm:text-sm">
-                Prawdziwe kino pod gwiazdami. W jakości, jakiej jeszcze nie widziałeś.
+                {content.footer?.slogan}
               </p>
             </div>
 
@@ -1156,9 +1147,9 @@ export default function Home() {
             <div>
               <h4 className="font-semibold mb-3 text-sm sm:text-base">Kontakt</h4>
               <ul className="space-y-2 text-white/70 text-xs sm:text-sm">
-                <li>pokaz@hangarfilmowy.pl</li>
-                <li>+48 XXX XXX XXX</li>
-                <li>Polska (zasięg ogólnopolski)</li>
+                <li>{content.footer?.email}</li>
+                <li>{content.footer?.phone}</li>
+                <li>{content.footer?.address}</li>
               </ul>
             </div>
           </div>
