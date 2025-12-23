@@ -1206,7 +1206,12 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
             {/* Column 1 - Brand */}
             <div>
-              <div className="flex items-center space-x-2 mb-3 md:mb-4">
+              <div className="flex items-center space-x-3 mb-3 md:mb-4">
+                <img 
+                  src="/hangar_filmowy.svg" 
+                  alt="Hangar Filmowy Logo" 
+                  className="h-12 w-auto"
+                />
                 <span className="text-lg sm:text-xl font-bold">Hangar Filmowy</span>
               </div>
               <p className="text-white/70 text-xs sm:text-sm">

@@ -90,6 +90,7 @@ export async function POST(request: Request) {
             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
             .header { background: linear-gradient(135deg, #FFD700, #FFA500); padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .header img { height: 60px; margin-bottom: 15px; }
             .header h1 { color: white; margin: 0; font-size: 28px; }
             .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
             .section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -110,6 +111,7 @@ export async function POST(request: Request) {
         <body>
           <div class="container">
             <div class="header">
+              <img src="https://hangarfilmowy.pl/hangar_filmowy.svg" alt="Hangar Filmowy Logo" />
               <h1>🎬 Nowe Zapytanie o Pokaz</h1>
             </div>
             <div class="content">
@@ -180,8 +182,7 @@ export async function POST(request: Request) {
           <style>
             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(135deg, #0A1828, #1E3A5F); padding: 40px; text-align: center; border-radius: 10px 10px 0 0; }
-            .header h1 { color: white; margin: 0; font-size: 28px; }
+            .header { background: linear-gradient(135deg, #0A1828, #1E3A5F); padding: 40px; text-align: center; border-radius: 10px 10px 0 0; }            .header img { height: 60px; margin-bottom: 15px; }            .header h1 { color: white; margin: 0; font-size: 28px; }
             .header p { color: rgba(255,255,255,0.8); margin: 10px 0 0 0; }
             .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
             .message-box { background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -193,6 +194,7 @@ export async function POST(request: Request) {
         <body>
           <div class="container">
             <div class="header">
+              <img src="https://hangarfilmowy.pl/hangar_filmowy.svg" alt="Hangar Filmowy Logo" />
               <h1>🎬 Dziękujemy za zapytanie!</h1>
               <p>Hangar Filmowy - Kino Pod Gwiazdami</p>
             </div>

@@ -45,9 +45,14 @@ export default function Navbar() {
         {/* Logo */}
         <button
           onClick={() => scrollToSection('hero')}
-          className="flex items-center gap-2 group"
+          className="flex items-center gap-3 group"
         >
-          <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+          <img 
+            src="/hangar_filmowy.svg" 
+            alt="Hangar Filmowy Logo" 
+            className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent hidden sm:block">
             Hangar Filmowy
           </div>
         </button>

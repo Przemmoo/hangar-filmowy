@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   title: "Hangar Filmowy - Ekran LED na Wynajem",
   description: "Prawdziwe kino pod gwiazdami. Wypożycz nasz profesjonalny ekran LED na eventy, kino plenerowe i wydarzenia firmowe.",
   keywords: "ekran LED, kino plenerowe, wynajem ekranu, event outdoor, kino samochodowe",
+  icons: {
+    icon: '/hangar_filmowy.svg',
+    shortcut: '/hangar_filmowy.svg',
+    apple: '/hangar_filmowy.svg',
+  },
   openGraph: {
     title: "Hangar Filmowy - Ekran LED na Wynajem",
     description: "Prawdziwe kino pod gwiazdami. Wypożycz nasz profesjonalny ekran LED.",
@@ -20,6 +25,14 @@ export const metadata: Metadata = {
     siteName: "Hangar Filmowy",
     locale: "pl_PL",
     type: "website",
+    images: [
+      {
+        url: '/hangar_filmowy.svg',
+        width: 320,
+        height: 200,
+        alt: 'Hangar Filmowy Logo',
+      },
+    ],
   },
 };
 

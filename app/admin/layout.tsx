@@ -86,10 +86,14 @@ export default function AdminLayout({
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center space-x-3 px-6 py-6 border-b border-white/10">
-            
+            <img 
+              src="/hangar_filmowy.svg" 
+              alt="Hangar Filmowy Logo" 
+              className="h-12 w-auto"
+            />
             <div>
               <h1 className="text-lg font-bold text-white">Hangar Filmowy</h1>
-              <p className="text-xs text-white/60">Panel Admin</p>
+              <p className="text-xs text-white/60 align-text-top">Panel Admin</p>
             </div>
           </div>
 

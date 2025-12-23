@@ -4,6 +4,7 @@
 **Wersja:** 1.0  
 **Status:** Plan do zatwierdzenia
 
+
 ---
 
 ## I. Podstawowe Informacje o Projekcie

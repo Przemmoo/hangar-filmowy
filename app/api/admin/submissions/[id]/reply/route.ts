@@ -64,6 +64,7 @@ export async function POST(request: Request, context: RouteParams) {
             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
             .header { background: linear-gradient(135deg, #0A1828, #1E3A5F); padding: 40px; text-align: center; border-radius: 10px 10px 0 0; }
+            .header img { height: 60px; margin-bottom: 15px; }
             .header h1 { color: white; margin: 0; font-size: 28px; }
             .header p { color: rgba(255,255,255,0.8); margin: 10px 0 0 0; }
             .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
@@ -75,6 +76,7 @@ export async function POST(request: Request, context: RouteParams) {
         <body>
           <div class="container">
             <div class="header">
+              <img src="https://hangarfilmowy.pl/hangar_filmowy.svg" alt="Hangar Filmowy Logo" />
               <h1>🎬 Hangar Filmowy</h1>
               <p>Kino Pod Gwiazdami</p>
             </div>
