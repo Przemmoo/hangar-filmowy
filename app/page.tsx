@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import ScrollReveal from '@/components/ScrollReveal';
+import CookieBanner from '@/components/CookieBanner';
 import { ChevronDown, Sparkles, Users, Film, Star } from 'lucide-react';
 
 type EventType = 'city' | 'corporate' | 'hotel' | 'festival' | null;
@@ -1240,7 +1242,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-[var(--brand-dark)] text-white py-6 md:py-12 border-t border-white/10">
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-6 md:mb-8">
             {/* Column 1 - Brand */}
             <div>
               <div className="flex items-center space-x-3 mb-3 md:mb-4">
@@ -1259,7 +1261,7 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Column 2 - Links */}
+            {/* Column 2 - Navigation */}
             <div>
               <h4 className="font-semibold mb-3 text-sm sm:text-base">Nawigacja</h4>
               <ul className="space-y-2 text-white/70 text-xs sm:text-sm">
@@ -1270,7 +1272,17 @@ export default function Home() {
               </ul>
             </div>
 
-            {/* Column 3 - Contact */}
+            {/* Column 3 - Legal */}
+            <div>
+              <h4 className="font-semibold mb-3 text-sm sm:text-base">Informacje prawne</h4>
+              <ul className="space-y-2 text-white/70 text-xs sm:text-sm">
+                <li><Link href="/polityka-prywatnosci" className="hover:text-[var(--brand-gold)] transition">Polityka prywatności</Link></li>
+                <li><Link href="/regulamin" className="hover:text-[var(--brand-gold)] transition">Regulamin</Link></li>
+                <li><Link href="/polityka-cookies" className="hover:text-[var(--brand-gold)] transition">Polityka cookies</Link></li>
+              </ul>
+            </div>
+
+            {/* Column 4 - Contact */}
             <div>
               <h4 className="font-semibold mb-3 text-sm sm:text-base">Kontakt</h4>
               <ul className="space-y-2 text-white/70 text-xs sm:text-sm">
@@ -1281,8 +1293,17 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="border-t border-white/10 pt-4 md:pt-6 text-center text-white/50 text-xs sm:text-sm">
-            <p>&copy; 2025 Hangar Filmowy. Wszystkie prawa zastrzeżone.</p>
+          <div className="border-t border-white/10 pt-4 md:pt-6 text-center">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-3">
+              <p className="text-white/50 text-xs sm:text-sm">&copy; 2025 Hangar Filmowy. Wszystkie prawa zastrzeżone.</p>
+              <div className="flex gap-3 text-xs text-white/50">
+                <Link href="/polityka-prywatnosci" className="hover:text-[var(--brand-gold)] transition">Prywatność</Link>
+                <span>•</span>
+                <Link href="/regulamin" className="hover:text-[var(--brand-gold)] transition">Regulamin</Link>
+                <span>•</span>
+                <Link href="/polityka-cookies" className="hover:text-[var(--brand-gold)] transition">Cookies</Link>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
@@ -1343,6 +1364,9 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Cookie Banner */}
+      <CookieBanner />
     </main>
   );
 }
