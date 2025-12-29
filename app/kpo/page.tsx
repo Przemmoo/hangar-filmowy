@@ -1,14 +1,18 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, CheckCircle, Target, DollarSign } from 'lucide-react';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Dofinansowanie z KPO | Hangar Filmowy',
-  description: 'Projekt Hangar Filmowy otrzymał dofinansowanie z Funduszy Europejskich w ramach Krajowego Planu Odbudowy i Zwiększania Odporności.',
-};
 
 export default function KPOPage() {
+  const router = useRouter();
+
+  const handleContactClick = () => {
+    // Przejdź do strony głównej z hashem
+    router.push('/#kontakt');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0A1828] via-[#1E3A5F] to-[#0A1828] flex flex-col">
       {/* Header z powrotem */}
@@ -28,37 +32,25 @@ export default function KPOPage() {
       <div className="flex-1 container mx-auto px-4 py-6 flex flex-col">
         {/* Logotypy */}
         <div className="bg-white flex flex-wrap items-center justify-center rounded-2xl gap-6 mb-6 py-3">
-          <Image
+          <img
             src="/kpo-fe-popc.jpg"
             alt="Fundusze Europejskie Program Operacyjny Polska Cyfrowa"
-            width={180}
-            height={20}
-            className="h-12 sm:h-14 lg:h-20 w-auto object-contain"
-            priority
+            className="h-14 lg:h-20 w-auto object-contain"
           />
-          <Image
+          <img
             src="/kpo-barwy-rp.jpg"
             alt="Barwy Rzeczypospolitej Polskiej"
-            width={180}
-            height={20}
-            className="h-12 sm:h-14 lg:h-20 w-auto object-contain"
-            priority
+            className="h-14 lg:h-20 w-auto object-contain"
           />
-          <Image
+          <img
             src="/kpo-kpo.jpg"
             alt="KPO"
-            width={180}
-            height={20}
-            className="h-12 sm:h-14 lg:h-20 w-auto object-contain"
-            priority
+            className="h-14 lg:h-20 w-auto object-contain"
           />
-          <Image
+          <img
             src="/kpo-nextgeneU.jpg"
             alt="Next Generation EU"
-            width={180}
-            height={20}
-            className="h-12 sm:h-14 lg:h-20 w-auto object-contain"
-            priority
+            className="h-14 lg:h-20 w-auto object-contain"
           />
         </div>
 
@@ -160,12 +152,12 @@ export default function KPOPage() {
 
         {/* CTA Button */}
         <div className="mt-6 text-center">
-          <Link
-            href="/#kontakt"
-            className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0A1828] font-bold text-lg rounded-xl hover:scale-105 transition-transform shadow-2xl"
+          <button
+            onClick={handleContactClick}
+            className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0A1828] font-bold text-lg rounded-xl hover:scale-105 transition-transform shadow-2xl cursor-pointer"
           >
             Skontaktuj się z nami
-          </Link>
+          </button>
         </div>
       </div>
     </div>

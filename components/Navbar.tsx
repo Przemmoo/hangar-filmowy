@@ -3,22 +3,46 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import { scrollToSection as scrollToSectionUtil } from '@/lib/scrollToSection';
 
-const KPO_BANNER_HEIGHT = 72;
+const KPO_BANNER_HEIGHT_MOBILE = 60;
+const KPO_BANNER_HEIGHT_DESKTOP = 72;
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [kpoBannerVisible, setKpoBannerVisible] = useState(true);
+  const [kpoBannerHeight, setKpoBannerHeight] = useState(60);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 10);
     };
 
     const handleBannerVisibility = (e: CustomEvent) => {
       setKpoBannerVisible(e.detail.isVisible);
+      if (e.detail.height) {
+        setKpoBannerHeight(e.detail.height);
+      }
     };
+
+    // Sprawdź initial scroll position
+    handleScroll();
+    
+    // Bezpośrednio zmierz wysokość bannera jako fallback
+    const measureBanner = () => {
+      const banner = document.querySelector('[class*="fixed top-0"][class*="z-[60]"]');
+      if (banner) {
+        const height = banner.getBoundingClientRect().height;
+        if (height > 0) {
+          setKpoBannerHeight(height);
+        }
+      }
+    };
+    
+    // Zmierz od razu i po krótkim opóźnieniu
+    measureBanner();
+    setTimeout(measureBanner, 100);
 
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('kpoBannerVisibility', handleBannerVisibility as EventListener);
@@ -30,37 +54,10 @@ export default function Navbar() {
   }, []);
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      // Zamknij mobile menu
-      setIsMobileMenuOpen(false);
-      
-      // Jeśli baner jest widoczny, wymuś jego ukrycie
-      if (kpoBannerVisible) {
-        window.dispatchEvent(new CustomEvent('hideKPOBanner'));
-        // Czekaj na ukrycie banera przed scrollowaniem
-        setTimeout(() => {
-          const navbarHeight = 80;
-          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-          const offsetPosition = elementPosition - navbarHeight;
-
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
-        }, 100);
-      } else {
-        // Baner już ukryty, scrolluj od razu
-        const navbarHeight = 80;
-        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-        const offsetPosition = elementPosition - navbarHeight;
-
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        });
-      }
-    }
+    // Zamknij mobile menu
+    setIsMobileMenuOpen(false);
+    // Użyj wspólnej funkcji scrollowania
+    scrollToSectionUtil(sectionId);
   };
 
   return (
@@ -71,8 +68,8 @@ export default function Navbar() {
           : 'bg-[#0A1828]/80 backdrop-blur-md md:bg-transparent md:backdrop-blur-none'
       }`}
       style={{ 
-        height: '80px',
-        top: kpoBannerVisible ? `${KPO_BANNER_HEIGHT}px` : '0'
+        height: isScrolled ? '64px' : '80px',
+        top: kpoBannerVisible ? `${kpoBannerHeight}px` : '0'
       }}
     >
       <div className="container mx-auto h-full flex items-center justify-between px-4 sm:px-6 lg:px-12">
@@ -84,7 +81,8 @@ export default function Navbar() {
           <img 
             src="/hangar_filmowy.svg" 
             alt="Hangar Filmowy Logo" 
-            className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
+            style={{ height: '40px', width: 'auto' }}
+            className="transition-transform duration-300 group-hover:scale-105"
           />
           <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent hidden sm:block">
             Hangar Filmowy

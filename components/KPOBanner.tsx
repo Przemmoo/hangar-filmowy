@@ -1,16 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
 // Wysokość banera w px
-export const KPO_BANNER_HEIGHT = 72;
+export const KPO_BANNER_HEIGHT = 60; // mobile
+export const KPO_BANNER_HEIGHT_MD = 72; // desktop
 
 export default function KPOBanner() {
   const [isVisible, setIsVisible] = useState(true);
+  const bannerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,19 +42,39 @@ export default function KPOBanner() {
   }, []);
 
   useEffect(() => {
-    // Informuj o zmianie widoczności
-    window.dispatchEvent(new CustomEvent('kpoBannerVisibility', { detail: { isVisible } }));
+    // Informuj o zmianie widoczności i wysokości
+    const updateBannerHeight = () => {
+      const height = bannerRef.current?.offsetHeight || 0;
+      window.dispatchEvent(new CustomEvent('kpoBannerVisibility', { 
+        detail: { isVisible, height } 
+      }));
+    };
+
+    // Pierwszy pomiar natychmiast
+    updateBannerHeight();
+    
+    // Drugi pomiar po krótkim opóźnieniu (gdy DOM już jest gotowy)
+    const timer = setTimeout(updateBannerHeight, 100);
+    
+    // Śledź zmiany rozmiaru okna
+    window.addEventListener('resize', updateBannerHeight);
+    
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', updateBannerHeight);
+    };
   }, [isVisible]);
 
   return (
     <AnimatePresence mode="wait">
       {isVisible && (
         <motion.div
+          ref={bannerRef}
           initial={{ y: 0, opacity: 1 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -100, opacity: 0 }}
           transition={{ duration: 0.4, ease: 'easeInOut' }}
-          className="fixed top-0 left-0 right-0 z-[60] w-full bg-gradient-to-r from-white via-gray-50 to-white py-4 border-b border-gray-200"
+          className="fixed top-0 left-0 right-0 z-[60] w-full bg-gradient-to-r from-white via-gray-50 to-white py-2 sm:py-3 md:py-4 border-b border-gray-200"
         >
           <div className="container mx-auto px-4">
             <Link 
@@ -60,34 +82,26 @@ export default function KPOBanner() {
               className="flex flex-col lg:flex-row items-center justify-between gap-4 group"
             >
               {/* Logotypy */}
-              <div className="flex items-center gap-3 sm:gap-4 flex-wrap justify-center lg:justify-start">
-                <Image
+              <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-wrap justify-center lg:justify-start">
+                <img
                   src="/kpo-fe-popc.jpg"
                   alt="Fundusze Europejskie"
-                  width={160}
-                  height={60}
-                  className="h-10 sm:h-12 w-auto object-contain"
+                  className="h-10 md:h-14 w-auto object-contain"
                 />
-                <Image
+                <img
                   src="/kpo-barwy-rp.jpg"
                   alt="Rzeczypospolita Polska"
-                  width={140}
-                  height={60}
-                  className="h-10 sm:h-12 w-auto object-contain"
+                  className="h-10 md:h-14 w-auto object-contain"
                 />
-                <Image
+                <img
                   src="/kpo-kpo.jpg"
                   alt="KPO"
-                  width={140}
-                  height={60}
-                  className="h-10 sm:h-12 w-auto object-contain"
+                  className="h-10 md:h-14 w-auto object-contain"
                 />
-                <Image
+                <img
                   src="/kpo-nextgeneU.jpg"
                   alt="Next Generation EU"
-                  width={140}
-                  height={60}
-                  className="h-10 sm:h-12 w-auto object-contain"
+                  className="h-10 md:h-14 w-auto object-contain"
                 />
               </div>
 

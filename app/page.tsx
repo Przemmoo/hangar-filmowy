@@ -9,6 +9,7 @@ import ScrollReveal from '@/components/ScrollReveal';
 import CookieBanner from '@/components/CookieBanner';
 import KPOBanner from '@/components/KPOBanner';
 import { ChevronDown, Sparkles, Users, Film, Star } from 'lucide-react';
+import { scrollToSection } from '@/lib/scrollToSection';
 
 type EventType = 'city' | 'corporate' | 'hotel' | 'festival' | null;
 
@@ -20,6 +21,8 @@ export default function Home() {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const [preferredDate, setPreferredDate] = useState('');
+  const [kpoBannerHeight, setKpoBannerHeight] = useState(60);
+  const [kpoBannerVisible, setKpoBannerVisible] = useState(true);
   const [extras, setExtras] = useState({
     popcorn: false,
     deckchairs: false,
@@ -44,6 +47,22 @@ export default function Home() {
     return 'MASS EVENT';
   };
 
+  // Śledź wysokość bannera KPO
+  useEffect(() => {
+    const handleBannerVisibility = (e: CustomEvent) => {
+      setKpoBannerVisible(e.detail.isVisible);
+      if (e.detail.height) {
+        setKpoBannerHeight(e.detail.height);
+      }
+    };
+
+    window.addEventListener('kpoBannerVisibility', handleBannerVisibility as EventListener);
+    
+    return () => {
+      window.removeEventListener('kpoBannerVisibility', handleBannerVisibility as EventListener);
+    };
+  }, []);
+
   // Load content from CMS
   useEffect(() => {
     fetch('/api/content')
@@ -56,6 +75,21 @@ export default function Home() {
         console.error('Error loading content:', err);
         setIsLoading(false);
       });
+  }, []);
+
+  // Obsługa scrollowania do sekcji z hash w URL (np. /#kontakt)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const hash = window.location.hash;
+    if (hash) {
+      // Usuń # z początku
+      const sectionId = hash.substring(1);
+      // Odczekaj chwilę, aż strona się załaduje
+      setTimeout(() => {
+        scrollToSection(sectionId);
+      }, 500);
+    }
   }, []);
 
   const eventLabels: Record<Exclude<EventType, null>, string> = {
@@ -140,9 +174,10 @@ export default function Home() {
       {/* Hero Section */}
       <section 
         id="hero" 
-        className="relative min-h-[650px] sm:min-h-[700px] md:min-h-screen flex items-center justify-center overflow-hidden pt-[152px] md:pt-0"
+        className="relative min-h-[650px] sm:min-h-[700px] md:min-h-screen flex items-center justify-center overflow-hidden md:pt-0"
         style={{
-          backgroundImage: `url(${content.hero?.backgroundImage || '/kino.png'})`,
+          paddingTop: kpoBannerVisible ? `${kpoBannerHeight + 80}px` : '80px',
+          backgroundImage: content.hero?.backgroundImage ? `url(${content.hero.backgroundImage})` : undefined,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -192,18 +227,18 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
-              <a
-                href="#kontakt"
-                className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-orange)] text-black font-bold rounded-lg hover:scale-105 transition-transform duration-300 text-center"
+              <button
+                onClick={() => scrollToSection('kontakt')}
+                className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-orange)] text-black font-bold rounded-lg hover:scale-105 transition-transform duration-300 text-center cursor-pointer"
               >
                 {content.hero?.ctaPrimary}
-              </a>
-              <a
-                href="#oferta"
-                className="px-6 sm:px-8 py-3 sm:py-4 border-2 border-[var(--brand-gold)] text-[var(--brand-gold)] font-bold rounded-lg hover:bg-[var(--brand-gold)]/10 transition-colors duration-300 text-center"
+              </button>
+              <button
+                onClick={() => scrollToSection('oferta')}
+                className="px-6 sm:px-8 py-3 sm:py-4 border-2 border-[var(--brand-gold)] text-[var(--brand-gold)] font-bold rounded-lg hover:bg-[var(--brand-gold)]/10 transition-colors duration-300 text-center cursor-pointer"
               >
                 {content.hero?.ctaSecondary}
-              </a>
+              </button>
             </div>
           </motion.div>
 
@@ -248,7 +283,7 @@ export default function Home() {
       {/* O Nas Section */}
       <section id="o-nas" className="section-padding bg-gradient-to-b from-[var(--brand-dark)] to-[var(--brand-blue)]">
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-top">
             {/* Text Side */}
             <ScrollReveal>
               <div className="space-y-4 md:space-y-8">
@@ -269,19 +304,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3 md:gap-4 pt-3 md:pt-4">
-                  <div className="flex gap-2 md:gap-3">
-                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                      <span className="text-white/80 text-xs md:text-sm font-bold">EXIP</span>
-                    </div>
-                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                      <span className="text-white/80 text-xs md:text-sm font-bold">HF</span>
-                    </div>
-                  </div>
-                  <p className="text-white/60 text-xs md:text-sm">
-                    Zaufali nam organizatorzy<br />z całej Polski
-                  </p>
-                </div>
+                
               </div>
             </ScrollReveal>
 
@@ -311,15 +334,18 @@ export default function Home() {
                     }}
                   />
                   {/* Image Container */}
+                  {content.about?.imageUrl && (
                   <div className="relative aspect-[4/3] rounded-2xl overflow-hidden z-10">
                     <Image 
-                      src={content.about?.imageUrl || "/plan_filmowy.png"} 
-                      alt={content.about?.title || "Plan filmowy Hangar Filmowy"}
+                      src={content.about?.imageUrl} 
+                      alt={content.about?.title}
                       fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
                     />
                   </div>
+                  )}
                 </div>
               </div>
             </ScrollReveal>
@@ -341,6 +367,7 @@ export default function Home() {
           </ScrollReveal>
 
           {/* Comparison Image */}
+          {content["why-us"]?.comparisonImageUrl && (
           <ScrollReveal delay={0.1}>
             <div className="max-w-4xl mx-auto mb-8 md:mb-16 px-4">
               <div className="relative">
@@ -370,9 +397,10 @@ export default function Home() {
                   
                   {/* Full comparison image as base */}
                   <Image 
-                    src={content["why-us"]?.comparisonImageUrl || "/kino.png"} 
+                    src={content["why-us"]?.comparisonImageUrl} 
                     alt="Porównanie rzutnika i ekranu LED"
                     fill
+                    sizes="(max-width: 1024px) 100vw, 1024px"
                     className="object-cover"
                     loading="lazy"
                   />
@@ -411,7 +439,7 @@ export default function Home() {
                 >
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-[var(--brand-gold)] to-[var(--brand-orange)] flex items-center justify-center shadow-lg">
                     <svg className="w-4 h-4 md:w-5 md:h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4 4-4M17 8l4 4-4 4" />
                     </svg>
                   </div>
                 </div>
@@ -420,6 +448,7 @@ export default function Home() {
               <p className="text-center text-white/50 mt-2 md:mt-4 text-xs md:text-sm px-4">Przesuń suwak</p>
             </div>
           </ScrollReveal>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8 px-4">
             {/* Box 1 - Sun Icon */}
@@ -516,6 +545,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-8 mx-auto">
             {/* Card 1 - Technika Kinowa */}
+            {content.offer?.cards?.[0]?.imageUrl && (
             <ScrollReveal delay={0.1}>
               <div className="relative group">
                 {/* Gradient Glow Layer */}
@@ -543,9 +573,10 @@ export default function Home() {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <Image 
-                    src={content.offer?.cards?.[0]?.imageUrl || "/kino.png"}
-                    alt={content.offer?.cards?.[0]?.title || "Technika Kinowa"}
+                    src={content.offer?.cards?.[0]?.imageUrl}
+                    alt={content.offer?.cards?.[0]?.title}
                     fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
                     className="object-cover transition-transform duration-500"
                     loading="lazy"
                   />
@@ -572,8 +603,10 @@ export default function Home() {
               </div>
               </div>
             </ScrollReveal>
+            )}
 
             {/* Card 2 - Licencje */}
+            {content.offer?.cards?.[1]?.imageUrl && (
             <ScrollReveal delay={0.2}>
               <div className="relative group">
                 {/* Gradient Glow Layer */}
@@ -601,9 +634,10 @@ export default function Home() {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <Image 
-                    src={content.offer?.cards?.[1]?.imageUrl || "/kino.png"}
-                    alt={content.offer?.cards?.[1]?.title || "Licencje"}
+                    src={content.offer?.cards?.[1]?.imageUrl}
+                    alt={content.offer?.cards?.[1]?.title}
                     fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
                     className="object-cover transition-transform duration-500"
                     loading="lazy"
                   />
@@ -630,8 +664,10 @@ export default function Home() {
               </div>
               </div>
             </ScrollReveal>
+            )}
 
             {/* Card 3 - Strefa Widza */}
+            {content.offer?.cards?.[2]?.imageUrl && (
             <ScrollReveal delay={0.3}>
               <div className="relative group">
                 {/* Gradient Glow Layer */}
@@ -660,9 +696,10 @@ export default function Home() {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <Image 
-                    src={content.offer?.cards?.[2]?.imageUrl || "/kino.png"}
-                    alt={content.offer?.cards?.[2]?.title || "Strefa Widza"}
+                    src={content.offer?.cards?.[2]?.imageUrl}
+                    alt={content.offer?.cards?.[2]?.title}
                     fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
                     className="object-cover transition-transform duration-500"
                     loading="lazy"
                   />
@@ -689,8 +726,10 @@ export default function Home() {
               </div>
               </div>
             </ScrollReveal>
+            )}
 
             {/* Card 4 - Popcorn Bar */}
+            {content.offer?.cards?.[3]?.imageUrl && (
             <ScrollReveal delay={0.4}>
               <div className="relative group">
                 {/* Gradient Glow Layer */}
@@ -718,9 +757,10 @@ export default function Home() {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                   <Image 
-                    src={content.offer?.cards?.[3]?.imageUrl || "/kino.png"}
-                    alt={content.offer?.cards?.[3]?.title || "Popcorn Bar"}
+                    src={content.offer?.cards?.[3]?.imageUrl}
+                    alt={content.offer?.cards?.[3]?.title}
                     fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
                     className="object-cover transition-transform duration-500"
                     loading="lazy"
                   />
@@ -747,6 +787,7 @@ export default function Home() {
               </div>
               </div>
             </ScrollReveal>
+            )}
           </div>
 
           {/* Dla Kogo Subsection */}
@@ -1256,6 +1297,7 @@ export default function Home() {
                   width={48}
                   height={48}
                   className="h-12 w-auto"
+                  style={{ width: 'auto', height: 'auto' }}
                   loading="lazy"
                 />
                 <span className="text-lg sm:text-xl font-bold">Hangar Filmowy</span>
