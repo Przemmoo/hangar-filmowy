@@ -4,42 +4,76 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 
+const KPO_BANNER_HEIGHT = 72;
+
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [kpoBannerVisible, setKpoBannerVisible] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
 
+    const handleBannerVisibility = (e: CustomEvent) => {
+      setKpoBannerVisible(e.detail.isVisible);
+    };
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('kpoBannerVisibility', handleBannerVisibility as EventListener);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('kpoBannerVisibility', handleBannerVisibility as EventListener);
+    };
   }, []);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const navbarHeight = 50;
-      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-      const offsetPosition = elementPosition - navbarHeight;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
+      // Zamknij mobile menu
       setIsMobileMenuOpen(false);
+      
+      // Jeśli baner jest widoczny, wymuś jego ukrycie
+      if (kpoBannerVisible) {
+        window.dispatchEvent(new CustomEvent('hideKPOBanner'));
+        // Czekaj na ukrycie banera przed scrollowaniem
+        setTimeout(() => {
+          const navbarHeight = 80;
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+          const offsetPosition = elementPosition - navbarHeight;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }, 100);
+      } else {
+        // Baner już ukryty, scrolluj od razu
+        const navbarHeight = 80;
+        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - navbarHeight;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
     }
   };
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
           ? 'bg-[#0A1828] shadow-lg backdrop-blur-sm'
           : 'bg-[#0A1828]/80 backdrop-blur-md md:bg-transparent md:backdrop-blur-none'
       }`}
-      style={{ height: '80px' }}
+      style={{ 
+        height: '80px',
+        top: kpoBannerVisible ? `${KPO_BANNER_HEIGHT}px` : '0'
+      }}
     >
       <div className="container mx-auto h-full flex items-center justify-between px-4 sm:px-6 lg:px-12">
         {/* Logo */}

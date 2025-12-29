@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import ScrollReveal from '@/components/ScrollReveal';
 import CookieBanner from '@/components/CookieBanner';
+import KPOBanner from '@/components/KPOBanner';
 import { ChevronDown, Sparkles, Users, Film, Star } from 'lucide-react';
 
 type EventType = 'city' | 'corporate' | 'hotel' | 'festival' | null;
@@ -131,12 +132,15 @@ export default function Home() {
 
   return (
     <main className="bg-[var(--brand-dark)]">
+      {/* KPO Banner - na górze przed navbar */}
+      <KPOBanner />
+      
       <Navbar />
       
       {/* Hero Section */}
       <section 
         id="hero" 
-        className="relative min-h-[650px] sm:min-h-[700px] md:min-h-screen flex items-center justify-center overflow-hidden pt-24 md:pt-0"
+        className="relative min-h-[650px] sm:min-h-[700px] md:min-h-screen flex items-center justify-center overflow-hidden pt-[152px] md:pt-0"
         style={{
           backgroundImage: `url(${content.hero?.backgroundImage || '/kino.png'})`,
           backgroundSize: 'cover',
@@ -1279,6 +1283,7 @@ export default function Home() {
                 <li><Link href="/polityka-prywatnosci" className="hover:text-[var(--brand-gold)] transition">Polityka prywatności</Link></li>
                 <li><Link href="/regulamin" className="hover:text-[var(--brand-gold)] transition">Regulamin</Link></li>
                 <li><Link href="/polityka-cookies" className="hover:text-[var(--brand-gold)] transition">Polityka cookies</Link></li>
+                <li><Link href="/kpo" className="hover:text-[var(--brand-gold)] transition">Dofinansowanie z KPO</Link></li>
               </ul>
             </div>
 
