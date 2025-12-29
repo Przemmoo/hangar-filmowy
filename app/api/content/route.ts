@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = 'edge';
+export const revalidate = 60; // Cache na 60 sekund
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,7 +20,8 @@ export async function GET(request: NextRequest) {
       headers: {
         'apikey': supabaseKey!,
         'Authorization': `Bearer ${supabaseKey}`,
-      }
+      },
+      next: { revalidate: 60 } // Cache Supabase fetch
     });
 
     if (!response.ok) {
@@ -30,7 +32,9 @@ export async function GET(request: NextRequest) {
 
     if (section) {
       // Return specific section data or empty object
-      return NextResponse.json(data[0]?.data || {});
+      const result = NextResponse.json(data[0]?.data || {});
+      result.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+      return result;
     }
 
     // Convert array to object { section: data }
@@ -39,7 +43,9 @@ export async function GET(request: NextRequest) {
       return acc;
     }, {});
 
-    return NextResponse.json(contentObject);
+    const result = NextResponse.json(contentObject);
+    result.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    return result;
   } catch (error) {
     console.error("Error fetching content:", error);
     return NextResponse.json({}, { status: 200 }); // Return empty object on error

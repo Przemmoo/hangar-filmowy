@@ -1297,7 +1297,6 @@ export default function Home() {
                   width={48}
                   height={48}
                   className="h-12 w-auto"
-                  style={{ width: 'auto', height: 'auto' }}
                   loading="lazy"
                 />
                 <span className="text-lg sm:text-xl font-bold">Hangar Filmowy</span>
