@@ -85,9 +85,6 @@ export async function PUT(request: Request, context: RouteParams) {
     const checkResponse = await supabaseAdminFetch(
       `/users?email=eq.${email}&id=neq.${userId}&select=id`
     );
-        },
-      }
-    );
 
     const existingUsers = await checkResponse.json();
     if (existingUsers.length > 0) {
