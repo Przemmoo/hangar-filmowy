@@ -5,6 +5,26 @@
 -- przed nieautoryzowanym dostępem
 -- ==============================================
 
+-- ==============================================
+-- FUNKCJA POMOCNICZA (omija rekursję RLS)
+-- ==============================================
+-- Funkcja sprawdza czy użytkownik jest adminem
+-- SECURITY DEFINER pozwala ominąć RLS i uniknąć rekursji
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.users
+    WHERE id = auth.uid()::text
+    AND role = 'admin'
+  );
+END;
+$$;
+
 -- Włącz RLS na wszystkich tabelach
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.form_submissions ENABLE ROW LEVEL SECURITY;
@@ -27,43 +47,19 @@ DROP POLICY IF EXISTS "Admin can delete users" ON public.users;
 -- Admini mogą wszystko
 CREATE POLICY "Admin can view all users" ON public.users
     FOR SELECT
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 CREATE POLICY "Admin can insert users" ON public.users
     FOR INSERT
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    WITH CHECK (is_admin());
 
 CREATE POLICY "Admin can update users" ON public.users
     FOR UPDATE
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 CREATE POLICY "Admin can delete users" ON public.users
     FOR DELETE
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 -- ==============================================
 -- POLITYKI DLA TABELI: form_submissions
@@ -78,33 +74,15 @@ DROP POLICY IF EXISTS "Public can create submissions" ON public.form_submissions
 -- Admini mogą wszystko
 CREATE POLICY "Admin can view submissions" ON public.form_submissions
     FOR SELECT
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 CREATE POLICY "Admin can update submissions" ON public.form_submissions
     FOR UPDATE
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 CREATE POLICY "Admin can delete submissions" ON public.form_submissions
     FOR DELETE
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 -- Publiczny dostęp do tworzenia zgłoszeń (formularz kontaktowy)
 CREATE POLICY "Public can create submissions" ON public.form_submissions
@@ -122,33 +100,15 @@ DROP POLICY IF EXISTS "Admin can delete replies" ON public.submission_replies;
 
 CREATE POLICY "Admin can view replies" ON public.submission_replies
     FOR SELECT
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 CREATE POLICY "Admin can create replies" ON public.submission_replies
     FOR INSERT
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    WITH CHECK (is_admin());
 
 CREATE POLICY "Admin can delete replies" ON public.submission_replies
     FOR DELETE
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 -- ==============================================
 -- POLITYKI DLA TABELI: media
@@ -169,33 +129,15 @@ CREATE POLICY "Public can view media" ON public.media
 -- Admini mogą zarządzać mediami
 CREATE POLICY "Admin can insert media" ON public.media
     FOR INSERT
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    WITH CHECK (is_admin());
 
 CREATE POLICY "Admin can update media" ON public.media
     FOR UPDATE
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 CREATE POLICY "Admin can delete media" ON public.media
     FOR DELETE
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 -- ==============================================
 -- POLITYKI DLA TABELI: content
@@ -215,33 +157,15 @@ CREATE POLICY "Public can view content" ON public.content
 -- Admini mogą zarządzać treścią
 CREATE POLICY "Admin can manage content" ON public.content
     FOR INSERT
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    WITH CHECK (is_admin());
 
 CREATE POLICY "Admin can update content" ON public.content
     FOR UPDATE
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 CREATE POLICY "Admin can delete content" ON public.content
     FOR DELETE
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 -- ==============================================
 -- POLITYKI DLA TABELI: settings
@@ -262,33 +186,15 @@ CREATE POLICY "Public can view settings" ON public.settings
 -- Admini mogą zarządzać ustawieniami
 CREATE POLICY "Admin can manage settings" ON public.settings
     FOR INSERT
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    WITH CHECK (is_admin());
 
 CREATE POLICY "Admin can update settings" ON public.settings
     FOR UPDATE
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 CREATE POLICY "Admin can delete settings" ON public.settings
     FOR DELETE
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid()::text
-            AND role = 'admin'
-        )
-    );
+    USING (is_admin());
 
 -- ==============================================
 -- WERYFIKACJA

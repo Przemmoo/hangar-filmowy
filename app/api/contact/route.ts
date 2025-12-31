@@ -14,9 +14,11 @@ export async function POST(request: Request) {
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    // Use Service Role Key for submissions (backend operation)
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     // Fetch contact email from database
-    const settingsResponse = await fetch(`${supabaseUrl}/rest/v1/content_sections?section=eq.contact&select=data`, {
+    const settingsResponse = await fetch(`${supabaseUrl}/rest/v1/content?section=eq.contact&select=data`, {
       headers: {
         'apikey': supabaseKey!,
         'Authorization': `Bearer ${supabaseKey}`,
@@ -66,8 +68,8 @@ export async function POST(request: Request) {
     const submissionResponse = await fetch(`${supabaseUrl}/rest/v1/form_submissions`, {
       method: 'POST',
       headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
+        'apikey': supabaseServiceKey!,
+        'Authorization': `Bearer ${supabaseServiceKey}`,
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
       },
@@ -257,6 +259,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, message: 'Zapytanie wysłane pomyślnie!' });
   } catch (error) {
+    console.error('Contact form error:', error);
+    console.error('Error details:', error instanceof Error ? error.message : String(error));
     return NextResponse.json(
       { 
         success: false, 
