@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { supabaseAdminFetch, getSupabaseAdminHeaders } from "@/lib/supabase-admin";
 
 export const runtime = 'edge';
 
@@ -15,20 +16,12 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const section = searchParams.get("section");
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    let url = `${supabaseUrl}/rest/v1/content?select=*`;
+    let query = '/content?select=*';
     if (section) {
-      url += `&section=eq.${section}`;
+      query += `&section=eq.${section}`;
     }
 
-    const response = await fetch(url, {
-      headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
-      }
-    });
+    const response = await supabaseAdminFetch(query);
 
     const data = await response.json();
     return NextResponse.json(section ? (data[0] || null) : data);
@@ -54,16 +47,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Section and data are required" }, { status: 400 });
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
     // First, check if section exists
-    const checkResponse = await fetch(`${supabaseUrl}/rest/v1/content?section=eq.${section}&select=id`, {
-      headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
-      }
-    });
+    const checkResponse = await supabaseAdminFetch(`/content?section=eq.${section}&select=id`);
 
     const existing = await checkResponse.json();
     const exists = Array.isArray(existing) && existing.length > 0;
@@ -71,12 +56,9 @@ export async function POST(request: NextRequest) {
     let response;
     if (exists) {
       // UPDATE existing record
-      response = await fetch(`${supabaseUrl}/rest/v1/content?section=eq.${section}`, {
+      response = await supabaseAdminFetch(`/content?section=eq.${section}`, {
         method: 'PATCH',
         headers: {
-          'apikey': supabaseKey!,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Content-Type': 'application/json',
           'Prefer': 'return=representation'
         },
         body: JSON.stringify({
@@ -88,12 +70,9 @@ export async function POST(request: NextRequest) {
     } else {
       // INSERT new record
       const id = crypto.randomUUID();
-      response = await fetch(`${supabaseUrl}/rest/v1/content`, {
+      response = await supabaseAdminFetch(`/content`, {
         method: 'POST',
         headers: {
-          'apikey': supabaseKey!,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Content-Type': 'application/json',
           'Prefer': 'return=representation'
         },
         body: JSON.stringify({

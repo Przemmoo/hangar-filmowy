@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { supabaseAdminFetch } from "@/lib/supabase-admin";
 
 export const runtime = 'edge';
 
@@ -15,15 +16,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    const response = await fetch(`${supabaseUrl}/rest/v1/media?select=*&order=createdAt.desc`, {
-      headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
-      }
-    });
+    const response = await supabaseAdminFetch('/media?select=*&order=createdAt.desc');
 
     const media = await response.json();
     return NextResponse.json(media);
@@ -138,11 +131,9 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString()
     };
 
-    const dbResponse = await fetch(`${supabaseUrl}/rest/v1/media`, {
+    const dbResponse = await supabaseAdminFetch(`/media`, {
       method: 'POST',
       headers: {
-        'apikey': supabaseAnonKey!,
-        'Authorization': `Bearer ${supabaseAnonKey}`,
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
       },

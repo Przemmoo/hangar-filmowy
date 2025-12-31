@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { hashPassword } from '@/lib/password';
+import { supabaseAdminFetch } from '@/lib/supabase-admin';
 
 export const runtime = 'edge';
 
@@ -26,15 +27,7 @@ export async function GET(request: Request, context: RouteParams) {
       return NextResponse.json({ error: 'Forbidden - Can only access your own data' }, { status: 403 });
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    const response = await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${userId}&select=id,email,name,role,createdAt`, {
-      headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
-      },
-    });
+    const response = await supabaseAdminFetch(`/users?id=eq.${userId}&select=id,email,name,role,createdAt`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch user');
@@ -88,16 +81,10 @@ export async function PUT(request: Request, context: RouteParams) {
       );
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
     // Check if email is already taken by another user
-    const checkResponse = await fetch(
-      `${supabaseUrl}/rest/v1/users?email=eq.${email}&id=neq.${userId}&select=id`,
-      {
-        headers: {
-          'apikey': supabaseKey!,
-          'Authorization': `Bearer ${supabaseKey}`,
+    const checkResponse = await supabaseAdminFetch(
+      `/users?email=eq.${email}&id=neq.${userId}&select=id`
+    );
         },
       }
     );
@@ -128,11 +115,9 @@ export async function PUT(request: Request, context: RouteParams) {
     }
 
     // Update user
-    const response = await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${userId}`, {
+    const response = await supabaseAdminFetch(`/users?id=eq.${userId}`, {
       method: 'PATCH',
       headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
         'Content-Type': 'application/json',
         'Prefer': 'return=representation',
       },
@@ -187,16 +172,9 @@ export async function DELETE(request: Request, context: RouteParams) {
       );
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
     // Delete user
-    const response = await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${userId}`, {
+    const response = await supabaseAdminFetch(`/users?id=eq.${userId}`, {
       method: 'DELETE',
-      headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
-      },
     });
 
     if (!response.ok) {

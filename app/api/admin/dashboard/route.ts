@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { supabaseAdminFetch } from "@/lib/supabase-admin";
 
 export const runtime = 'edge';
 
@@ -10,13 +11,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
     // Get all submissions counts
-    const submissionsRes = await fetch(`${supabaseUrl}/rest/v1/form_submissions?select=status`, {
-      headers: { 'apikey': supabaseKey!, 'Authorization': `Bearer ${supabaseKey}` }
-    });
+    const submissionsRes = await supabaseAdminFetch('/form_submissions?select=status');
     const allSubmissions = await submissionsRes.json();
     const totalSubmissions = allSubmissions.length;
     const newSubmissions = allSubmissions.filter((s: any) => s.status === 'NEW').length;
@@ -24,16 +20,12 @@ export async function GET(request: NextRequest) {
     const closedSubmissions = allSubmissions.filter((s: any) => s.status === 'CLOSED').length;
 
     // Get total media files count
-    const mediaRes = await fetch(`${supabaseUrl}/rest/v1/media?select=id`, {
-      headers: { 'apikey': supabaseKey!, 'Authorization': `Bearer ${supabaseKey}` }
-    });
+    const mediaRes = await supabaseAdminFetch('/media?select=id');
     const mediaFiles = await mediaRes.json();
     const totalMediaFiles = mediaFiles.length;
 
     // Get recent submissions (last 5)
-    const recentRes = await fetch(`${supabaseUrl}/rest/v1/form_submissions?select=id,firstName,lastName,email,status,createdAt&order=createdAt.desc&limit=5`, {
-      headers: { 'apikey': supabaseKey!, 'Authorization': `Bearer ${supabaseKey}` }
-    });
+    const recentRes = await supabaseAdminFetch('/form_submissions?select=id,firstName,lastName,email,status,createdAt&order=createdAt.desc&limit=5');
     const recentSubmissions = await recentRes.json();
 
     return NextResponse.json({

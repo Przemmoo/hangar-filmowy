@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { supabaseAdminFetch, supabaseAdminInsert } from "@/lib/supabase-admin";
 
 export const runtime = 'edge';
 
@@ -10,8 +11,6 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     const defaultContent = {
       hero: {
         title: "Prawdziwe Kino",
@@ -137,11 +136,9 @@ export async function POST(request: NextRequest) {
       // Generate unique id
       const id = crypto.randomUUID();
       
-      const response = await fetch(`${supabaseUrl}/rest/v1/content`, {
+      const response = await supabaseAdminFetch(`/content`, {
         method: 'POST',
         headers: {
-          'apikey': supabaseKey!,
-          'Authorization': `Bearer ${supabaseKey}`,
           'Content-Type': 'application/json',
           'Prefer': 'resolution=merge-duplicates,return=representation'
         },

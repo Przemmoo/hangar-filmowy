@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { supabaseAdminFetch } from '@/lib/supabase-admin';
 
 export const runtime = 'edge';
 
@@ -18,18 +19,9 @@ export async function GET(request: Request, context: RouteParams) {
 
     const { id: submissionId } = await context.params;
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
     // Get reply history
-    const response = await fetch(
-      `${supabaseUrl}/rest/v1/submission_replies?submissionId=eq.${submissionId}&select=*&order=createdAt.desc`,
-      {
-        headers: {
-          'apikey': supabaseKey!,
-          'Authorization': `Bearer ${supabaseKey}`,
-        },
-      }
+    const response = await supabaseAdminFetch(
+      `/submission_replies?submissionId=eq.${submissionId}&select=*&order=createdAt.desc`
     );
 
     if (!response.ok) {

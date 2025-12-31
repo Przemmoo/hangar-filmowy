@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { supabaseAdminFetch } from "@/lib/supabase-admin";
 
 export const runtime = 'edge';
 
@@ -22,14 +23,9 @@ export async function PATCH(
     const body = await request.json();
     const { status } = body;
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    const response = await fetch(`${supabaseUrl}/rest/v1/form_submissions?id=eq.${id}`, {
+    const response = await supabaseAdminFetch(`/form_submissions?id=eq.${id}`, {
       method: 'PATCH',
       headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
       },
@@ -63,15 +59,9 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    await fetch(`${supabaseUrl}/rest/v1/form_submissions?id=eq.${id}`, {
+    await supabaseAdminFetch(`/form_submissions?id=eq.${id}`, {
       method: 'DELETE',
-      headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
-      }
     });
 
     return NextResponse.json({ success: true });

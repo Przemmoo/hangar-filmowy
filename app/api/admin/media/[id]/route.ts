@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { supabaseAdminFetch } from "@/lib/supabase-admin";
 
 export const runtime = 'edge';
 
@@ -22,14 +23,9 @@ export async function PUT(
     const body = await request.json();
     const { alt } = body;
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    const response = await fetch(`${supabaseUrl}/rest/v1/media?id=eq.${id}`, {
+    const response = await supabaseAdminFetch(`/media?id=eq.${id}`, {
       method: 'PATCH',
       headers: {
-        'apikey': supabaseAnonKey!,
-        'Authorization': `Bearer ${supabaseAnonKey}`,
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
       },
@@ -71,16 +67,10 @@ export async function DELETE(
 
     const { id } = await params;
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     // First, get the media record to get the filename from URL
-    const getResponse = await fetch(`${supabaseUrl}/rest/v1/media?id=eq.${id}&select=url`, {
-      headers: {
-        'apikey': supabaseAnonKey!,
-        'Authorization': `Bearer ${supabaseAnonKey}`,
-      }
-    });
+    const getResponse = await supabaseAdminFetch(`/media?id=eq.${id}&select=url`);
 
     if (getResponse.ok) {
       const mediaRecords = await getResponse.json();
@@ -106,12 +96,8 @@ export async function DELETE(
     }
 
     // Delete from database
-    await fetch(`${supabaseUrl}/rest/v1/media?id=eq.${id}`, {
+    await supabaseAdminFetch(`/media?id=eq.${id}`, {
       method: 'DELETE',
-      headers: {
-        'apikey': supabaseAnonKey!,
-        'Authorization': `Bearer ${supabaseAnonKey}`,
-      }
     });
 
     return NextResponse.json({ success: true });

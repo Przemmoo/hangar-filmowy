@@ -26,14 +26,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           const { email, password } = parsedCredentials.data;
 
-          // Use Supabase REST API instead of Prisma for Edge Runtime compatibility
+          // Use Supabase REST API with Service Role Key for authentication
+          // This bypasses RLS to allow login before user is authenticated
           const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-          const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+          const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+          
+          if (!supabaseServiceKey) {
+            console.error("SUPABASE_SERVICE_ROLE_KEY is not set");
+            return null;
+          }
           
           const response = await fetch(`${supabaseUrl}/rest/v1/users?email=eq.${email}&select=*`, {
             headers: {
-              'apikey': supabaseKey!,
-              'Authorization': `Bearer ${supabaseKey}`,
+              'apikey': supabaseServiceKey,
+              'Authorization': `Bearer ${supabaseServiceKey}`,
             },
           });
 

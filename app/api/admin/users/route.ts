@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { hashPassword } from '@/lib/password';
+import { supabaseAdminFetch } from '@/lib/supabase-admin';
 
 export const runtime = 'edge';
 
@@ -19,15 +20,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    const response = await fetch(`${supabaseUrl}/rest/v1/users?select=id,email,name,role,createdAt&order=createdAt.desc`, {
-      headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
-      },
-    });
+    const response = await supabaseAdminFetch('/users?select=id,email,name,role,createdAt&order=createdAt.desc');
 
     if (!response.ok) {
       throw new Error('Failed to fetch users');
@@ -69,16 +62,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
     // Check if user already exists
-    const checkResponse = await fetch(`${supabaseUrl}/rest/v1/users?email=eq.${email}&select=id`, {
-      headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
-      },
-    });
+    const checkResponse = await supabaseAdminFetch(`/users?email=eq.${email}&select=id`);
 
     const existingUsers = await checkResponse.json();
     if (existingUsers.length > 0) {
@@ -102,11 +87,9 @@ export async function POST(request: Request) {
       updatedAt: new Date().toISOString(),
     };
 
-    const response = await fetch(`${supabaseUrl}/rest/v1/users`, {
+    const response = await supabaseAdminFetch('/users', {
       method: 'POST',
       headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
         'Content-Type': 'application/json',
         'Prefer': 'return=representation',
       },

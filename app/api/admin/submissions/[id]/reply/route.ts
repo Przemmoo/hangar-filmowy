@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { Resend } from 'resend';
+import { supabaseAdminFetch } from '@/lib/supabase-admin';
 
 export const runtime = 'edge';
 
@@ -30,18 +31,9 @@ export async function POST(request: Request, context: RouteParams) {
       );
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
     // Get submission details
-    const submissionResponse = await fetch(
-      `${supabaseUrl}/rest/v1/form_submissions?id=eq.${submissionId}&select=*`,
-      {
-        headers: {
-          'apikey': supabaseKey!,
-          'Authorization': `Bearer ${supabaseKey}`,
-        },
-      }
+    const submissionResponse = await supabaseAdminFetch(
+      `/form_submissions?id=eq.${submissionId}&select=*`
     );
 
     if (!submissionResponse.ok) {
@@ -132,11 +124,9 @@ export async function POST(request: Request, context: RouteParams) {
     };
 
     try {
-      await fetch(`${supabaseUrl}/rest/v1/submission_replies`, {
+      await supabaseAdminFetch(`/submission_replies`, {
         method: 'POST',
         headers: {
-          'apikey': supabaseKey!,
-          'Authorization': `Bearer ${supabaseKey}`,
           'Content-Type': 'application/json',
           'Prefer': 'return=representation',
         },
