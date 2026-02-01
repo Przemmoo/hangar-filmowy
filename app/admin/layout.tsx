@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { 
   LayoutDashboard, 
@@ -11,7 +11,9 @@ import {
   Mail, 
   Settings,
   Film,
-  LogOut
+  LogOut,
+  Menu,
+  X
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -23,12 +25,18 @@ export default function AdminLayout({
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated" && pathname !== "/admin/login") {
       router.push("/admin/login");
     }
   }, [status, pathname, router]);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   // Don't render layout for login page
   if (pathname === "/admin/login") {
@@ -81,20 +89,69 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-dark via-brand-blue to-brand-dark">
-      {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-brand-dark/90 backdrop-blur-xl border-r border-white/10">
-        <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="flex items-center space-x-3 px-6 py-6 border-b border-white/10">
+      {/* Mobile Header */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-brand-dark/95 backdrop-blur-xl border-b border-white/10">
+        <div className="flex items-center justify-between px-4 py-3">
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-2 text-white hover:bg-white/10 rounded-lg transition"
+            aria-label="Otwórz menu"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+          
+          <div className="flex items-center space-x-2">
             <img 
               src="/hangar_filmowy.svg" 
               alt="Hangar Filmowy Logo" 
-              className="h-12 w-auto"
+              className="h-8 w-auto"
             />
-            <div>
-              <h1 className="text-lg font-bold text-white">Hangar Filmowy</h1>
-              <p className="text-xs text-white/60 align-text-top">Panel Admin</p>
+            <h1 className="text-sm font-bold text-white">Hangar Filmowy</h1>
+          </div>
+
+          <button
+            onClick={handleSignOut}
+            className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition"
+            title="Wyloguj"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-50"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-brand-dark/90 backdrop-blur-xl border-r border-white/10 transform transition-transform duration-300 ease-in-out ${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
+        <div className="flex flex-col h-full">
+          {/* Logo + Close button */}
+          <div className="flex items-center justify-between px-6 py-6 border-b border-white/10">
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/hangar_filmowy.svg" 
+                alt="Hangar Filmowy Logo" 
+                className="h-12 w-auto"
+              />
+              <div>
+                <h1 className="text-lg font-bold text-white">Hangar Filmowy</h1>
+                <p className="text-xs text-white/60">Panel Admin</p>
+              </div>
             </div>
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="lg:hidden p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition"
+              aria-label="Zamknij menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Navigation */}
@@ -144,7 +201,7 @@ export default function AdminLayout({
       </aside>
 
       {/* Main content */}
-      <div className="pl-64">
+      <div className="lg:pl-64 pt-16 lg:pt-0">
         <main className="min-h-screen">
           {children}
         </main>

@@ -103,39 +103,39 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Dashboard</h1>
-        <p className="text-white/60">Przegląd aktywności strony</p>
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Dashboard</h1>
+        <p className="text-sm md:text-base text-white/60">Przegląd aktywności strony</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 mb-6 md:mb-8">
         {statCards.map((stat, index) => (
           <Link
             key={index}
             href={stat.link}
-            className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6 hover:border-brand-gold/30 hover:scale-105 transition group"
+            className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4 md:p-6 hover:border-brand-gold/30 hover:scale-105 transition group"
           >
-            <div className="flex items-start justify-between mb-4">
-              <div className={`p-3 rounded-lg bg-gradient-to-r ${stat.color}`}>
-                <stat.icon className="w-6 h-6 text-white" />
+            <div className="flex items-start justify-between mb-3 md:mb-4">
+              <div className={`p-2 md:p-3 rounded-lg bg-gradient-to-r ${stat.color}`}>
+                <stat.icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
-            <p className="text-sm text-white/60">{stat.label}</p>
+            <p className="text-2xl md:text-3xl font-bold text-white mb-1">{stat.value}</p>
+            <p className="text-xs md:text-sm text-white/60">{stat.label}</p>
           </Link>
         ))}
       </div>
 
       {/* Recent Submissions */}
-      <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-white">Ostatnie Zgłoszenia</h2>
+      <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4 md:p-6">
+        <div className="flex items-center justify-between mb-4 md:mb-6">
+          <h2 className="text-lg md:text-xl font-bold text-white">Ostatnie Zgłoszenia</h2>
           <Link
             href="/admin/submissions"
-            className="text-sm text-brand-gold hover:text-brand-orange transition"
+            className="text-xs md:text-sm text-brand-gold hover:text-brand-orange transition"
           >
             Zobacz wszystkie →
           </Link>
@@ -152,23 +152,23 @@ export default function DashboardPage() {
               <Link
                 key={submission.id}
                 href={`/admin/submissions`}
-                className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10 hover:border-brand-gold/30 transition group"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 md:p-4 bg-white/5 rounded-lg border border-white/10 hover:border-brand-gold/30 transition group gap-3"
               >
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-brand-gold to-brand-orange flex items-center justify-center text-brand-dark font-bold">
+                <div className="flex items-center space-x-3 md:space-x-4">
+                  <div className="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 rounded-full bg-gradient-to-r from-brand-gold to-brand-orange flex items-center justify-center text-brand-dark text-sm md:text-base font-bold">
                     {submission.firstName[0]}
                     {submission.lastName[0]}
                   </div>
-                  <div>
-                    <p className="text-white font-medium group-hover:text-brand-gold transition">
+                  <div className="min-w-0">
+                    <p className="text-sm md:text-base text-white font-medium group-hover:text-brand-gold transition truncate">
                       {submission.firstName} {submission.lastName}
                     </p>
-                    <p className="text-sm text-white/60">{submission.email}</p>
+                    <p className="text-xs md:text-sm text-white/60 truncate">{submission.email}</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center justify-between sm:justify-end space-x-3 md:space-x-4">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                    className={`px-2 md:px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
                       submission.status === "NEW"
                         ? "bg-blue-500/20 text-blue-400"
                         : submission.status === "IN_PROGRESS"
@@ -182,7 +182,7 @@ export default function DashboardPage() {
                       ? "W trakcie"
                       : "Zamknięte"}
                   </span>
-                  <span className="text-sm text-white/40">
+                  <span className="text-xs md:text-sm text-white/40 whitespace-nowrap">
                     {new Date(submission.createdAt).toLocaleDateString("pl-PL")}
                   </span>
                 </div>
@@ -193,40 +193,40 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mt-6 md:mt-8">
         <Link
           href="/admin/content"
-          className="bg-gradient-to-r from-brand-gold to-brand-orange p-6 rounded-xl hover:scale-105 transition group"
+          className="bg-gradient-to-r from-brand-gold to-brand-orange p-4 md:p-6 rounded-xl hover:scale-105 transition group"
         >
-          <FileText className="w-8 h-8 text-brand-dark mb-3" />
-          <h3 className="text-xl font-bold text-brand-dark mb-2">
+          <FileText className="w-6 h-6 md:w-8 md:h-8 text-brand-dark mb-2 md:mb-3" />
+          <h3 className="text-lg md:text-xl font-bold text-brand-dark mb-1 md:mb-2">
             Edytuj Treść
           </h3>
-          <p className="text-brand-dark/80 text-sm">
+          <p className="text-brand-dark/80 text-xs md:text-sm">
             Zarządzaj tekstami na stronie głównej
           </p>
         </Link>
 
         <Link
           href="/admin/media"
-          className="bg-gradient-to-r from-purple-500 to-pink-500 p-6 rounded-xl hover:scale-105 transition group"
+          className="bg-gradient-to-r from-purple-500 to-pink-500 p-4 md:p-6 rounded-xl hover:scale-105 transition group"
         >
-          <Image className="w-8 h-8 text-white mb-3" />
-          <h3 className="text-xl font-bold text-white mb-2">
+          <Image className="w-6 h-6 md:w-8 md:h-8 text-white mb-2 md:mb-3" />
+          <h3 className="text-lg md:text-xl font-bold text-white mb-1 md:mb-2">
             Biblioteka Mediów
           </h3>
-          <p className="text-white/80 text-sm">
+          <p className="text-white/80 text-xs md:text-sm">
             Dodaj nowe zdjęcia i grafiki
           </p>
         </Link>
 
         <Link
           href="/admin/settings"
-          className="bg-gradient-to-r from-blue-500 to-indigo-500 p-6 rounded-xl hover:scale-105 transition group"
+          className="bg-gradient-to-r from-blue-500 to-indigo-500 p-4 md:p-6 rounded-xl hover:scale-105 transition group sm:col-span-2 md:col-span-1"
         >
-          <Film className="w-8 h-8 text-white mb-3" />
-          <h3 className="text-xl font-bold text-white mb-2">Ustawienia</h3>
-          <p className="text-white/80 text-sm">
+          <Film className="w-6 h-6 md:w-8 md:h-8 text-white mb-2 md:mb-3" />
+          <h3 className="text-lg md:text-xl font-bold text-white mb-1 md:mb-2">Ustawienia</h3>
+          <p className="text-white/80 text-xs md:text-sm">
             Konfiguruj SEO i dane kontaktowe
           </p>
         </Link>
