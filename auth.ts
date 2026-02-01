@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import { verifyPassword } from "@/lib/password";
+import { getUserByEmail } from "@/lib/cloudflare-db";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -26,25 +27,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           const { email, password } = parsedCredentials.data;
 
-          // Use Supabase REST API with Service Role Key for authentication
-          // This bypasses RLS to allow login before user is authenticated
-          const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-          const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-          
-          if (!supabaseServiceKey) {
-            console.error("SUPABASE_SERVICE_ROLE_KEY is not set");
-            return null;
-          }
-          
-          const response = await fetch(`${supabaseUrl}/rest/v1/users?email=eq.${email}&select=*`, {
-            headers: {
-              'apikey': supabaseServiceKey,
-              'Authorization': `Bearer ${supabaseServiceKey}`,
-            },
-          });
-
-          const users = await response.json();
-          const user = users[0];
+          // Fetch user from D1 database
+          const user = await getUserByEmail(email);
           
           if (!user) {
             return null;

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { dbInsert, getContentBySection, stringifyJSON, getCurrentTimestamp } from '@/lib/cloudflare-db';
 
 // Edge Runtime for Cloudflare Pages
 export const runtime = 'edge';
@@ -12,21 +13,9 @@ export async function POST(request: Request) {
     
     const { eventType, audienceSize, extras, formData, category, preferredDate } = body;
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    // Use Service Role Key for submissions (backend operation)
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
     // Fetch contact email from database
-    const settingsResponse = await fetch(`${supabaseUrl}/rest/v1/content?section=eq.contact&select=data`, {
-      headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
-      }
-    });
-
-    const settingsData = await settingsResponse.json();
-    const contactEmail = settingsData?.[0]?.data?.email || process.env.EMAIL_TO || 'pokaz@hangarfilmowy.pl';
+    const contactContent = await getContentBySection('contact');
+    const contactEmail = contactContent?.data?.email || process.env.EMAIL_TO || 'pokaz@hangarfilmowy.pl';
 
     const eventLabels: Record<string, string> = {
       city: 'Event miejski',
@@ -47,41 +36,33 @@ export async function POST(request: Request) {
       })
       .join(', ') || 'Brak';
 
-    // Save to database - dostosowane do struktury tabeli
-    const submissionData = {
-      id: crypto.randomUUID(),
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      phone: formData.phone || null,
-      message: formData.message || '',
-      eventType: eventLabels[eventType] || eventType,
-      audienceSize: audienceSize,
-      extras: extras, // JSONB object, nie string
-      estimatedLevel: category,
-      preferredDate: preferredDate || null,
-      status: 'NEW', // Uppercase zgodnie z DEFAULT
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+    // Save to database - D1 SQLite
+    const submissionId = crypto.randomUUID();
+    const now = getCurrentTimestamp();
     
-    const submissionResponse = await fetch(`${supabaseUrl}/rest/v1/form_submissions`, {
-      method: 'POST',
-      headers: {
-        'apikey': supabaseServiceKey!,
-        'Authorization': `Bearer ${supabaseServiceKey}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify(submissionData)
-    });
-    
-    if (!submissionResponse.ok) {
-      const errorText = await submissionResponse.text();
-      throw new Error(`Database save failed: ${errorText}`);
-    }
-    
-    const savedSubmission = await submissionResponse.json();
+    await dbInsert(
+      `INSERT INTO form_submissions (
+        id, firstName, lastName, email, phone, message,
+        eventType, audienceSize, extras, estimatedLevel,
+        preferredDate, status, createdAt, updatedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        submissionId,
+        formData.firstName,
+        formData.lastName,
+        formData.email,
+        formData.phone || null,
+        formData.message || '',
+        eventLabels[eventType] || eventType,
+        audienceSize,
+        stringifyJSON(extras), // Store JSON as TEXT
+        category,
+        preferredDate || null,
+        'NEW',
+        now,
+        now
+      ]
+    );
 
     // Email do firmy
     const adminEmailHtml = `

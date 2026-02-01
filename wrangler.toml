@@ -2,5 +2,16 @@ name = "hangar-filmowy"
 compatibility_flags = ["nodejs_compat", "nodejs_compat_populate_process_env"]
 compatibility_date = "2024-12-20"
 
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "hangar-filmowy-db"
+database_id = "8c588b46-6e4c-467b-b32e-ee6f6e52ddc5"
+
+# R2 Storage binding for media files
+[[r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "hangar-filmowy-media"
+
 [site]
 bucket = ".vercel/output/static"

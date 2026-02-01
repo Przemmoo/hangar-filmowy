@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { supabaseAdminFetch } from "@/lib/supabase-admin";
+import { dbSelect, dbSelectOne } from "@/lib/cloudflare-db";
 
 export const runtime = 'edge';
 
@@ -12,21 +12,20 @@ export async function GET(request: NextRequest) {
 
   try {
     // Get all submissions counts
-    const submissionsRes = await supabaseAdminFetch('/form_submissions?select=status');
-    const allSubmissions = await submissionsRes.json();
+    const allSubmissions = await dbSelect('SELECT status FROM form_submissions');
     const totalSubmissions = allSubmissions.length;
     const newSubmissions = allSubmissions.filter((s: any) => s.status === 'NEW').length;
     const inProgressSubmissions = allSubmissions.filter((s: any) => s.status === 'IN_PROGRESS').length;
     const closedSubmissions = allSubmissions.filter((s: any) => s.status === 'CLOSED').length;
 
     // Get total media files count
-    const mediaRes = await supabaseAdminFetch('/media?select=id');
-    const mediaFiles = await mediaRes.json();
-    const totalMediaFiles = mediaFiles.length;
+    const mediaCount = await dbSelectOne<{ count: number }>('SELECT COUNT(*) as count FROM media');
+    const totalMediaFiles = mediaCount?.count || 0;
 
     // Get recent submissions (last 5)
-    const recentRes = await supabaseAdminFetch('/form_submissions?select=id,firstName,lastName,email,status,createdAt&order=createdAt.desc&limit=5');
-    const recentSubmissions = await recentRes.json();
+    const recentSubmissions = await dbSelect(
+      'SELECT id, firstName, lastName, email, status, createdAt FROM form_submissions ORDER BY createdAt DESC LIMIT 5'
+    );
 
     return NextResponse.json({
       totalSubmissions,

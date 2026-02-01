@@ -1,20 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAllSettings } from "@/lib/cloudflare-db";
 
 export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    const response = await fetch(`${supabaseUrl}/rest/v1/settings?select=key,value`, {
-      headers: {
-        'apikey': supabaseKey!,
-        'Authorization': `Bearer ${supabaseKey}`,
-      }
-    });
-
-    const settings = await response.json();
+    const settings = await getAllSettings();
+    
     const settingsObject = settings.reduce((acc: any, setting: any) => {
       acc[setting.key] = setting.value;
       return acc;
