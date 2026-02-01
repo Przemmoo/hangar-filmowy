@@ -33,7 +33,7 @@ export default function DashboardPage() {
     try {
       const response = await fetch("/api/admin/dashboard");
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as Stats;
         setStats(data);
       }
     } catch (error) {
