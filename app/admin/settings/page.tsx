@@ -458,7 +458,7 @@ export default function SettingsPage() {
                   try {
                     const response = await fetch(`/api/admin/users/${currentUserId}`);
                     if (response.ok) {
-                      const userData = await response.json();
+                      const userData = await response.json() as User;
                       openUserModal(userData);
                     }
                   } catch (error) {

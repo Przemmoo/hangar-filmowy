@@ -58,7 +58,7 @@ export async function PUT(request: Request, context: RouteParams) {
     }
 
     const { id: userId } = await context.params;
-    const body = await request.json();
+    const body = await request.json() as { email?: string; password?: string; name?: string; role?: string };
     const { email, name, password, role } = body;
 
     const currentUserId = session.user.id;

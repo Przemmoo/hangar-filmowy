@@ -69,7 +69,7 @@ export default function SubmissionsPage() {
     try {
       const response = await fetch("/api/admin/submissions");
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as FormSubmission[];
         setSubmissions(data);
       }
     } catch (error) {
@@ -84,7 +84,7 @@ export default function SubmissionsPage() {
     try {
       const response = await fetch(`/api/admin/submissions/${submissionId}/replies`);
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as SubmissionReply[];
         setReplyHistory(data);
       }
     } catch (error) {
@@ -182,7 +182,7 @@ export default function SubmissionsPage() {
           closeReplyModal();
         }, 2000);
       } else {
-        const error = await response.json();
+        const error = await response.json() as { error?: string };
         setReplyMessage({ type: "error", text: error.error || "Błąd wysyłania odpowiedzi" });
       }
     } catch (error) {

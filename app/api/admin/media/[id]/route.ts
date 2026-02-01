@@ -20,7 +20,7 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const body = await request.json();
+    const body = await request.json() as { alt?: string };
     const { alt } = body;
 
     const response = await supabaseAdminFetch(`/media?id=eq.${id}`, {
@@ -73,7 +73,7 @@ export async function DELETE(
     const getResponse = await supabaseAdminFetch(`/media?id=eq.${id}&select=url`);
 
     if (getResponse.ok) {
-      const mediaRecords = await getResponse.json();
+      const mediaRecords = await getResponse.json() as { url: string }[];
       if (mediaRecords.length > 0) {
         const url = mediaRecords[0].url;
         // Extract filename from URL

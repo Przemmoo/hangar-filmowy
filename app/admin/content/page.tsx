@@ -53,7 +53,7 @@ export default function ContentManagement() {
     try {
       const response = await fetch("/api/admin/content");
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as ContentSection[];
         const contentMap: Record<string, any> = {};
         
         // Ensure data is an array

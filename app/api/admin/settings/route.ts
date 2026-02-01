@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   try {
     const response = await supabaseAdminFetch('/settings?select=key,value');
 
-    const settings = await response.json();
+    const settings = await response.json() as { key: string; value: any }[];
     const settingsObject = settings.reduce((acc: Record<string, any>, setting: { key: string; value: any }) => {
       acc[setting.key] = setting.value;
       return acc;
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const data = await request.json();
+    const data = await request.json() as Record<string, any>;
 
     // Update each setting individually
     const settingsToUpdate = [
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         
         // Check if exists
         const checkRes = await supabaseAdminFetch(`/settings?key=eq.${key}&select=key`);
-        const existing = await checkRes.json();
+        const existing = await checkRes.json() as { key: string }[];
         
         if (existing.length > 0) {
           // UPDATE

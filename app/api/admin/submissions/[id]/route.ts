@@ -20,7 +20,7 @@ export async function PATCH(
     }
 
     const { id } = await params;
-    const body = await request.json();
+    const body = await request.json() as { status?: string };
     const { status } = body;
 
     const response = await supabaseAdminFetch(`/form_submissions?id=eq.${id}`, {

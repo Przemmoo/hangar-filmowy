@@ -21,7 +21,7 @@ export async function POST(request: Request, context: RouteParams) {
     }
 
     const { id: submissionId } = await context.params;
-    const body = await request.json();
+    const body = await request.json() as { subject?: string; message?: string };
     const { subject, message } = body;
 
     if (!subject || !message) {
@@ -40,7 +40,7 @@ export async function POST(request: Request, context: RouteParams) {
       throw new Error('Failed to fetch submission');
     }
 
-    const submissions = await submissionResponse.json();
+    const submissions = await submissionResponse.json() as { email: string; name: string }[];
     if (submissions.length === 0) {
       return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
     }
