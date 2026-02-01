@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { supabaseAdminFetch } from "@/lib/supabase-admin";
+import { dbUpdate, dbDelete, dbSelectOne, getCurrentTimestamp } from "@/lib/cloudflare-db";
 
 export const runtime = 'edge';
 
@@ -23,17 +23,26 @@ export async function PATCH(
     const body = await request.json() as { status?: string };
     const { status } = body;
 
-    const response = await supabaseAdminFetch(`/form_submissions?id=eq.${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify({ status, updatedAt: new Date().toISOString() })
-    });
+    if (!status) {
+      return NextResponse.json(
+        { error: "Status is required" },
+        { status: 400 }
+      );
+    }
 
-    const submission = await response.json() as any[];
-    return NextResponse.json(submission[0]);
+    const now = getCurrentTimestamp();
+    
+    await dbUpdate(
+      'UPDATE form_submissions SET status = ?, updatedAt = ? WHERE id = ?',
+      [status, now, id]
+    );
+
+    const submission = await dbSelectOne(
+      'SELECT * FROM form_submissions WHERE id = ?',
+      [id]
+    );
+
+    return NextResponse.json(submission);
   } catch (error) {
     console.error("Error updating submission:", error);
     return NextResponse.json(
@@ -60,9 +69,16 @@ export async function DELETE(
 
     const { id } = await params;
 
-    await supabaseAdminFetch(`/form_submissions?id=eq.${id}`, {
-      method: 'DELETE',
-    });
+    // Delete submission and related replies (cascade)
+    await dbDelete(
+      'DELETE FROM submission_replies WHERE submissionId = ?',
+      [id]
+    );
+    
+    await dbDelete(
+      'DELETE FROM form_submissions WHERE id = ?',
+      [id]
+    );
 
     return NextResponse.json({ success: true });
   } catch (error) {

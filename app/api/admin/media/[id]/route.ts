@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { supabaseAdminFetch } from "@/lib/supabase-admin";
+import { dbUpdate, dbDelete, dbSelectOne } from "@/lib/cloudflare-db";
+import { deleteFromR2, extractR2Key } from "@/lib/cloudflare-r2";
 
 export const runtime = 'edge';
 
@@ -23,23 +24,16 @@ export async function PUT(
     const body = await request.json() as { alt?: string };
     const { alt } = body;
 
-    const response = await supabaseAdminFetch(`/media?id=eq.${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify({ alt })
-    });
+    await dbUpdate(
+      'UPDATE media SET alt = ? WHERE id = ?',
+      [alt || null, id]
+    );
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: "Failed to update media" },
-        { status: 500 }
-      );
-    }
+    const media = await dbSelectOne(
+      'SELECT * FROM media WHERE id = ?',
+      [id]
+    );
 
-    const media = await response.json() as any;
     return NextResponse.json(media);
   } catch (error) {
     console.error("Error updating media:", error);
@@ -66,39 +60,31 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    // First, get the media record to get the filename from URL
-    const getResponse = await supabaseAdminFetch(`/media?id=eq.${id}&select=url`);
+    // Get media record to get the R2 key from URL
+    const media = await dbSelectOne(
+      'SELECT url FROM media WHERE id = ?',
+      [id]
+    );
 
-    if (getResponse.ok) {
-      const mediaRecords = await getResponse.json() as { url: string }[];
-      if (mediaRecords.length > 0) {
-        const url = mediaRecords[0].url;
-        // Extract filename from URL
-        const filename = url.split('/').pop();
-        
-        if (filename) {
-          // Delete from Supabase Storage (use service role key to bypass RLS)
-          await fetch(
-            `${supabaseUrl}/storage/v1/object/hangar-media/${filename}`,
-            {
-              method: 'DELETE',
-              headers: {
-                'apikey': supabaseServiceKey!,
-                'Authorization': `Bearer ${supabaseServiceKey}`
-              }
-            }
-          );
+    if (media) {
+      // Extract R2 key from URL and delete from R2
+      const key = extractR2Key(media.url);
+      if (key) {
+        try {
+          await deleteFromR2(key);
+        } catch (error) {
+          console.error("Error deleting from R2:", error);
+          // Continue even if R2 deletion fails
         }
       }
     }
 
     // Delete from database
-    await supabaseAdminFetch(`/media?id=eq.${id}`, {
-      method: 'DELETE',
-    });
+    await dbDelete(
+      'DELETE FROM media WHERE id = ?',
+      [id]
+    );
 
     return NextResponse.json({ success: true });
   } catch (error) {
