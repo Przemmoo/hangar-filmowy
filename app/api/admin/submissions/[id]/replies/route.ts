@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { supabaseAdminFetch } from '@/lib/supabase-admin';
+import { dbSelect } from '@/lib/cloudflare-db';
 
 export const runtime = 'edge';
 
@@ -20,15 +20,11 @@ export async function GET(request: Request, context: RouteParams) {
     const { id: submissionId } = await context.params;
 
     // Get reply history
-    const response = await supabaseAdminFetch(
-      `/submission_replies?submissionId=eq.${submissionId}&select=*&order=createdAt.desc`
+    const replies = await dbSelect(
+      'SELECT * FROM submission_replies WHERE submissionId = ? ORDER BY createdAt DESC',
+      [submissionId]
     );
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch reply history');
-    }
-
-    const replies = await response.json() as any;
     return NextResponse.json(replies);
   } catch (error) {
     console.error('Error fetching reply history:', error);

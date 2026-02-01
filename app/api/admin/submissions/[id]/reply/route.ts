@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { Resend } from 'resend';
-import { supabaseAdminFetch } from '@/lib/supabase-admin';
+import { dbSelectOne, dbInsert, getCurrentTimestamp } from '@/lib/cloudflare-db';
 
 export const runtime = 'edge';
 
@@ -32,20 +32,14 @@ export async function POST(request: Request, context: RouteParams) {
     }
 
     // Get submission details
-    const submissionResponse = await supabaseAdminFetch(
-      `/form_submissions?id=eq.${submissionId}&select=*`
-    );
+    const submission = await dbSelectOne(
+      'SELECT email, name FROM form_submissions WHERE id = ?',
+      [submissionId]
+    ) as { email: string; name: string } | null;
 
-    if (!submissionResponse.ok) {
-      throw new Error('Failed to fetch submission');
-    }
-
-    const submissions = await submissionResponse.json() as { email: string; name: string }[];
-    if (submissions.length === 0) {
+    if (!submission) {
       return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
     }
-
-    const submission = submissions[0];
 
     // Prepare email HTML
     const emailHtml = `
@@ -113,25 +107,21 @@ export async function POST(request: Request, context: RouteParams) {
     }
 
     // Save reply to history
-    const replyRecord = {
-      id: crypto.randomUUID(),
-      submissionId: submissionId,
-      subject: subject,
-      message: message,
-      sentBy: session.user.id,
-      sentByName: session.user.name || session.user.email || 'Admin',
-      createdAt: new Date().toISOString(),
-    };
+    const replyId = crypto.randomUUID();
 
     try {
-      await supabaseAdminFetch(`/submission_replies`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation',
-        },
-        body: JSON.stringify(replyRecord),
-      });
+      await dbInsert(
+        'INSERT INTO submission_replies (id, submissionId, subject, message, sentBy, sentByName, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [
+          replyId,
+          submissionId,
+          subject,
+          message,
+          session.user.id || '',
+          session.user.name || session.user.email || 'Admin',
+          getCurrentTimestamp()
+        ]
+      );
     } catch (historyError) {
       console.error('Error saving reply history:', historyError);
       // Email was sent successfully, so we don't fail here
