@@ -870,25 +870,43 @@ export default function ContentManagement() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Zarządzanie Treścią</h1>
-        <p className="text-white/60">Edytuj treść wszystkich sekcji strony</p>
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Zarządzanie Treścią</h1>
+        <p className="text-sm md:text-base text-white/60">Edytuj treść wszystkich sekcji strony</p>
       </div>
 
       {/* Message */}
       {message && (
-        <div className={`mb-6 p-4 rounded-lg ${
+        <div className={`mb-4 md:mb-6 p-3 md:p-4 rounded-lg text-sm md:text-base ${
           message.type === "success" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
         }`}>
           {message.text}
         </div>
       )}
 
-      <div className="grid grid-cols-12 gap-6">
-        {/* Sidebar - Section selector */}
-        <div className="col-span-3">
+      {/* Mobile Section Selector (Dropdown) */}
+      <div className="lg:hidden mb-4">
+        <label className="block text-sm font-medium text-white mb-2">
+          Wybierz sekcję do edycji
+        </label>
+        <select
+          value={activeSection}
+          onChange={(e) => setActiveSection(e.target.value)}
+          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none"
+        >
+          {sections.map((section) => (
+            <option key={section.key} value={section.key} className="bg-brand-dark">
+              {section.name} - {section.description}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
+        {/* Desktop Sidebar - Section selector */}
+        <div className="hidden lg:block lg:col-span-3">
           <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4">
             <h3 className="text-sm font-semibold text-white mb-4">Sekcje</h3>
             <div className="space-y-1">
@@ -911,49 +929,50 @@ export default function ContentManagement() {
         </div>
 
         {/* Main editor */}
-        <div className="col-span-9">
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6">
+        <div className="lg:col-span-9">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4 md:p-6">
             {/* Section header */}
-            <div className="flex items-center justify-between mb-6 pb-6 border-b border-white/10">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 md:mb-6 pb-4 md:pb-6 border-b border-white/10 gap-4">
               <div>
-                <h2 className="text-2xl font-bold text-white">
+                <h2 className="text-xl md:text-2xl font-bold text-white">
                   {sections.find(s => s.key === activeSection)?.name}
                 </h2>
-                <p className="text-white/60 text-sm">
+                <p className="text-white/60 text-xs md:text-sm">
                   {sections.find(s => s.key === activeSection)?.description}
                 </p>
               </div>
-              <div className="flex space-x-3">
+              <div className="flex flex-wrap gap-2 md:gap-3">
                 {Object.keys(content).length === 0 && !isLoading && (
                   <button
                     onClick={handleMigrate}
                     disabled={isMigrating}
-                    className="flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-green-600 to-teal-600 text-white font-semibold rounded-lg hover:scale-105 transition disabled:opacity-50"
+                    className="flex items-center space-x-1.5 md:space-x-2 px-3 md:px-6 py-2 bg-gradient-to-r from-green-600 to-teal-600 text-white text-xs md:text-base font-semibold rounded-lg hover:scale-105 transition disabled:opacity-50"
                   >
                     {isMigrating ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 animate-spin" />
                     ) : (
-                      <Download className="w-4 h-4" />
+                      <Download className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     )}
-                    <span>{isMigrating ? "Importowanie..." : "Importuj Dane"}</span>
+                    <span className="hidden sm:inline">{isMigrating ? "Importowanie..." : "Importuj Dane"}</span>
+                    <span className="sm:hidden">{isMigrating ? "Import..." : "Import"}</span>
                   </button>
                 )}
                 <button
                   onClick={() => window.open("/", "_blank")}
-                  className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
+                  className="flex items-center space-x-1.5 md:space-x-2 px-3 md:px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs md:text-base rounded-lg transition"
                 >
-                  <Eye className="w-4 h-4" />
-                  <span>Podgląd</span>
+                  <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Podgląd</span>
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-brand-gold to-brand-orange text-brand-dark font-semibold rounded-lg hover:scale-105 transition disabled:opacity-50"
+                  className="flex items-center space-x-1.5 md:space-x-2 px-3 md:px-6 py-2 bg-gradient-to-r from-brand-gold to-brand-orange text-brand-dark text-xs md:text-base font-semibold rounded-lg hover:scale-105 transition disabled:opacity-50"
                 >
                   {isSaving ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 animate-spin" />
                   ) : (
-                    <Save className="w-4 h-4" />
+                    <Save className="w-3.5 h-3.5 md:w-4 md:h-4" />
                   )}
                   <span>{isSaving ? "Zapisywanie..." : "Zapisz"}</span>
                 </button>
@@ -1010,7 +1029,7 @@ export default function ContentManagement() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                   {mediaLibrary.map((media) => (
                     <button
                       key={media.id}
