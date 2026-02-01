@@ -17,10 +17,10 @@ export function getCloudflareContext() {
 
 export function getDB() {
   const context = getCloudflareContext();
-  return context?.env.DB;
+  return (context?.env as any)?.DB;
 }
 
 export function getR2Bucket() {
   const context = getCloudflareContext();
-  return context?.env.MEDIA_BUCKET;
+  return (context?.env as any)?.MEDIA_BUCKET;
 }

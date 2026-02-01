@@ -26,7 +26,7 @@ export async function GET() {
       throw new Error('Failed to fetch users');
     }
 
-    const users = await response.json();
+    const users = await response.json() as any;
     return NextResponse.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     // Check if user already exists
     const checkResponse = await supabaseAdminFetch(`/users?email=eq.${email}&select=id`);
 
-    const existingUsers = await checkResponse.json();
+    const existingUsers = await checkResponse.json() as any;
     if (existingUsers.length > 0) {
       return NextResponse.json(
         { error: 'User with this email already exists' },
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
       throw new Error(`Failed to create user: ${errorText}`);
     }
 
-    const createdUser = await response.json();
+    const createdUser = await response.json() as any;
     
     // Remove password from response
     const { password: _, ...userWithoutPassword } = createdUser[0];

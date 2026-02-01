@@ -68,7 +68,7 @@ export default function Home() {
     fetch('/api/content')
       .then(res => res.json())
       .then(data => {
-        setContent(data);
+        setContent(data as Record<string, any>);
         setIsLoading(false);
       })
       .catch(err => {
@@ -128,7 +128,7 @@ export default function Home() {
         }),
       });
       
-      const data = await response.json();
+      const data = await response.json() as { success?: boolean };
 
       if (data.success) {
         // Reset formularza

@@ -39,7 +39,7 @@ export async function PUT(
       );
     }
 
-    const media = await response.json();
+    const media = await response.json() as any;
     return NextResponse.json(media);
   } catch (error) {
     console.error("Error updating media:", error);

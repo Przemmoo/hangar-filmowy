@@ -32,7 +32,7 @@ export async function PATCH(
       body: JSON.stringify({ status, updatedAt: new Date().toISOString() })
     });
 
-    const submission = await response.json();
+    const submission = await response.json() as any[];
     return NextResponse.json(submission[0]);
   } catch (error) {
     console.error("Error updating submission:", error);

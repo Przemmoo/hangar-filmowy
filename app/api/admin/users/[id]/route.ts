@@ -33,7 +33,7 @@ export async function GET(request: Request, context: RouteParams) {
       throw new Error('Failed to fetch user');
     }
 
-    const users = await response.json();
+    const users = await response.json() as any;
     if (users.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
@@ -86,7 +86,7 @@ export async function PUT(request: Request, context: RouteParams) {
       `/users?email=eq.${email}&id=neq.${userId}&select=id`
     );
 
-    const existingUsers = await checkResponse.json();
+    const existingUsers = await checkResponse.json() as any;
     if (existingUsers.length > 0) {
       return NextResponse.json(
         { error: 'Email already taken by another user' },
@@ -126,7 +126,7 @@ export async function PUT(request: Request, context: RouteParams) {
       throw new Error(`Failed to update user: ${errorText}`);
     }
 
-    const updatedUser = await response.json();
+    const updatedUser = await response.json() as any;
     
     // Remove password from response
     if (updatedUser[0]) {

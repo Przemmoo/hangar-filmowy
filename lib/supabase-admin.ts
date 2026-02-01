@@ -78,7 +78,7 @@ export async function supabaseAdminInsert<T = any>(
     throw new Error(`Supabase insert failed: ${error}`);
   }
   
-  const result = await response.json();
+  const result = await response.json() as T;
   return Array.isArray(result) ? result[0] : result;
 }
 
@@ -103,7 +103,7 @@ export async function supabaseAdminUpdate<T = any>(
     throw new Error(`Supabase update failed: ${error}`);
   }
   
-  const result = await response.json();
+  const result = await response.json() as T;
   return Array.isArray(result) ? result[0] : result;
 }
 

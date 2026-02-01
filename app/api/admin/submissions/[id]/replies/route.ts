@@ -28,7 +28,7 @@ export async function GET(request: Request, context: RouteParams) {
       throw new Error('Failed to fetch reply history');
     }
 
-    const replies = await response.json();
+    const replies = await response.json() as any;
     return NextResponse.json(replies);
   } catch (error) {
     console.error('Error fetching reply history:', error);
