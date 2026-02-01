@@ -135,7 +135,7 @@ export default function ContentManagement() {
     try {
       const response = await fetch("/api/admin/media");
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as Media[];
         setMediaLibrary(data);
       }
     } catch (error) {
