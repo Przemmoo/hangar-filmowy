@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { hashPassword } from '@/lib/password';
-import { supabaseAdminFetch } from '@/lib/supabase-admin';
+import { dbSelect, dbInsert, getCurrentTimestamp } from '@/lib/cloudflare-db';
 
 export const runtime = 'edge';
 
@@ -20,13 +20,10 @@ export async function GET() {
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     }
 
-    const response = await supabaseAdminFetch('/users?select=id,email,name,role,createdAt&order=createdAt.desc');
+    const users = await dbSelect(
+      'SELECT id, email, name, role, createdAt FROM users ORDER BY createdAt DESC'
+    );
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch users');
-    }
-
-    const users = await response.json() as any;
     return NextResponse.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -63,9 +60,11 @@ export async function POST(request: Request) {
     }
 
     // Check if user already exists
-    const checkResponse = await supabaseAdminFetch(`/users?email=eq.${email}&select=id`);
+    const existingUsers = await dbSelect(
+      'SELECT id FROM users WHERE email = ?',
+      [email]
+    );
 
-    const existingUsers = await checkResponse.json() as any;
     if (existingUsers.length > 0) {
       return NextResponse.json(
         { error: 'User with this email already exists' },
@@ -75,38 +74,24 @@ export async function POST(request: Request) {
 
     // Hash password
     const hashedPassword = await hashPassword(password);
+    const now = getCurrentTimestamp();
 
     // Create user
-    const newUser = {
-      id: crypto.randomUUID(),
+    const userId = crypto.randomUUID();
+    
+    await dbInsert(
+      'INSERT INTO users (id, email, name, password, role, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [userId, email, name, hashedPassword, role || 'admin', now, now]
+    );
+
+    // Return created user without password
+    return NextResponse.json({
+      id: userId,
       email,
       name,
-      password: hashedPassword,
       role: role || 'admin',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    const response = await supabaseAdminFetch('/users', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation',
-      },
-      body: JSON.stringify(newUser),
+      createdAt: now,
     });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to create user: ${errorText}`);
-    }
-
-    const createdUser = await response.json() as any;
-    
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = createdUser[0];
-    
-    return NextResponse.json(userWithoutPassword);
   } catch (error) {
     console.error('Error creating user:', error);
     return NextResponse.json(

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { hashPassword } from '@/lib/password';
-import { supabaseAdminFetch } from '@/lib/supabase-admin';
+import { dbSelectOne, dbSelect, dbUpdate, dbDelete, getCurrentTimestamp } from '@/lib/cloudflare-db';
 
 export const runtime = 'edge';
 
@@ -27,18 +27,16 @@ export async function GET(request: Request, context: RouteParams) {
       return NextResponse.json({ error: 'Forbidden - Can only access your own data' }, { status: 403 });
     }
 
-    const response = await supabaseAdminFetch(`/users?id=eq.${userId}&select=id,email,name,role,createdAt`);
+    const user = await dbSelectOne(
+      'SELECT id, email, name, role, createdAt FROM users WHERE id = ?',
+      [userId]
+    );
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch user');
-    }
-
-    const users = await response.json() as any;
-    if (users.length === 0) {
+    if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json(users[0]);
+    return NextResponse.json(user);
   } catch (error) {
     console.error('Error fetching user:', error);
     return NextResponse.json(
@@ -82,11 +80,11 @@ export async function PUT(request: Request, context: RouteParams) {
     }
 
     // Check if email is already taken by another user
-    const checkResponse = await supabaseAdminFetch(
-      `/users?email=eq.${email}&id=neq.${userId}&select=id`
+    const existingUsers = await dbSelect(
+      'SELECT id FROM users WHERE email = ? AND id != ?',
+      [email, userId]
     );
 
-    const existingUsers = await checkResponse.json() as any;
     if (existingUsers.length > 0) {
       return NextResponse.json(
         { error: 'Email already taken by another user' },
@@ -94,47 +92,44 @@ export async function PUT(request: Request, context: RouteParams) {
       );
     }
 
-    // Prepare update data
-    const updateData: any = {
-      email,
-      name,
-      updatedAt: new Date().toISOString(),
-    };
+    const now = getCurrentTimestamp();
 
-    // Tylko administratorzy mogą zmieniać rolę
-    if (userRole === 'admin' && role) {
-      updateData.role = role;
-    }
-
-    // Only update password if provided
+    // Update user - build query dynamically
     if (password && password.trim() !== '') {
-      updateData.password = await hashPassword(password);
+      const hashedPassword = await hashPassword(password);
+      
+      if (userRole === 'admin' && role) {
+        await dbUpdate(
+          'UPDATE users SET email = ?, name = ?, password = ?, role = ?, updatedAt = ? WHERE id = ?',
+          [email, name, hashedPassword, role, now, userId]
+        );
+      } else {
+        await dbUpdate(
+          'UPDATE users SET email = ?, name = ?, password = ?, updatedAt = ? WHERE id = ?',
+          [email, name, hashedPassword, now, userId]
+        );
+      }
+    } else {
+      if (userRole === 'admin' && role) {
+        await dbUpdate(
+          'UPDATE users SET email = ?, name = ?, role = ?, updatedAt = ? WHERE id = ?',
+          [email, name, role, now, userId]
+        );
+      } else {
+        await dbUpdate(
+          'UPDATE users SET email = ?, name = ?, updatedAt = ? WHERE id = ?',
+          [email, name, now, userId]
+        );
+      }
     }
 
-    // Update user
-    const response = await supabaseAdminFetch(`/users?id=eq.${userId}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation',
-      },
-      body: JSON.stringify(updateData),
-    });
+    // Return updated user without password
+    const updatedUser = await dbSelectOne(
+      'SELECT id, email, name, role, createdAt FROM users WHERE id = ?',
+      [userId]
+    );
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to update user: ${errorText}`);
-    }
-
-    const updatedUser = await response.json() as any;
-    
-    // Remove password from response
-    if (updatedUser[0]) {
-      const { password: _, ...userWithoutPassword } = updatedUser[0];
-      return NextResponse.json(userWithoutPassword);
-    }
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json(updatedUser);
   } catch (error) {
     console.error('Error updating user:', error);
     return NextResponse.json(
@@ -170,14 +165,10 @@ export async function DELETE(request: Request, context: RouteParams) {
     }
 
     // Delete user
-    const response = await supabaseAdminFetch(`/users?id=eq.${userId}`, {
-      method: 'DELETE',
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to delete user: ${errorText}`);
-    }
+    await dbDelete(
+      'DELETE FROM users WHERE id = ?',
+      [userId]
+    );
 
     return NextResponse.json({ success: true });
   } catch (error) {

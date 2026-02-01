@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { supabaseAdminFetch } from "@/lib/supabase-admin";
+import { dbSelect, dbUpdate, dbInsert, getCurrentTimestamp } from "@/lib/cloudflare-db";
 
 export const runtime = 'edge';
 
@@ -12,11 +12,17 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const response = await supabaseAdminFetch('/settings?select=key,value');
+    const settings = await dbSelect(
+      'SELECT key, value FROM settings'
+    );
 
-    const settings = await response.json() as { key: string; value: any }[];
-    const settingsObject = settings.reduce((acc: Record<string, any>, setting: { key: string; value: any }) => {
-      acc[setting.key] = setting.value;
+    const settingsObject = settings.reduce((acc: Record<string, any>, setting: { key: string; value: string }) => {
+      // Try to parse JSON value, fallback to string
+      try {
+        acc[setting.key] = JSON.parse(setting.value);
+      } catch {
+        acc[setting.key] = setting.value;
+      }
       return acc;
     }, {});
 
@@ -51,6 +57,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const data = await request.json() as Record<string, any>;
+    const now = getCurrentTimestamp();
 
     // Update each setting individually
     const settingsToUpdate = [
@@ -67,31 +74,31 @@ export async function POST(request: NextRequest) {
     ];
 
     // Update each setting using upsert pattern
-    await Promise.all(
-      settingsToUpdate.map(async (key) => {
-        const value = typeof data[key] === 'object' ? data[key] : (data[key] || "");
-        
-        // Check if exists
-        const checkRes = await supabaseAdminFetch(`/settings?key=eq.${key}&select=key`);
-        const existing = await checkRes.json() as { key: string }[];
-        
-        if (existing.length > 0) {
-          // UPDATE
-          return supabaseAdminFetch(`/settings?key=eq.${key}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ value, updatedAt: new Date().toISOString(), updatedBy: session.user?.email })
-          });
-        } else {
-          // INSERT
-          return supabaseAdminFetch(`/settings`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key, value, updatedAt: new Date().toISOString(), updatedBy: session.user?.email })
-          });
-        }
-      })
-    );
+    for (const key of settingsToUpdate) {
+      const value = typeof data[key] === 'object' 
+        ? JSON.stringify(data[key]) 
+        : (data[key] || "");
+      
+      // Check if exists
+      const existing = await dbSelect(
+        'SELECT key FROM settings WHERE key = ?',
+        [key]
+      );
+      
+      if (existing.length > 0) {
+        // UPDATE
+        await dbUpdate(
+          'UPDATE settings SET value = ?, updatedAt = ?, updatedBy = ? WHERE key = ?',
+          [value, now, session.user?.email || 'admin', key]
+        );
+      } else {
+        // INSERT
+        await dbInsert(
+          'INSERT INTO settings (key, value, updatedAt, updatedBy) VALUES (?, ?, ?, ?)',
+          [key, value, now, session.user?.email || 'admin']
+        );
+      }
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
