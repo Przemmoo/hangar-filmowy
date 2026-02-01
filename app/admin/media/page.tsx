@@ -35,7 +35,7 @@ export default function MediaLibrary() {
     try {
       const response = await fetch("/api/admin/media");
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as Media[];
         setMedia(data);
       }
     } catch (error) {
