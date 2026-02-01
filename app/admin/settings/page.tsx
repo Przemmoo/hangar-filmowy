@@ -193,7 +193,7 @@ export default function SettingsPage() {
         loadUsers();
         closeUserModal();
       } else {
-        const error = await response.json();
+        const error = await response.json() as { error?: string };
         showMessage("error", error.error || "Błąd zapisu użytkownika");
       }
     } catch (error) {
