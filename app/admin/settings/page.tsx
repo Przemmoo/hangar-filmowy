@@ -86,7 +86,7 @@ export default function SettingsPage() {
     try {
       const response = await fetch("/api/admin/users");
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as User[];
         setUsers(data);
       }
     } catch (error) {
