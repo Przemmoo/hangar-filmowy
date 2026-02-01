@@ -4,6 +4,10 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'media.hangarfilmowy.pl',
+      },
+      {
+        protocol: 'https',
         hostname: '**.cloudflare.com',
       },
       {
