@@ -67,7 +67,7 @@ export default function SettingsPage() {
     try {
       const response = await fetch("/api/admin/settings");
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as Settings;
         setSettings(data);
       }
     } catch (error) {
