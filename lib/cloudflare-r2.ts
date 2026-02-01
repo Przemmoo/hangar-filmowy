@@ -15,9 +15,10 @@ export function getMediaBucket(): R2Bucket {
 
 /**
  * Get public R2 URL for media files
+ * Hardcoded because process.env doesn't work reliably in edge runtime
  */
 export function getR2PublicURL(): string {
-  return process.env.NEXT_PUBLIC_R2_PUBLIC_URL || '';
+  return 'https://media.hangarfilmowy.pl';
 }
 
 /**

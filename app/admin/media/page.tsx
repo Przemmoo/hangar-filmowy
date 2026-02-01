@@ -19,6 +19,7 @@ export default function MediaLibrary() {
   const [media, setMedia] = useState<Media[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -51,9 +52,12 @@ export default function MediaLibrary() {
 
     setIsUploading(true);
     setUploadMessage(null);
+    setUploadProgress(0);
     
     let successCount = 0;
     let errorCount = 0;
+    const totalFiles = Array.from(files).length;
+    let processedFiles = 0;
     
     for (const file of Array.from(files)) {
       // Validate file type
@@ -85,10 +89,14 @@ export default function MediaLibrary() {
       } catch (error) {
         errorCount++;
       }
+      
+      processedFiles++;
+      setUploadProgress(Math.round((processedFiles / totalFiles) * 100));
     }
 
     await loadMedia();
     setIsUploading(false);
+    setUploadProgress(0);
     e.target.value = "";
     
     if (successCount > 0) {
@@ -206,6 +214,24 @@ export default function MediaLibrary() {
           />
         </label>
       </div>
+
+      {/* Upload Progress Bar */}
+      {isUploading && uploadProgress > 0 && (
+        <div className="mb-6">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white/80 text-sm">Przesyłanie...</span>
+              <span className="text-brand-gold font-semibold">{uploadProgress}%</span>
+            </div>
+            <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-brand-gold to-yellow-500 transition-all duration-300 ease-out"
+                style={{ width: `${uploadProgress}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Upload Message */}
       {uploadMessage && (
