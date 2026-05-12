@@ -8,6 +8,7 @@ import Navbar from '@/components/Navbar';
 import ScrollReveal from '@/components/ScrollReveal';
 import CookieBanner from '@/components/CookieBanner';
 import KPOBanner from '@/components/KPOBanner';
+import MovieCatalogModal from '@/components/MovieCatalogModal';
 import { ChevronDown, Sparkles, Users, Film, Star } from 'lucide-react';
 import { scrollToSection } from '@/lib/scrollToSection';
 
@@ -38,6 +39,7 @@ export default function Home() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMovieCatalogOpen, setIsMovieCatalogOpen] = useState(false);
 
   // Oblicz kategorię na podstawie liczby widzów
   const getCategory = () => {
@@ -909,6 +911,32 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Katalog Filmów Section */}
+      <section id="katalog" className="section-padding bg-gradient-to-b from-[var(--brand-dark)] to-[var(--brand-blue)]">
+        <div className="container mx-auto px-4 sm:px-6">
+          <ScrollReveal>
+            <div className="text-center max-w-3xl mx-auto">
+              <div className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-brand-gold to-yellow-500 rounded-2xl mb-6">
+                <Film className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+                Katalog Filmów
+              </h2>
+              <p className="text-white/80 text-sm sm:text-base md:text-lg mb-8">
+                Odkryj naszą bogatą kolekcję filmów. Od klasycznych produkcji po najnowsze hity kinowe - znajdziesz tutaj coś dla każdego widza.
+              </p>
+              <button
+                onClick={() => setIsMovieCatalogOpen(true)}
+                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-brand-gold to-yellow-500 text-white font-bold rounded-full hover:scale-105 transition-transform duration-300 shadow-lg hover:shadow-brand-gold/50"
+              >
+                <Film className="w-5 h-5" />
+                Przeglądaj Katalog
+              </button>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       {/* Proces Section */}
       <section id="proces" className="section-padding bg-gradient-to-b from-[var(--brand-blue)] to-[var(--brand-dark)]">
         <div className="container mx-auto px-4 sm:px-6">
@@ -1413,6 +1441,12 @@ export default function Home() {
 
       {/* Cookie Banner */}
       <CookieBanner />
+
+      {/* Movie Catalog Modal */}
+      <MovieCatalogModal 
+        isOpen={isMovieCatalogOpen} 
+        onClose={() => setIsMovieCatalogOpen(false)} 
+      />
     </main>
   );
 }

@@ -72,6 +72,11 @@ export default function AdminLayout({
       icon: Image,
     },
     {
+      name: "Katalog Filmów",
+      href: "/admin/movies",
+      icon: Film,
+    },
+    {
       name: "Formularze",
       href: "/admin/submissions",
       icon: Mail,
