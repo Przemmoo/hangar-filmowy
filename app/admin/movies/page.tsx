@@ -55,7 +55,7 @@ export default function MoviesPage() {
       setLoading(true);
       const response = await fetch('/api/admin/movies');
       if (!response.ok) throw new Error('Failed to fetch movies');
-      const data = await response.json();
+      const data = await response.json() as Movie[];
       setMovies(data);
       setError('');
     } catch (err) {

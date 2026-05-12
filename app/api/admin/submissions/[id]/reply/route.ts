@@ -5,11 +5,21 @@ import { dbSelectOne, dbInsert, getCurrentTimestamp } from '@/lib/cloudflare-db'
 
 export const runtime = 'edge';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 type RouteParams = {
   params: Promise<{ id: string }>;
 };
+
+// Helper function to escape HTML
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, (m) => map[m]);
+}
 
 // POST - Send reply to submission
 export async function POST(request: Request, context: RouteParams) {
@@ -41,6 +51,9 @@ export async function POST(request: Request, context: RouteParams) {
       return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
     }
 
+    // Escape and format message
+    const escapedMessage = escapeHtml(message).replace(/\n/g, '<br>');
+
     // Prepare email HTML
     const emailHtml = `
       <!DOCTYPE html>
@@ -63,12 +76,12 @@ export async function POST(request: Request, context: RouteParams) {
           <div class="container">
             <div class="header">
               <img src="https://hangarfilmowy.pl/hangar_filmowy.svg" alt="Hangar Filmowy Logo" />
-              <h1>🎬 Hangar Filmowy</h1>
+              <h1>Hangar Filmowy</h1>
               <p>Kino Pod Gwiazdami</p>
             </div>
             <div class="content">
               <div class="message-box">
-                <div style="white-space: pre-wrap;">${message.replace(/\n/g, '<br>')}</div>
+                <div style="white-space: pre-wrap;">${escapedMessage}</div>
               </div>
 
               <div class="highlight">
@@ -108,13 +121,15 @@ export async function POST(request: Request, context: RouteParams) {
     `;
 
     // Send email
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    
     try {
       await resend.emails.send({
-        from: process.env.EMAIL_FROM!,
+        from: 'pokaz@hangarfilmowy.pl',
         to: submission.email,
         subject: subject,
         html: emailHtml,
-        replyTo: process.env.EMAIL_TO || 'pokaz@hangarfilmowy.pl',
+        replyTo: 'pokaz@hangarfilmowy.pl',
       });
     } catch (emailError) {
       console.error('Error sending email:', emailError);
