@@ -55,7 +55,7 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
       setLoading(true);
       const response = await fetch('/api/movies');
       if (!response.ok) throw new Error('Failed to fetch movies');
-      const data = await response.json();
+      const data = await response.json() as Movie[];
       setMovies(data);
       setFilteredMovies(data);
     } catch (err) {
