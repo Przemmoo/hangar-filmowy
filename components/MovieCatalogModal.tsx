@@ -23,13 +23,17 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
   const [loading, setLoading] = useState(false);
   const [hoveredMovieId, setHoveredMovieId] = useState<string | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isAnimatingIn, setIsAnimatingIn] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       fetchMovies();
       document.body.style.overflow = 'hidden';
+      // Trigger animation
+      setIsAnimatingIn(true);
     } else {
       document.body.style.overflow = 'unset';
+      setIsAnimatingIn(false);
     }
 
     return () => {
@@ -94,8 +98,41 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
   const hoveredMovie = movies.find(m => m.id === hoveredMovieId);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="relative w-full max-w-6xl max-h-[90vh] bg-gradient-to-br from-brand-dark via-brand-blue to-brand-dark rounded-2xl shadow-2xl border border-white/10 flex flex-col">
+    <div 
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ${
+        isAnimatingIn ? 'bg-black/80 backdrop-blur-sm' : 'bg-black/0'
+      }`}
+      style={{ animation: isAnimatingIn ? 'fadeIn 0.3s ease-out' : undefined }}
+    >
+      <div 
+        className={`relative w-full max-w-6xl max-h-[90vh] bg-gradient-to-br from-brand-dark via-brand-blue to-brand-dark rounded-2xl shadow-2xl border border-white/10 flex flex-col transition-all duration-300 ${
+          isAnimatingIn ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+        }`}
+        style={{ 
+          animation: isAnimatingIn ? 'modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1)' : undefined 
+        }}
+      >
+        <style jsx>{`
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+          
+          @keyframes modalSlideIn {
+            from {
+              opacity: 0;
+              transform: scale(0.95) translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1) translateY(0);
+            }
+          }
+        `}</style>
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-r from-brand-gold to-yellow-500 rounded-lg">
@@ -133,21 +170,22 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 md:p-6">
-          {loading ? (
-            <div className="text-center py-12 text-white/60">
-              <div className="animate-spin w-8 h-8 border-4 border-brand-gold border-t-transparent rounded-full mx-auto mb-4"></div>
-              Wczytywanie katalogu...
-            </div>
-          ) : filteredMovies.length === 0 ? (
-            <div className="text-center py-12 text-white/60">
-              <FilmIcon className="w-16 h-16 mx-auto mb-4 text-white/20" />
-              <p className="text-lg font-medium">
-                {searchTerm.length >= 3 ? 'Nie znaleziono filmów' : 'Brak filmów w katalogu'}
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredMovies.map((movie) => {
+          <div className="transition-all duration-500 ease-in-out">
+            {loading ? (
+              <div className="text-center py-12 text-white/60 animate-in fade-in duration-300">
+                <div className="animate-spin w-8 h-8 border-4 border-brand-gold border-t-transparent rounded-full mx-auto mb-4"></div>
+                Wczytywanie katalogu...
+              </div>
+            ) : filteredMovies.length === 0 ? (
+              <div className="text-center py-12 text-white/60 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <FilmIcon className="w-16 h-16 mx-auto mb-4 text-white/20" />
+                <p className="text-lg font-medium">
+                  {searchTerm.length >= 3 ? 'Nie znaleziono filmów' : 'Brak filmów w katalogu'}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-500">
+                {filteredMovies.map((movie, index) => {
                 // Parse categories
                 let categories: string[] = [];
                 try {
@@ -161,7 +199,11 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
                   key={movie.id}
                   onMouseEnter={(e) => handleMouseEnter(movie.id, e)}
                   onMouseLeave={handleMouseLeave}
-                  className="relative p-4 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg hover:border-brand-gold hover:bg-white/10 hover:shadow-xl transition-all cursor-pointer group"
+                  className="relative p-4 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg hover:border-brand-gold hover:bg-white/10 hover:shadow-xl transition-all duration-300 cursor-pointer group animate-in fade-in slide-in-from-bottom-2"
+                  style={{
+                    animationDelay: `${index * 50}ms`,
+                    animationFillMode: 'backwards'
+                  }}
                 >
                   <div className="space-y-2">
                     <h3 className="font-bold text-white text-lg group-hover:text-brand-gold transition-colors">
@@ -203,8 +245,9 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
               })}
             </div>
           )}
+          </div>
 
-          <div className="mt-6 text-center text-sm text-white/60">
+          <div className="mt-6 text-center text-sm text-white/60 transition-opacity duration-300">
             Znaleziono: {filteredMovies.length} {filteredMovies.length === 1 ? 'film' : 'filmów'}
           </div>
         </div>
@@ -212,7 +255,7 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
 
       {hoveredMovie && hoveredMovie.description && (
         <div
-          className="fixed z-[60] max-w-sm p-4 bg-brand-dark border border-brand-gold/50 text-white rounded-lg shadow-2xl pointer-events-none transform -translate-x-1/2 -translate-y-full backdrop-blur-sm"
+          className="fixed z-[60] max-w-sm p-4 bg-brand-dark border border-brand-gold/50 text-white rounded-lg shadow-2xl pointer-events-none transform -translate-x-1/2 -translate-y-full backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2 duration-200"
           style={{
             left: `${tooltipPosition.x}px`,
             top: `${tooltipPosition.y}px`,

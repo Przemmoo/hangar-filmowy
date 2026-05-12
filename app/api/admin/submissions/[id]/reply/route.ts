@@ -5,9 +5,6 @@ import { dbSelectOne, dbInsert, getCurrentTimestamp } from '@/lib/cloudflare-db'
 
 export const runtime = 'edge';
 
-// Hardcoded API key for edge runtime (process.env unreliable)
-const resend = new Resend('re_9i3MUVze_FxtMHbXQEoXPc4zcw7m6bSfm');
-
 type RouteParams = {
   params: Promise<{ id: string }>;
 };
@@ -41,6 +38,9 @@ export async function POST(request: Request, context: RouteParams) {
     if (!submission) {
       return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
     }
+
+    // Initialize Resend with secret from Cloudflare environment
+    const resend = new Resend(process.env.RESEND_API_KEY!);
 
     // Format message for HTML email
     const formattedMessage = message.replace(/\n/g, '<br>');

@@ -5,10 +5,9 @@ import { dbInsert, getContentBySection, stringifyJSON, getCurrentTimestamp } fro
 // Edge Runtime for Cloudflare Pages
 export const runtime = 'edge';
 
-// Hardcoded API key for edge runtime (process.env unreliable)
-const resend = new Resend('re_9i3MUVze_FxtMHbXQEoXPc4zcw7m6bSfm');
-
 export async function POST(request: Request) {
+  // Initialize Resend with secret from Cloudflare environment
+  const resend = new Resend(process.env.RESEND_API_KEY!);
   try {
     const body = await request.json() as any;
     
