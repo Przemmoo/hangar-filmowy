@@ -5,21 +5,12 @@ import { dbSelectOne, dbInsert, getCurrentTimestamp } from '@/lib/cloudflare-db'
 
 export const runtime = 'edge';
 
+// Initialize Resend at module level like in contact route
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 type RouteParams = {
   params: Promise<{ id: string }>;
 };
-
-// Helper function to escape HTML
-function escapeHtml(text: string): string {
-  const map: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;'
-  };
-  return text.replace(/[&<>"']/g, (m) => map[m]);
-}
 
 // POST - Send reply to submission
 export async function POST(request: Request, context: RouteParams) {
@@ -51,8 +42,8 @@ export async function POST(request: Request, context: RouteParams) {
       return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
     }
 
-    // Escape and format message
-    const escapedMessage = escapeHtml(message).replace(/\n/g, '<br>');
+    // Format message for HTML email
+    const formattedMessage = message.replace(/\n/g, '<br>');
 
     // Prepare email HTML
     const emailHtml = `
@@ -81,7 +72,7 @@ export async function POST(request: Request, context: RouteParams) {
             </div>
             <div class="content">
               <div class="message-box">
-                <div style="white-space: pre-wrap;">${escapedMessage}</div>
+                <div style="white-space: pre-wrap;">${formattedMessage}</div>
               </div>
 
               <div class="highlight">
@@ -120,21 +111,30 @@ export async function POST(request: Request, context: RouteParams) {
       </html>
     `;
 
-    // Send email (hardcoded API key for edge runtime compatibility)
-    const resend = new Resend('re_9i3MUVze_FxtMHbXQEoXPc4zcw7m6bSfm');
-    
+    // Send email
     try {
-      await resend.emails.send({
+      const emailResult = await resend.emails.send({
         from: 'pokaz@hangarfilmowy.pl',
         to: submission.email,
         subject: subject,
         html: emailHtml,
         replyTo: 'pokaz@hangarfilmowy.pl',
       });
+      
+      console.log('Email sent successfully:', emailResult);
     } catch (emailError) {
-      console.error('Error sending email:', emailError);
+      console.error('Detailed email error:', {
+        error: emailError,
+        message: emailError instanceof Error ? emailError.message : 'Unknown error',
+        stack: emailError instanceof Error ? emailError.stack : undefined,
+        to: submission.email,
+        subject: subject
+      });
       return NextResponse.json(
-        { error: 'Failed to send email' },
+        { 
+          error: 'Failed to send email', 
+          details: emailError instanceof Error ? emailError.message : 'Unknown error'
+        },
         { status: 500 }
       );
     }

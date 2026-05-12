@@ -94,39 +94,39 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
   const hoveredMovie = movies.find(m => m.id === hoveredMovieId);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="relative w-full max-w-6xl max-h-[90vh] bg-white rounded-2xl shadow-2xl flex flex-col">
-        <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div className="relative w-full max-w-6xl max-h-[90vh] bg-gradient-to-br from-brand-dark via-brand-blue to-brand-dark rounded-2xl shadow-2xl border border-white/10 flex flex-col">
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-r from-brand-gold to-yellow-500 rounded-lg">
-              <FilmIcon className="w-6 h-6 text-white" />
+              <FilmIcon className="w-6 h-6 text-brand-dark" />
             </div>
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+            <h2 className="text-xl md:text-2xl font-bold text-white">
               Katalog Filmów
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
             aria-label="Zamknij"
           >
-            <X className="w-6 h-6 text-gray-600" />
+            <X className="w-6 h-6 text-white/80 hover:text-white" />
           </button>
         </div>
 
-        <div className="p-4 md:p-6 border-b border-gray-200">
+        <div className="p-4 md:p-6 border-b border-white/10">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
             <input
               type="text"
               placeholder="Wyszukaj film (min. 3 znaki)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-transparent text-sm md:text-base"
+              className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 focus:ring-2 focus:ring-brand-gold focus:border-transparent text-sm md:text-base"
             />
           </div>
           {searchTerm.length > 0 && searchTerm.length < 3 && (
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-white/60">
               Wprowadź minimum 3 znaki aby wyszukać
             </p>
           )}
@@ -134,13 +134,13 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
 
         <div className="flex-1 overflow-y-auto p-4 md:p-6">
           {loading ? (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-white/60">
               <div className="animate-spin w-8 h-8 border-4 border-brand-gold border-t-transparent rounded-full mx-auto mb-4"></div>
               Wczytywanie katalogu...
             </div>
           ) : filteredMovies.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              <FilmIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+            <div className="text-center py-12 text-white/60">
+              <FilmIcon className="w-16 h-16 mx-auto mb-4 text-white/20" />
               <p className="text-lg font-medium">
                 {searchTerm.length >= 3 ? 'Nie znaleziono filmów' : 'Brak filmów w katalogu'}
               </p>
@@ -161,21 +161,21 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
                   key={movie.id}
                   onMouseEnter={(e) => handleMouseEnter(movie.id, e)}
                   onMouseLeave={handleMouseLeave}
-                  className="relative p-4 border border-gray-200 rounded-lg hover:border-brand-gold hover:shadow-lg transition-all cursor-pointer bg-white group"
+                  className="relative p-4 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg hover:border-brand-gold hover:bg-white/10 hover:shadow-xl transition-all cursor-pointer group"
                 >
                   <div className="space-y-2">
-                    <h3 className="font-bold text-gray-900 text-lg group-hover:text-brand-gold transition-colors">
+                    <h3 className="font-bold text-white text-lg group-hover:text-brand-gold transition-colors">
                       {movie.title}
                     </h3>
                     
                     {categories.length > 0 && (
                       <div className="space-y-1">
-                        <span className="text-xs font-medium text-gray-500">
+                        <span className="text-xs font-medium text-white/50">
                           {categories.length === 1 ? 'Kategoria:' : 'Kategorie:'}
                         </span>
                         <div className="flex flex-wrap gap-1">
                           {categories.map(cat => (
-                            <span key={cat} className="inline-block px-2 py-1 bg-brand-gold/20 text-brand-dark rounded text-xs font-medium whitespace-nowrap">
+                            <span key={cat} className="inline-block px-2 py-1 bg-brand-gold/20 text-brand-gold border border-brand-gold/30 rounded text-xs font-medium whitespace-nowrap">
                               {cat}
                             </span>
                           ))}
@@ -185,15 +185,15 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
                     
                     {movie.distributor && (
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-gray-500">Dystrybutor:</span>
-                        <span className="text-sm text-gray-700">{movie.distributor}</span>
+                        <span className="text-xs font-medium text-white/50">Dystrybutor:</span>
+                        <span className="text-sm text-white/80">{movie.distributor}</span>
                       </div>
                     )}
                   </div>
 
                   {movie.description && (
-                    <div className="mt-2 pt-2 border-t border-gray-100">
-                      <p className="text-xs text-gray-400 italic">
+                    <div className="mt-2 pt-2 border-t border-white/10">
+                      <p className="text-xs text-white/40 italic">
                         Najedź aby zobaczyć opis
                       </p>
                     </div>
@@ -204,7 +204,7 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
             </div>
           )}
 
-          <div className="mt-6 text-center text-sm text-gray-500">
+          <div className="mt-6 text-center text-sm text-white/60">
             Znaleziono: {filteredMovies.length} {filteredMovies.length === 1 ? 'film' : 'filmów'}
           </div>
         </div>
@@ -212,15 +212,15 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
 
       {hoveredMovie && hoveredMovie.description && (
         <div
-          className="fixed z-[60] max-w-sm p-4 bg-brand-dark text-white rounded-lg shadow-2xl pointer-events-none transform -translate-x-1/2 -translate-y-full"
+          className="fixed z-[60] max-w-sm p-4 bg-brand-dark border border-brand-gold/50 text-white rounded-lg shadow-2xl pointer-events-none transform -translate-x-1/2 -translate-y-full backdrop-blur-sm"
           style={{
             left: `${tooltipPosition.x}px`,
             top: `${tooltipPosition.y}px`,
           }}
         >
           <div className="font-bold mb-2 text-brand-gold">{hoveredMovie.title}</div>
-          <p className="text-sm leading-relaxed">{hoveredMovie.description}</p>
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-brand-dark"></div>
+          <p className="text-sm leading-relaxed text-white/90">{hoveredMovie.description}</p>
+          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-brand-dark border-r border-b border-brand-gold/50"></div>
         </div>
       )}
     </div>

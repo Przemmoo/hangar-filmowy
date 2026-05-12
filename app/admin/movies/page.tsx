@@ -196,15 +196,15 @@ export default function MoviesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
               <Film className="w-7 h-7 md:w-8 md:h-8 text-brand-gold" />
               Katalog Filmów
             </h1>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-white/60 mt-1">
               Zarządzaj katalogiem dostępnych filmów
             </p>
           </div>
@@ -212,7 +212,7 @@ export default function MoviesPage() {
           <button
             onClick={handleAddNew}
             disabled={loading || isAddingNew}
-            className="flex items-center gap-2 px-4 py-2 bg-brand-gold text-white rounded-lg hover:bg-yellow-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2 bg-brand-gold text-brand-dark rounded-lg hover:bg-yellow-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             <Plus className="w-5 h-5" />
             Dodaj Film
@@ -220,51 +220,51 @@ export default function MoviesPage() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+          <div className="mb-6 p-4 bg-red-500/20 border border-red-500/40 rounded-lg text-red-200">
             {error}
           </div>
         )}
 
         {(isAddingNew || editingMovie) && (
-          <div className="mb-6 bg-white rounded-lg shadow-md p-4 md:p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900">
+          <div className="mb-6 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-4 md:p-6">
+            <h2 className="text-xl font-semibold mb-4 text-white">
               {editingMovie ? 'Edytuj Film' : 'Dodaj Nowy Film'}
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-white/80 mb-1">
                   Tytuł filmu *
                 </label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-transparent"
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 focus:ring-2 focus:ring-brand-gold focus:border-transparent"
                   placeholder="Np. Incepcja"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-white/80 mb-1">
                   Dystrybutor
                 </label>
                 <input
                   type="text"
                   value={formData.distributor}
                   onChange={(e) => setFormData({ ...formData, distributor: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-transparent"
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 focus:ring-2 focus:ring-brand-gold focus:border-transparent"
                   placeholder="Np. Warner Bros"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-white/80 mb-2">
                   Kategorie * (wybierz co najmniej jedną)
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 p-4 border border-gray-300 rounded-lg bg-gray-50">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 p-4 border border-white/20 rounded-lg bg-white/5">
                   {CATEGORIES.map(cat => (
-                    <label key={cat} className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded">
+                    <label key={cat} className="flex items-center gap-2 cursor-pointer hover:bg-white/10 p-2 rounded transition">
                       <input
                         type="checkbox"
                         checked={formData.categories.includes(cat)}
@@ -275,20 +275,20 @@ export default function MoviesPage() {
                             setFormData({ ...formData, categories: formData.categories.filter(c => c !== cat) });
                           }
                         }}
-                        className="w-4 h-4 text-brand-gold focus:ring-brand-gold border-gray-300 rounded"
+                        className="w-4 h-4 text-brand-gold focus:ring-brand-gold border-white/30 rounded bg-white/10"
                       />
-                      <span className="text-sm text-gray-700">{cat}</span>
+                      <span className="text-sm text-white/80">{cat}</span>
                     </label>
                   ))}
                 </div>
                 {formData.categories.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {formData.categories.map(cat => (
-                      <span key={cat} className="inline-flex items-center gap-1 px-2 py-1 bg-brand-gold/20 text-brand-dark rounded text-xs font-medium">
+                      <span key={cat} className="inline-flex items-center gap-1 px-2 py-1 bg-brand-gold/20 text-brand-gold border border-brand-gold/30 rounded text-xs font-medium">
                         {cat}
                         <button
                           onClick={() => setFormData({ ...formData, categories: formData.categories.filter(c => c !== cat) })}
-                          className="text-brand-dark hover:text-red-600"
+                          className="text-brand-gold hover:text-yellow-300"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -299,14 +299,14 @@ export default function MoviesPage() {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-white/80 mb-1">
                   Opis
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-transparent"
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 focus:ring-2 focus:ring-brand-gold focus:border-transparent"
                   placeholder="Krótki opis filmu..."
                 />
               </div>
@@ -316,7 +316,7 @@ export default function MoviesPage() {
               <button
                 onClick={handleSave}
                 disabled={loading}
-                className="flex items-center gap-2 px-4 py-2 bg-brand-gold text-white rounded-lg hover:bg-yellow-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2 bg-brand-gold text-brand-dark rounded-lg hover:bg-yellow-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
                 <Save className="w-4 h-4" />
                 Zapisz
@@ -324,7 +324,7 @@ export default function MoviesPage() {
               <button
                 onClick={handleCancel}
                 disabled={loading}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2 bg-white/10 text-white border border-white/20 rounded-lg hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <X className="w-4 h-4" />
                 Anuluj
@@ -333,32 +333,32 @@ export default function MoviesPage() {
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
+        <div className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-4 md:p-6">
           <div className="mb-4">
             <input
               type="text"
               placeholder="Szukaj filmu..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-transparent"
+              className="w-full md:w-96 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 focus:ring-2 focus:ring-brand-gold focus:border-transparent"
             />
           </div>
 
           {loading && !editingMovie && !isAddingNew ? (
-            <div className="text-center py-8 text-gray-500">Wczytywanie...</div>
+            <div className="text-center py-8 text-white/60">Wczytywanie...</div>
           ) : filteredMovies.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-white/60">
               {searchTerm ? 'Nie znaleziono filmów' : 'Brak filmów w katalogu'}
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200 text-left">
-                    <th className="pb-3 px-2 text-sm font-semibold text-gray-700">Tytuł</th>
-                    <th className="pb-3 px-2 text-sm font-semibold text-gray-700">Kategoria</th>
-                    <th className="pb-3 px-2 text-sm font-semibold text-gray-700 hidden md:table-cell">Dystrybutor</th>
-                    <th className="pb-3 px-2 text-sm font-semibold text-gray-700 text-right">Akcje</th>
+                  <tr className="border-b border-white/10 text-left">
+                    <th className="pb-3 px-2 text-sm font-semibold text-white/80">Tytuł</th>
+                    <th className="pb-3 px-2 text-sm font-semibold text-white/80">Kategorie</th>
+                    <th className="pb-3 px-2 text-sm font-semibold text-white/80 hidden md:table-cell">Dystrybutor</th>
+                    <th className="pb-3 px-2 text-sm font-semibold text-white/80 text-right">Akcje</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -372,32 +372,32 @@ export default function MoviesPage() {
                     }
                     
                     return (
-                    <tr key={movie.id} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-3 px-2 text-sm text-gray-900">{movie.title}</td>
+                    <tr key={movie.id} className="border-b border-white/10 hover:bg-white/5 transition">
+                      <td className="py-3 px-2 text-sm text-white">{movie.title}</td>
                       <td className="py-3 px-2 text-sm">
                         <div className="flex flex-wrap gap-1">
                           {categories.map(cat => (
-                            <span key={cat} className="inline-block px-2 py-1 bg-brand-gold/20 text-brand-dark rounded text-xs font-medium whitespace-nowrap">
+                            <span key={cat} className="inline-block px-2 py-1 bg-brand-gold/20 text-brand-gold border border-brand-gold/30 rounded text-xs font-medium whitespace-nowrap">
                               {cat}
                             </span>
                           ))}
                         </div>
                       </td>
-                      <td className="py-3 px-2 text-sm text-gray-600 hidden md:table-cell">
+                      <td className="py-3 px-2 text-sm text-white/60 hidden md:table-cell">
                         {movie.distributor || '-'}
                       </td>
                       <td className="py-3 px-2 text-sm text-right">
                         <div className="flex gap-2 justify-end">
                           <button
                             onClick={() => handleEdit(movie)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                            className="p-2 text-blue-400 hover:bg-blue-500/20 rounded transition-colors"
                             title="Edytuj"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(movie.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
+                            className="p-2 text-red-400 hover:bg-red-500/20 rounded transition-colors"
                             title="Usuń"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -412,7 +412,7 @@ export default function MoviesPage() {
             </div>
           )}
 
-          <div className="mt-4 text-sm text-gray-500">
+          <div className="mt-4 text-sm text-white/60">
             Razem: {filteredMovies.length} {filteredMovies.length === 1 ? 'film' : 'filmów'}
           </div>
         </div>
