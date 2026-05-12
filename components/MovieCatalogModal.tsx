@@ -23,6 +23,7 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [hoveredMovieId, setHoveredMovieId] = useState<string | null>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isAnimatingIn, setIsAnimatingIn] = useState(false);
 
@@ -74,6 +75,7 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
       const data = await response.json() as Movie[];
       setMovies(data);
       setFilteredMovies(data);
+      setIsInitialLoad(false);
     } catch (err) {
       console.error('Error fetching movies:', err);
     } finally {
@@ -171,22 +173,26 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 md:p-6">
-          <div className="transition-all duration-500 ease-in-out">
-            {loading ? (
-              <div className="text-center py-12 text-white/60 animate-in fade-in duration-300">
-                <div className="animate-spin w-8 h-8 border-4 border-brand-gold border-t-transparent rounded-full mx-auto mb-4"></div>
-                Wczytywanie katalogu...
-              </div>
-            ) : filteredMovies.length === 0 ? (
-              <div className="text-center py-12 text-white/60 animate-in fade-in slide-in-from-bottom-4 duration-300">
-                <FilmIcon className="w-16 h-16 mx-auto mb-4 text-white/20" />
-                <p className="text-lg font-medium">
-                  {searchTerm.length >= 3 ? 'Nie znaleziono filmów' : 'Brak filmów w katalogu'}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-500">
-                {filteredMovies.map((movie, index) => {
+          {loading ? (
+            <div className="text-center py-12 text-white/60 animate-in fade-in duration-300">
+              <div className="animate-spin w-8 h-8 border-4 border-brand-gold border-t-transparent rounded-full mx-auto mb-4"></div>
+              Wczytywanie katalogu...
+            </div>
+          ) : filteredMovies.length === 0 ? (
+            <div className="text-center py-12 text-white/60 animate-in fade-in slide-in-from-bottom-4 duration-300">
+              <FilmIcon className="w-16 h-16 mx-auto mb-4 text-white/20" />
+              <p className="text-lg font-medium">
+                {searchTerm.length >= 3 ? 'Nie znaleziono filmów' : 'Brak filmów w katalogu'}
+              </p>
+            </div>
+          ) : (
+            <div 
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-300 ease-out"
+              style={{ 
+                minHeight: filteredMovies.length > 0 ? 'auto' : '200px'
+              }}
+            >
+              {filteredMovies.map((movie, index) => {
                 // Parse categories
                 let categories: string[] = [];
                 try {
@@ -200,11 +206,12 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
                   key={movie.id}
                   onMouseEnter={(e) => handleMouseEnter(movie.id, e)}
                   onMouseLeave={handleMouseLeave}
-                  className="relative p-4 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg hover:border-brand-gold hover:bg-white/10 hover:shadow-xl transition-all duration-300 cursor-pointer group animate-in fade-in slide-in-from-bottom-2"
-                  style={{
+                  className="relative p-4 bg-white/5 backdrop-blur-sm border border-white/20 rounded-lg hover:border-brand-gold hover:bg-white/10 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                  style={isInitialLoad ? {
+                    animation: 'fadeIn 0.3s ease-out, slideInFromBottom 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
                     animationDelay: `${index * 50}ms`,
                     animationFillMode: 'backwards'
-                  }}
+                  } : undefined}
                 >
                   <div className="space-y-2">
                     <h3 className="font-bold text-white text-lg group-hover:text-brand-gold transition-colors">
@@ -252,7 +259,6 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
               })}
             </div>
           )}
-          </div>
 
           <div className="mt-6 text-center text-sm text-white/60 transition-opacity duration-300">
             Znaleziono: {filteredMovies.length} {filteredMovies.length === 1 ? 'film' : 'filmów'}

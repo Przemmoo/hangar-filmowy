@@ -52,7 +52,8 @@ export default function MoviesPage() {
     title: '',
     categories: [],
     description: '',
-    distributor: ''
+    distributor: '',
+    year: ''
   });
 
   useEffect(() => {
