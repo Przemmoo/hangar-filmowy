@@ -5,7 +5,8 @@ import { dbInsert, getContentBySection, stringifyJSON, getCurrentTimestamp } fro
 // Edge Runtime for Cloudflare Pages
 export const runtime = 'edge';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Hardcoded API key for edge runtime (process.env unreliable)
+const resend = new Resend('re_9i3MUVze_FxtMHbXQEoXPc4zcw7m6bSfm');
 
 export async function POST(request: Request) {
   try {
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
 
     // Fetch contact email from database
     const contactContent = await getContentBySection('contact');
-    const contactEmail = contactContent?.data?.email || process.env.EMAIL_TO || 'pokaz@hangarfilmowy.pl';
+    const contactEmail = contactContent?.data?.email || 'pokaz@hangarfilmowy.pl';
 
     const eventLabels: Record<string, string> = {
       city: 'Event miejski',
@@ -253,7 +254,7 @@ export async function POST(request: Request) {
     // Wysyłka emaila do firmy
     try {
       await resend.emails.send({
-        from: process.env.EMAIL_FROM!,
+        from: 'pokaz@hangarfilmowy.pl',
         to: contactEmail,
         subject: `Nowe zapytanie: ${eventLabels[eventType]} - ${formData.firstName} ${formData.lastName}`,
         html: adminEmailHtml,
@@ -265,7 +266,7 @@ export async function POST(request: Request) {
     // Wysyłka emaila potwierdzającego do klienta
     try {
       await resend.emails.send({
-        from: process.env.EMAIL_FROM!,
+        from: 'pokaz@hangarfilmowy.pl',
         to: formData.email,
         subject: `Potwierdzenie zapytania - Hangar Filmowy`,
         html: clientEmailHtml,

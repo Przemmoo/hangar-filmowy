@@ -5,8 +5,8 @@ import { dbSelectOne, dbInsert, getCurrentTimestamp } from '@/lib/cloudflare-db'
 
 export const runtime = 'edge';
 
-// Initialize Resend at module level like in contact route
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Hardcoded API key for edge runtime (process.env unreliable)
+const resend = new Resend('re_9i3MUVze_FxtMHbXQEoXPc4zcw7m6bSfm');
 
 type RouteParams = {
   params: Promise<{ id: string }>;
