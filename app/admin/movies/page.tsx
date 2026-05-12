@@ -6,11 +6,18 @@ import { Film, Plus, Pencil, Trash2, Save, X } from 'lucide-react';
 interface Movie {
   id: string;
   title: string;
-  category: string;
+  category: string; // JSON string array in DB
   description: string;
   distributor: string;
   createdAt: string;
   updatedAt: string;
+}
+
+interface MovieFormData {
+  title: string;
+  categories: string[]; // Array for form
+  description: string;
+  distributor: string;
 }
 
 const CATEGORIES = [
@@ -39,9 +46,9 @@ export default function MoviesPage() {
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<MovieFormData>({
     title: '',
-    category: '',
+    categories: [],
     description: '',
     distributor: ''
   });
@@ -71,7 +78,7 @@ export default function MoviesPage() {
     setEditingMovie(null);
     setFormData({
       title: '',
-      category: '',
+      categories: [],
       description: '',
       distributor: ''
     });
@@ -80,9 +87,16 @@ export default function MoviesPage() {
   const handleEdit = (movie: Movie) => {
     setEditingMovie(movie);
     setIsAddingNew(false);
+    // Parse category JSON string to array
+    let categories: string[] = [];
+    try {
+      categories = JSON.parse(movie.category || '[]');
+    } catch {
+      categories = movie.category ? [movie.category] : [];
+    }
     setFormData({
       title: movie.title,
-      category: movie.category,
+      categories: categories,
       description: movie.description,
       distributor: movie.distributor
     });
@@ -93,26 +107,34 @@ export default function MoviesPage() {
     setEditingMovie(null);
     setFormData({
       title: '',
-      category: '',
+      categories: [],
       description: '',
       distributor: ''
     });
   };
 
   const handleSave = async () => {
-    if (!formData.title || !formData.category) {
-      alert('Tytuł i kategoria są wymagane');
+    if (!formData.title || formData.categories.length === 0) {
+      alert('Tytuł i przynajmniej jedna kategoria są wymagane');
       return;
     }
 
     try {
       setLoading(true);
 
+      // Prepare data with JSON stringified categories
+      const dataToSend = {
+        title: formData.title,
+        category: JSON.stringify(formData.categories),
+        description: formData.description,
+        distributor: formData.distributor
+      };
+
       if (editingMovie) {
         const response = await fetch(`/api/admin/movies/${editingMovie.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(dataToSend)
         });
 
         if (!response.ok) throw new Error('Failed to update movie');
@@ -120,7 +142,7 @@ export default function MoviesPage() {
         const response = await fetch('/api/admin/movies', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(dataToSend)
         });
 
         if (!response.ok) throw new Error('Failed to create movie');
@@ -156,11 +178,22 @@ export default function MoviesPage() {
     }
   };
 
-  const filteredMovies = movies.filter(movie =>
-    movie.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    movie.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    movie.distributor.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredMovies = movies.filter(movie => {
+    const searchLower = searchTerm.toLowerCase();
+    
+    // Parse categories for search
+    let categories: string[] = [];
+    try {
+      categories = JSON.parse(movie.category || '[]');
+    } catch {
+      categories = movie.category ? [movie.category] : [];
+    }
+    const categoryText = categories.join(' ').toLowerCase();
+    
+    return movie.title.toLowerCase().includes(searchLower) ||
+      categoryText.includes(searchLower) ||
+      movie.distributor.toLowerCase().includes(searchLower);
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
@@ -214,22 +247,6 @@ export default function MoviesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kategoria *
-                </label>
-                <select
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-transparent"
-                >
-                  <option value="">Wybierz kategorię</option>
-                  {CATEGORIES.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Dystrybutor
                 </label>
                 <input
@@ -239,6 +256,46 @@ export default function MoviesPage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-transparent"
                   placeholder="Np. Warner Bros"
                 />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Kategorie * (wybierz co najmniej jedną)
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 p-4 border border-gray-300 rounded-lg bg-gray-50">
+                  {CATEGORIES.map(cat => (
+                    <label key={cat} className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={formData.categories.includes(cat)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setFormData({ ...formData, categories: [...formData.categories, cat] });
+                          } else {
+                            setFormData({ ...formData, categories: formData.categories.filter(c => c !== cat) });
+                          }
+                        }}
+                        className="w-4 h-4 text-brand-gold focus:ring-brand-gold border-gray-300 rounded"
+                      />
+                      <span className="text-sm text-gray-700">{cat}</span>
+                    </label>
+                  ))}
+                </div>
+                {formData.categories.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {formData.categories.map(cat => (
+                      <span key={cat} className="inline-flex items-center gap-1 px-2 py-1 bg-brand-gold/20 text-brand-dark rounded text-xs font-medium">
+                        {cat}
+                        <button
+                          onClick={() => setFormData({ ...formData, categories: formData.categories.filter(c => c !== cat) })}
+                          className="text-brand-dark hover:text-red-600"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="md:col-span-2">
@@ -305,13 +362,26 @@ export default function MoviesPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredMovies.map((movie) => (
+                  {filteredMovies.map((movie) => {
+                    // Parse categories
+                    let categories: string[] = [];
+                    try {
+                      categories = JSON.parse(movie.category || '[]');
+                    } catch {
+                      categories = movie.category ? [movie.category] : [];
+                    }
+                    
+                    return (
                     <tr key={movie.id} className="border-b border-gray-100 hover:bg-gray-50">
                       <td className="py-3 px-2 text-sm text-gray-900">{movie.title}</td>
                       <td className="py-3 px-2 text-sm">
-                        <span className="inline-block px-2 py-1 bg-brand-gold/20 text-brand-dark rounded text-xs font-medium">
-                          {movie.category}
-                        </span>
+                        <div className="flex flex-wrap gap-1">
+                          {categories.map(cat => (
+                            <span key={cat} className="inline-block px-2 py-1 bg-brand-gold/20 text-brand-dark rounded text-xs font-medium whitespace-nowrap">
+                              {cat}
+                            </span>
+                          ))}
+                        </div>
                       </td>
                       <td className="py-3 px-2 text-sm text-gray-600 hidden md:table-cell">
                         {movie.distributor || '-'}
@@ -335,7 +405,8 @@ export default function MoviesPage() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

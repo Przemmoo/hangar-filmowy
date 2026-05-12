@@ -120,8 +120,8 @@ export async function POST(request: Request, context: RouteParams) {
       </html>
     `;
 
-    // Send email
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    // Send email (hardcoded API key for edge runtime compatibility)
+    const resend = new Resend('re_9i3MUVze_FxtMHbXQEoXPc4zcw7m6bSfm');
     
     try {
       await resend.emails.send({

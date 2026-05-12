@@ -39,11 +39,22 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
 
   useEffect(() => {
     if (searchTerm.length >= 3) {
-      const filtered = movies.filter(movie =>
-        movie.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        movie.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        movie.distributor.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      const filtered = movies.filter(movie => {
+        const searchLower = searchTerm.toLowerCase();
+        
+        // Parse categories for search
+        let categories: string[] = [];
+        try {
+          categories = JSON.parse(movie.category || '[]');
+        } catch {
+          categories = movie.category ? [movie.category] : [];
+        }
+        const categoryText = categories.join(' ').toLowerCase();
+        
+        return movie.title.toLowerCase().includes(searchLower) ||
+          categoryText.includes(searchLower) ||
+          movie.distributor.toLowerCase().includes(searchLower);
+      });
       setFilteredMovies(filtered);
     } else {
       setFilteredMovies(movies);
@@ -136,7 +147,16 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredMovies.map((movie) => (
+              {filteredMovies.map((movie) => {
+                // Parse categories
+                let categories: string[] = [];
+                try {
+                  categories = JSON.parse(movie.category || '[]');
+                } catch {
+                  categories = movie.category ? [movie.category] : [];
+                }
+                
+                return (
                 <div
                   key={movie.id}
                   onMouseEnter={(e) => handleMouseEnter(movie.id, e)}
@@ -148,12 +168,20 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
                       {movie.title}
                     </h3>
                     
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-gray-500">Kategoria:</span>
-                      <span className="inline-block px-2 py-1 bg-brand-gold/20 text-brand-dark rounded text-xs font-medium">
-                        {movie.category}
-                      </span>
-                    </div>
+                    {categories.length > 0 && (
+                      <div className="space-y-1">
+                        <span className="text-xs font-medium text-gray-500">
+                          {categories.length === 1 ? 'Kategoria:' : 'Kategorie:'}
+                        </span>
+                        <div className="flex flex-wrap gap-1">
+                          {categories.map(cat => (
+                            <span key={cat} className="inline-block px-2 py-1 bg-brand-gold/20 text-brand-dark rounded text-xs font-medium whitespace-nowrap">
+                              {cat}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     
                     {movie.distributor && (
                       <div className="flex items-center gap-2">
@@ -171,7 +199,8 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
                     </div>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
