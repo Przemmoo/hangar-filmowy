@@ -148,6 +148,27 @@ export async function POST(request: Request) {
                 ` : ''}
               </div>
 
+              <!-- KPO Banner -->
+              <div style="background: linear-gradient(to right, #ffffff, #f9fafb, #ffffff); border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center;">
+                <a href="https://hangarfilmowy.pl/kpo" style="text-decoration: none; color: inherit; display: block;">
+                  <!-- Logotypy -->
+                  <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px;">
+                    <img src="https://hangarfilmowy.pl/kpo-fe-popc.jpg" alt="Fundusze Europejskie" style="height: 50px; width: auto;" />
+                    <img src="https://hangarfilmowy.pl/kpo-barwy-rp.jpg" alt="Rzeczypospolita Polska" style="height: 50px; width: auto;" />
+                    <img src="https://hangarfilmowy.pl/kpo-kpo.jpg" alt="KPO" style="height: 50px; width: auto;" />
+                    <img src="https://hangarfilmowy.pl/kpo-nextgeneU.jpg" alt="Next Generation EU" style="height: 50px; width: auto;" />
+                  </div>
+                  <!-- Tekst -->
+                  <p style="margin: 10px 0 0 0; font-size: 13px; color: #374151; line-height: 1.5;">
+                    Dofinansowano z <strong style="color: #0A1828;">Funduszy Europejskich</strong> w ramach<br />
+                    <strong style="color: #0A1828;">Krajowego Planu Odbudowy i Zwiększania Odporności</strong>
+                  </p>
+                  <p style="margin: 8px 0 0 0; font-size: 12px; color: #6B7280;">
+                    <strong>Więcej informacji →</strong>
+                  </p>
+                </a>
+              </div>
+
               <div class="footer">
                 <p>To zapytanie zostało automatycznie wygenerowane z formularza na hangarfilmowy.pl</p>
               </div>
@@ -201,6 +222,27 @@ export async function POST(request: Request) {
                 <p>Jeśli masz dodatkowe pytania lub chcesz omówić szczegóły swojego wydarzenia, nie wahaj się z nami skontaktować.</p>
 
                 <p style="margin-top: 25px;">W razie pilnych pytań, możesz napisać bezpośrednio na: <a href="mailto:pokaz@hangarfilmowy.pl" style="color: #FFD700; text-decoration: none; font-weight: bold;">pokaz@hangarfilmowy.pl</a></p>
+              </div>
+
+              <!-- KPO Banner -->
+              <div style="background: linear-gradient(to right, #ffffff, #f9fafb, #ffffff); border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center;">
+                <a href="https://hangarfilmowy.pl/kpo" style="text-decoration: none; color: inherit; display: block;">
+                  <!-- Logotypy -->
+                  <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px;">
+                    <img src="https://hangarfilmowy.pl/kpo-fe-popc.jpg" alt="Fundusze Europejskie" style="height: 50px; width: auto;" />
+                    <img src="https://hangarfilmowy.pl/kpo-barwy-rp.jpg" alt="Rzeczypospolita Polska" style="height: 50px; width: auto;" />
+                    <img src="https://hangarfilmowy.pl/kpo-kpo.jpg" alt="KPO" style="height: 50px; width: auto;" />
+                    <img src="https://hangarfilmowy.pl/kpo-nextgeneU.jpg" alt="Next Generation EU" style="height: 50px; width: auto;" />
+                  </div>
+                  <!-- Tekst -->
+                  <p style="margin: 10px 0 0 0; font-size: 13px; color: #374151; line-height: 1.5;">
+                    Dofinansowano z <strong style="color: #0A1828;">Funduszy Europejskich</strong> w ramach<br />
+                    <strong style="color: #0A1828;">Krajowego Planu Odbudowy i Zwiększania Odporności</strong>
+                  </p>
+                  <p style="margin: 8px 0 0 0; font-size: 12px; color: #6B7280;">
+                    <strong>Więcej informacji →</strong>
+                  </p>
+                </a>
               </div>
 
               <div class="footer">
