@@ -9,6 +9,7 @@ export interface Movie {
   category: string;
   description: string;
   distributor: string;
+  year: number | null;
   createdAt: string;
   updatedAt: string;
 }

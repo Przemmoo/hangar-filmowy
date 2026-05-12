@@ -10,6 +10,7 @@ export interface Movie {
   category: string;
   description: string;
   distributor: string;
+  year: number | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -52,9 +53,10 @@ export async function POST(request: Request) {
       category?: string;
       description?: string;
       distributor?: string;
+      year?: number | null;
     };
 
-    const { title, category, description, distributor } = body;
+    const { title, category, description, distributor, year } = body;
 
     if (!title || !category) {
       return NextResponse.json(
@@ -67,13 +69,14 @@ export async function POST(request: Request) {
     const timestamp = getCurrentTimestamp();
 
     await dbInsert(
-      'INSERT INTO movies (id, title, category, description, distributor, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO movies (id, title, category, description, distributor, year, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [
         movieId,
         title,
         category,
         description || '',
         distributor || '',
+        year || null,
         timestamp,
         timestamp
       ]

@@ -3,6 +3,11 @@
 ## Opis
 Dodanie nowej tabeli `movies` do bazy danych D1 dla funkcjonalności katalogu filmów.
 
+## Pliki migracji
+
+1. **003_create_movies_table.sql** - Utworzenie tabeli movies (podstawowe pola)
+2. **004_add_year_to_movies.sql** - Dodanie pola roku produkcji
+
 ## Instrukcje wykonania migracji
 
 ### Opcja 1: Przez Dashboard Cloudflare (Zalecane)
@@ -10,7 +15,9 @@ Dodanie nowej tabeli `movies` do bazy danych D1 dla funkcjonalności katalogu fi
 1. Zaloguj się do Cloudflare Dashboard
 2. Przejdź do: **Workers & Pages** → **D1** → Twoja baza (ID: `8c588b46-6e4c-467b-b32e-ee6f6e52ddc5`)
 3. Kliknij zakładkę **Console**
-4. Skopiuj i wykonaj poniższe zapytanie SQL:
+4. Skopiuj i wykonaj poniższe zapytania SQL **PO KOLEI**:
+
+#### Krok 1: Utwórz tabelę (jeśli jeszcze nie istnieje)
 
 ```sql
 CREATE TABLE IF NOT EXISTS movies (
@@ -27,7 +34,14 @@ CREATE INDEX IF NOT EXISTS idx_movies_title ON movies(title);
 CREATE INDEX IF NOT EXISTS idx_movies_category ON movies(category);
 ```
 
-5. Kliknij **Execute**
+#### Krok 2: Dodaj pole roku produkcji
+
+```sql
+ALTER TABLE movies ADD COLUMN year INTEGER;
+CREATE INDEX IF NOT EXISTS idx_movies_year ON movies(year);
+```
+
+5. Kliknij **Execute** po każdym kroku
 6. Zweryfikuj utworzenie tabeli wykonując: `SELECT * FROM movies;`
 
 ### Opcja 2: Przez wrangler CLI (Lokalnie)

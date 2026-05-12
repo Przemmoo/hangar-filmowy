@@ -9,6 +9,7 @@ interface Movie {
   category: string; // JSON string array in DB
   description: string;
   distributor: string;
+  year: number | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,6 +19,7 @@ interface MovieFormData {
   categories: string[]; // Array for form
   description: string;
   distributor: string;
+  year: string;
 }
 
 const CATEGORIES = [
@@ -80,7 +82,8 @@ export default function MoviesPage() {
       title: '',
       categories: [],
       description: '',
-      distributor: ''
+      distributor: '',
+      year: ''
     });
   };
 
@@ -98,7 +101,8 @@ export default function MoviesPage() {
       title: movie.title,
       categories: categories,
       description: movie.description,
-      distributor: movie.distributor
+      distributor: movie.distributor,
+      year: movie.year ? movie.year.toString() : ''
     });
   };
 
@@ -109,7 +113,8 @@ export default function MoviesPage() {
       title: '',
       categories: [],
       description: '',
-      distributor: ''
+      distributor: '',
+      year: ''
     });
   };
 
@@ -127,7 +132,8 @@ export default function MoviesPage() {
         title: formData.title,
         category: JSON.stringify(formData.categories),
         description: formData.description,
-        distributor: formData.distributor
+        distributor: formData.distributor,
+        year: formData.year ? parseInt(formData.year) : null
       };
 
       if (editingMovie) {
@@ -247,6 +253,21 @@ export default function MoviesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-white/80 mb-1">
+                  Rok produkcji
+                </label>
+                <input
+                  type="number"
+                  value={formData.year}
+                  onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 focus:ring-2 focus:ring-brand-gold focus:border-transparent"
+                  placeholder="Np. 2010"
+                  min="1888"
+                  max="2100"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white/80 mb-1">
                   Dystrybutor
                 </label>
                 <input
@@ -356,6 +377,7 @@ export default function MoviesPage() {
                 <thead>
                   <tr className="border-b border-white/10 text-left">
                     <th className="pb-3 px-2 text-sm font-semibold text-white/80">Tytuł</th>
+                    <th className="pb-3 px-2 text-sm font-semibold text-white/80 hidden sm:table-cell">Rok</th>
                     <th className="pb-3 px-2 text-sm font-semibold text-white/80">Kategorie</th>
                     <th className="pb-3 px-2 text-sm font-semibold text-white/80 hidden md:table-cell">Dystrybutor</th>
                     <th className="pb-3 px-2 text-sm font-semibold text-white/80 text-right">Akcje</th>
@@ -374,6 +396,9 @@ export default function MoviesPage() {
                     return (
                     <tr key={movie.id} className="border-b border-white/10 hover:bg-white/5 transition">
                       <td className="py-3 px-2 text-sm text-white">{movie.title}</td>
+                      <td className="py-3 px-2 text-sm text-white/60 hidden sm:table-cell">
+                        {movie.year || '-'}
+                      </td>
                       <td className="py-3 px-2 text-sm">
                         <div className="flex flex-wrap gap-1">
                           {categories.map(cat => (

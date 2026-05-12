@@ -9,6 +9,7 @@ interface Movie {
   category: string;
   description: string;
   distributor: string;
+  year: number | null;
 }
 
 interface MovieCatalogModalProps {
@@ -209,6 +210,12 @@ export default function MovieCatalogModal({ isOpen, onClose }: MovieCatalogModal
                     <h3 className="font-bold text-white text-lg group-hover:text-brand-gold transition-colors">
                       {movie.title}
                     </h3>
+                    
+                    {movie.year && (
+                      <div className="text-sm text-white/60">
+                        <span className="font-medium">{movie.year}</span>
+                      </div>
+                    )}
                     
                     {categories.length > 0 && (
                       <div className="space-y-1">

@@ -23,9 +23,10 @@ export async function PUT(request: Request, context: RouteParams) {
       category?: string;
       description?: string;
       distributor?: string;
+      year?: number | null;
     };
 
-    const { title, category, description, distributor } = body;
+    const { title, category, description, distributor, year } = body;
 
     if (!title || !category) {
       return NextResponse.json(
@@ -37,12 +38,13 @@ export async function PUT(request: Request, context: RouteParams) {
     const timestamp = new Date().toISOString();
 
     await dbUpdate(
-      'UPDATE movies SET title = ?, category = ?, description = ?, distributor = ?, updatedAt = ? WHERE id = ?',
+      'UPDATE movies SET title = ?, category = ?, description = ?, distributor = ?, year = ?, updatedAt = ? WHERE id = ?',
       [
         title,
         category,
         description || '',
         distributor || '',
+        year || null,
         timestamp,
         movieId
       ]
