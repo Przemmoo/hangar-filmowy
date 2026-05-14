@@ -37,7 +37,7 @@ export default function PolitykaPrivatnosciPage() {
               hangarfilmowy.pl.
             </p>
             <p className="text-white/80">
-              Administratorem danych osobowych jest <strong>Hangar Filmowy</strong>, 
+              Administratorem danych osobowych jest <strong>Piloci Łukasz Biega</strong>, 
               z siedzibą w ul. Górska 7, 32-020 Wieliczka, NIP: 6871775693, REGON: 120380716.
             </p>
           </section>
