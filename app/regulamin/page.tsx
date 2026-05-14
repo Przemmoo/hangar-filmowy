@@ -37,7 +37,7 @@ export default function RegulaminPage() {
             </p>
             <div className="bg-white/5 rounded-lg p-4">
               <p className="text-white/80 text-sm mb-2">
-                <strong>Właściciel Serwisu:</strong> Hangar Filmowy<br/>
+                <strong>Właściciel Serwisu:</strong> Piloci Łukasz Biega<br/>
                 <strong>Siedziba:</strong> ul. Górska 7, 32-020 Wieliczka<br/>
                 <strong>NIP:</strong> 6871775693<br/>
                 <strong>REGON:</strong> 120380716<br/>
